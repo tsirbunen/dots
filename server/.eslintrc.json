@@ -1,0 +1,15 @@
+{
+    "extends": ["standard-with-typescript", "plugin:prettier/recommended"],
+    "root": true,
+    "rules": {
+      "prefer-const": 1,
+      "@typescript-eslint/no-unused-vars": [1, { "argsIgnorePattern": "^_" }],
+      "@typescript-eslint/no-explicit-any": 1
+    },
+  
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "project": "tsconfig.json"
+    }
+  }
+  
