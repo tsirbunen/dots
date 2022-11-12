@@ -1,0 +1,36 @@
+input CreatePollInput {
+  question: String!
+  answers: [String!]!
+  isAnonymous: Boolean!
+  totalVotesCountMax: Int!
+  optionVotesCountMax: Int!
+  showStatusWhenVoting: Boolean!
+}
+
+type Answer {
+  id: ID!
+  pollId: ID!
+  content: String!
+}
+
+type Poll {
+  id: ID!
+  code: String!
+  question: String!
+  answers: [Answer!]!
+  isAnonymous: Boolean!
+  totalVotesCountMax: Int!
+  optionVotesCountMax: Int!
+  showStatusWhenVoting: Boolean!
+  deletedAt: Timestamp
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+}
+
+extend type Query {
+  poll(code: String!): Poll
+}
+
+extend type Mutation {
+  createPoll(input: CreatePollInput!): Poll!
+}

@@ -14,4 +14,30 @@ describe('SERVER HEALTH', () => {
     const response = await axios.get(`${SERVER_URL}/ping`)
     expect(response.data).to.equal('pong')
   })
+
+  it('A get request to route "/health" returns "ok"', async () => {
+    const response = await axios.get(`${SERVER_URL}/health`)
+    expect(response.data).to.equal('ok')
+  })
+
+  it('A GraphQL query "ping" returns "pong"', async () => {
+    const headers = {
+      'content-type': 'application/json'
+    }
+    const pingQuery = `
+      {
+        ping
+      }
+    `
+    const response = await axios.request({
+      method: 'POST',
+      url: `${SERVER_URL}/graphql`,
+      headers: headers,
+      data: {
+        query: pingQuery
+      }
+    })
+
+    expect(response.data.data.ping).to.equal('pong')
+  })
 })

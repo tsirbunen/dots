@@ -1,0 +1,11 @@
+{
+  "name": "dots",
+  "version": "1.0.0",
+  "description": "DOTS all components",
+  "main": "index.js",
+  "scripts": {
+    "build-server": "cd server && npm run build"
+  },
+  "author": "Satu Hyvärinen",
+  "license": "ISC"
+}
