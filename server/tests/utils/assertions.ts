@@ -1,6 +1,7 @@
 import chai, { assert, expect } from 'chai'
 import chaiUuid from 'chai-uuid'
-import { AnswerType, CreatePollInputType, PollType } from '../../modules/poll/mutation-resolvers'
+import { AnswerPollResolvers } from '../../modules/answer/answer-poll-resolvers'
+import { PollType, AnswerType, DataClassType, VoteType, CreatePollInputType, PollFullDataType } from '../../types/types'
 
 chai.use(chaiUuid)
 
@@ -15,14 +16,11 @@ export function assertObjectIsAPoll(pollCandidate: unknown, isDeleted: boolean) 
   assert.isNumber(poll.totalVotesCountMax)
   assert.isNumber(poll.optionVotesCountMax)
   assert.isBoolean(poll.showStatusWhenVoting)
-  expect(poll.createdAt).not.to.equal(null)
-  assertIsNumberAndRepresentsAValidDate(poll.createdAt)
-  expect(poll.updatedAt).not.to.equal(null)
-  assertIsNumberAndRepresentsAValidDate(poll.updatedAt)
+  assertIsNumberAndRepresentsAValidDateIfPresent(poll.createdAt)
+  assertIsNumberAndRepresentsAValidDateIfPresent(poll.updatedAt)
   if (isDeleted) {
-    expect(poll.deletedAt).not.to.equal(null)
-    assertIsNumberAndRepresentsAValidDate(poll.deletedAt)
-  } else {
+    assertIsNumberAndRepresentsAValidDateIfPresent(poll.deletedAt)
+  } else if (poll.deletedAt !== undefined) {
     expect(poll.deletedAt).to.equal(null)
   }
 }
@@ -32,9 +30,36 @@ function assertObjectIsAnAnswer(answer: unknown) {
   expect(answerCandidate.id).to.be.a.uuid('v4')
   expect(answerCandidate.pollId).to.be.a.uuid('v4')
   assert.isString(answerCandidate.content)
+  assert.oneOf(answerCandidate.dataClass, Object.keys(DataClassType))
+  if (answerCandidate.votes) {
+    answerCandidate.votes.forEach((vote) => assertObjectIsAVote(vote))
+  }
 }
 
-function assertIsNumberAndRepresentsAValidDate(dateAsNumber: unknown) {
+export function assertObjectIsAVote(vote: unknown) {
+  const voteCandidate = vote as VoteType
+  expect(voteCandidate.id).to.be.a.uuid('v4')
+  expect(voteCandidate.answerId).to.be.a.uuid('v4')
+  if (voteCandidate.name) {
+    assert.isString(voteCandidate.name)
+  }
+}
+
+export function assertVoteIsForCorrectAnswerOption(vote: VoteType, answerId: string) {
+  assert.equal(vote.answerId, answerId)
+}
+
+export function assertEachAnswerHasValidVotes(poll: unknown) {
+  const pollWithFullData = poll as PollFullDataType
+  assert.isArray(pollWithFullData.answers)
+  pollWithFullData.answers.forEach((answer) => {
+    assert.isArray(answer.votes)
+    answer.votes?.forEach((vote) => assertObjectIsAVote(vote))
+  })
+}
+
+function assertIsNumberAndRepresentsAValidDateIfPresent(dateAsNumber: unknown) {
+  if (!dateAsNumber) return
   assert.isNumber(dateAsNumber)
   const dateCandidate = new Date(dateAsNumber as number)
   assert(dateCandidate instanceof Date)

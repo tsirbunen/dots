@@ -1,0 +1,10 @@
+type Vote {
+  id: ID!
+  answerId: ID!
+  voterId: ID!
+  name: String
+}
+
+extend type Answer {
+  votes(answerId: ID): [Vote]
+}

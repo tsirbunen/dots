@@ -1,23 +1,29 @@
+enum DataClass {
+  TEXT
+  NUMBER
+  DATE
+}
+
 input CreatePollInput {
   question: String!
   answers: [String!]!
   isAnonymous: Boolean!
+  dataClass: DataClass!
   totalVotesCountMax: Int!
   optionVotesCountMax: Int!
   showStatusWhenVoting: Boolean!
 }
 
-type Answer {
-  id: ID!
-  pollId: ID!
-  content: String!
+input FindPollInput {
+  id: ID
+  code: String
 }
 
 type Poll {
   id: ID!
   code: String!
   question: String!
-  answers: [Answer!]!
+  # answers: [Answer!]!
   isAnonymous: Boolean!
   totalVotesCountMax: Int!
   optionVotesCountMax: Int!
@@ -28,7 +34,7 @@ type Poll {
 }
 
 extend type Query {
-  poll(code: String!): Poll
+  findPoll(input: FindPollInput): Poll
 }
 
 extend type Mutation {

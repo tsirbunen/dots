@@ -1,11 +1,14 @@
+import 'reflect-metadata'
+import { Database } from './database/database'
 import { startServer } from './server'
 
-const startDotsServer = async () => {
-    await startServer()
+const startDotsServer = async (): Promise<void> => {
+  Database.instance.connect()
+  await startServer()
 }
 
 try {
-    void startDotsServer()
+  void startDotsServer()
 } catch (error) {
-    console.log(error)
+  console.log(error)
 }

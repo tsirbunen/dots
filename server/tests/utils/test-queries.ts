@@ -10,6 +10,7 @@ export const createPollMutation = gql`
         id
         pollId
         content
+        dataClass
       }
       isAnonymous
       totalVotesCountMax
@@ -18,6 +19,42 @@ export const createPollMutation = gql`
       deletedAt
       createdAt
       updatedAt
+    }
+  }
+`
+
+export const giveAVoteToAnswerMutation = gql`
+  mutation giveAVoteToAnswer($input: GiveAVoteToAnswerInput!) {
+    giveAVoteToAnswer(input: $input) {
+      id
+      answerId
+      voterId
+      name
+    }
+  }
+`
+
+export const findPollQuery = gql`
+  query findPoll($input: FindPollInput!) {
+    findPoll(input: $input) {
+      id
+      code
+      question
+      answers {
+        id
+        pollId
+        content
+        dataClass
+        votes {
+          id
+          answerId
+          name
+        }
+      }
+      isAnonymous
+      totalVotesCountMax
+      optionVotesCountMax
+      showStatusWhenVoting
     }
   }
 `

@@ -16,7 +16,7 @@ const GRAPHQL_ROUTE = '/graphql'
 
 export const startServer = async (): Promise<void> => {
   console.log('Starting DOTS server...')
-  const server = Fastify({ logger: true })
+  const server = Fastify({ logger: false })
   await server.register(fastifyCors)
 
   server.get('/ping', async (_request, reply) => {

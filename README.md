@@ -6,6 +6,29 @@
 
 The DOTS-program can be run locally in development mode with the following instructions:
 
+#### running the database
+
+Start a PostgreSQL database locally with Docker:
+`docker run --name postgres_for_dots -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=possupossu -e POSTGRES_DB=dots -d --rm postgres`
+
+Install knex globally:
+`npm install -g knex`
+
+Run database migrations (in directory `server`)
+`npx knex migrate:latest`
+
+docker images
+docker pull postgres
+docker ps -a
+docker start postgres_for_dots
+docker stop postgres_for_dots
+docker rmi postgres_for_dots
+docker images -f dangling=true
+docker image prune
+docker ps -a
+docker rm ID_or_Name ID_or_Name
+docker run --rm image_name
+
 #### running server
 
 In a shell, in directory `/server` start a server with the command:

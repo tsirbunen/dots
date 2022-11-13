@@ -5,10 +5,12 @@ import { PollModule } from './modules/poll/module'
 import { PingModule } from './modules/ping/module'
 import { CustomScalarsModule } from './modules/custom-scalars/module'
 import { makeExecutableSchema } from '@graphql-tools/schema'
+import { AnswerModule } from './modules/answer/module'
+import { VoteModule } from './modules/vote/module'
 
 export const createGraphQLApp = (): Application => {
   return createApplication({
-    modules: [QueryModule, MutationModule, PingModule, PollModule, CustomScalarsModule],
+    modules: [QueryModule, MutationModule, PingModule, AnswerModule, PollModule, VoteModule, CustomScalarsModule],
     schemaBuilder: ({ typeDefs, resolvers }) => makeExecutableSchema({ typeDefs, resolvers })
   })
 }
