@@ -5,6 +5,10 @@ export const createPollMutation = gql`
     createPoll(input: $input) {
       id
       code
+      owner {
+        id
+        name
+      }
       question
       answers {
         id
@@ -16,6 +20,8 @@ export const createPollMutation = gql`
       totalVotesCountMax
       optionVotesCountMax
       showStatusWhenVoting
+      state
+      token
       deletedAt
       createdAt
       updatedAt
@@ -55,6 +61,7 @@ export const findPollQuery = gql`
       totalVotesCountMax
       optionVotesCountMax
       showStatusWhenVoting
+      state
     }
   }
 `

@@ -2,6 +2,7 @@ import { DataClassType } from '../../types/types'
 
 export const POLL_INPUT_DATA = [
   {
+    ownerName: 'Eric Cartman',
     question: 'What kind of food should we order?',
     answers: ['Chinese', 'Sushi', 'Mexican', 'Nepalese'],
     dataClass: DataClassType.TEXT,
@@ -11,6 +12,7 @@ export const POLL_INPUT_DATA = [
     showStatusWhenVoting: true
   },
   {
+    ownerName: 'Darth Vader',
     question: 'How many days should we stay on holiday?',
     answers: ['7', '10', '14'],
     dataClass: DataClassType.NUMBER,
@@ -20,6 +22,7 @@ export const POLL_INPUT_DATA = [
     showStatusWhenVoting: true
   },
   {
+    ownerName: 'Harry Potter',
     question: 'When should we have the party?',
     answers: [
       new Date('2022-11-01').valueOf().toString(),

@@ -2,11 +2,13 @@ import chai, { assert, expect } from 'chai'
 import chaiUuid from 'chai-uuid'
 import { AnswerPollResolvers } from '../../modules/answer/answer-poll-resolvers'
 import { PollType, AnswerType, DataClassType, VoteType, CreatePollInputType, PollFullDataType } from '../../types/types'
+import chaiJWT from 'chai-jwt'
 
 chai.use(chaiUuid)
+chai.use(chaiJWT)
 
 export function assertObjectIsAPoll(pollCandidate: unknown, isDeleted: boolean) {
-  const poll = pollCandidate as PollType
+  const poll = pollCandidate as PollFullDataType
   expect(poll.id).to.be.a.uuid('v4')
   assert.isString(poll.code)
   assert.isString(poll.question)
@@ -23,6 +25,11 @@ export function assertObjectIsAPoll(pollCandidate: unknown, isDeleted: boolean) 
   } else if (poll.deletedAt !== undefined) {
     expect(poll.deletedAt).to.equal(null)
   }
+}
+
+export function assertReturnedCreatedPollContainsAToken(poll: PollFullDataType) {
+  assert.isString(poll.token)
+  expect(poll.token).to.be.a.jwt
 }
 
 function assertObjectIsAnAnswer(answer: unknown) {
@@ -65,26 +72,26 @@ function assertIsNumberAndRepresentsAValidDateIfPresent(dateAsNumber: unknown) {
   assert(dateCandidate instanceof Date)
 }
 
-export function assertPollFieldsArePracticallySameWhenPresent(
-  pollA: PollType | CreatePollInputType,
-  pollB: PollType
-): void {
-  const pollAPollType = pollA as PollType
-  let pollKey: keyof PollType
+export function assertPollFieldsArePracticallySameWhenPresent(pollA: unknown, pollB: unknown): void {
+  const pollAPollType = pollA as PollFullDataType
+  const pollBPollType = pollB as PollFullDataType
+  let pollKey: keyof PollFullDataType
 
   for (pollKey in pollAPollType) {
-    if (pollKey in pollB && pollKey !== 'answers') {
-      assertFieldValuesAreEqual(pollAPollType[pollKey], pollB[pollKey])
-    }
-    if (pollKey in pollB && pollKey === 'answers') {
-      const pollAAnswers =
-        pollA.answers.length > 0 && typeof pollA.answers[0] === 'object'
-          ? pollA.answers.map((answer) => (answer as AnswerType).content)
-          : pollA.answers
-      pollAAnswers.forEach((answerA, index) => {
-        const answerB = pollB.answers[index].content
-        assertFieldValuesAreEqual(answerA, answerB)
-      })
+    if (pollKey in pollBPollType) {
+      if (pollKey !== 'answers') {
+        assertFieldValuesAreEqual(pollAPollType[pollKey], pollBPollType[pollKey])
+      }
+      if (pollKey === 'answers') {
+        const pollAAnswers =
+          pollAPollType.answers.length > 0 && typeof pollAPollType.answers[0] === 'object'
+            ? pollAPollType.answers.map((answer) => (answer as AnswerType).content)
+            : pollAPollType.answers
+        pollAAnswers.forEach((answerA, index) => {
+          const answerB = pollBPollType.answers[index].content
+          assertFieldValuesAreEqual(answerA, answerB)
+        })
+      }
     }
   }
 }
@@ -92,6 +99,10 @@ export function assertPollFieldsArePracticallySameWhenPresent(
 function assertFieldValuesAreEqual(valueA: any, valueB: any) {
   if (typeof valueA === 'string' || typeof valueA === 'number' || typeof valueA === 'boolean' || valueA === null) {
     assert.equal(valueA, valueB)
+  } else if (typeof valueA === 'object') {
+    Object.keys(valueA).forEach((key) => {
+      assertFieldValuesAreEqual(valueA[key], valueB[key])
+    })
   } else {
     throw new Error(`Assert field values are equal not implemented for values like ${valueA}`)
   }

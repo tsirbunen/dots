@@ -26,7 +26,7 @@ describe('GIVE A VOTE', () => {
   })
 
   it('Votes can be given to answer options of an existing poll when max vote counts (per person) have not been reached', async () => {
-    const pollInputData = POLL_INPUT_DATA[0]
+    const pollInputData = { ...POLL_INPUT_DATA[0], ownerId: uuidv4() }
     const createdPoll = await createPollInDatabase(pollInputData)
     for (let personCount = 0; personCount < 2; personCount++) {
       for (let answerIndex = 0; answerIndex < pollInputData.answers.length; answerIndex++) {
@@ -44,7 +44,7 @@ describe('GIVE A VOTE', () => {
   })
 
   it('Voting an answer option fails if the max vote count PER ANSWER per person has been reached', async () => {
-    const pollInputData = POLL_INPUT_DATA[2]
+    const pollInputData = { ...POLL_INPUT_DATA[2], ownerId: uuidv4() }
     const createdPoll = await createPollInDatabase(pollInputData)
     const selectedAnswerToVoteId = createdPoll.answers[0].id
     let voterAId = uuidv4()
@@ -73,7 +73,7 @@ describe('GIVE A VOTE', () => {
   })
 
   it('Voting an answer option fails if the max vote count PER POLL per person has been reached', async () => {
-    const pollInputData = POLL_INPUT_DATA[2]
+    const pollInputData = { ...POLL_INPUT_DATA[2], ownerId: uuidv4() }
     const createdPoll = await createPollInDatabase(pollInputData)
     const voterAId = uuidv4()
     let answerTracker = { index: 0 }
@@ -81,26 +81,6 @@ describe('GIVE A VOTE', () => {
     const voterBId = uuidv4()
     answerTracker.index = 0
     await giveMaxNumberOfVotesByPersonInPoll(createdPoll, voterBId, answerTracker)
-    // let answerIndex = 0
-    // let votesGivenTotal = 0
-    // const voterId = uuidv4()
-    // const maxTotalVotesInPoll = createdPoll.totalVotesCountMax
-    // const maxVotesPerAnswerOption = createdPoll.optionVotesCountMax
-    // while (votesGivenTotal < maxTotalVotesInPoll) {
-    //   const answerOption = createdPoll.answers[answerIndex]
-    //   let votesGivenPerAnswerOption = 0
-    //   while (votesGivenTotal < maxTotalVotesInPoll && votesGivenPerAnswerOption < maxVotesPerAnswerOption) {
-    //     const giveAVoteInput = {
-    //       answerId: answerOption.id,
-    //       voterId: voterId
-    //     }
-
-    //     await giveAVoteToAnswerOptionInDatabase(giveAVoteInput)
-    //     votesGivenPerAnswerOption += 1
-    //     votesGivenTotal += 1
-    //   }
-    //   answerIndex += 1
-    // }
 
     try {
       const giveAVoteInput = {

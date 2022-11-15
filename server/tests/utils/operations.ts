@@ -9,10 +9,10 @@ import {
 import { getGraphQLClient } from './get-graphql-client'
 import { createPollMutation, findPollQuery, giveAVoteToAnswerMutation } from './test-queries'
 
-export async function createPollInDatabase(variables: CreatePollInputType): Promise<PollType> {
+export async function createPollInDatabase(variables: CreatePollInputType): Promise<PollFullDataType> {
   const graphQLClient = getGraphQLClient()
   const query = createPollMutation
-  const response: { createPoll: PollType } = await graphQLClient.request(query, { input: variables })
+  const response: { createPoll: PollFullDataType } = await graphQLClient.request(query, { input: variables })
   return response.createPoll
 }
 
@@ -26,13 +26,11 @@ export async function giveAVoteToAnswerOptionInDatabase(variables: VoteInputType
 }
 
 export async function giveMaxNumberOfVotesByPersonInPoll(
-  createdPoll: PollType,
+  createdPoll: PollFullDataType,
   voterId: string,
   answerTracker: { index: number }
 ) {
-  // let answerIndex = 0
   let votesGivenTotal = 0
-  // const voterId = uuidv4()
   const maxTotalVotesInPoll = createdPoll.totalVotesCountMax
   const maxVotesPerAnswerOption = createdPoll.optionVotesCountMax
   while (votesGivenTotal < maxTotalVotesInPoll) {

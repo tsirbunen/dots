@@ -2,7 +2,7 @@ import Fastify, { FastifyReply, FastifyRequest } from 'fastify'
 import fastifyCors from '@fastify/cors'
 import { envelop } from '@envelop/core'
 import { useGraphQLModules } from '@envelop/graphql-modules'
-import { createGraphQLApp } from './graphql-app'
+import { createGraphQLApp } from './graphql-app/graphql-app'
 import {
   Request,
   shouldRenderGraphiQL,
@@ -11,6 +11,7 @@ import {
   processRequest,
   sendResult
 } from 'graphql-helix'
+import { authenticationPlugin } from './graphql-app/authentication-plugin'
 
 const GRAPHQL_ROUTE = '/graphql'
 
@@ -29,7 +30,7 @@ export const startServer = async (): Promise<void> => {
   })
 
   const getEnveloped = envelop({
-    plugins: [useGraphQLModules(createGraphQLApp())]
+    plugins: [useGraphQLModules(createGraphQLApp()), authenticationPlugin()]
   })
 
   server.route({

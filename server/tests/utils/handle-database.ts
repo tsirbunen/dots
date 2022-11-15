@@ -20,6 +20,7 @@ export function getDatabaseConnection(): Knex {
 
 export async function clearDatabase(databaseConnection: Knex) {
   await databaseConnection.raw(`
+        DELETE FROM "Owners";
         DELETE FROM "Votes";
         DELETE FROM "Answers";
         DELETE FROM "Polls";
