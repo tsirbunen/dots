@@ -1,4 +1,4 @@
-directive @pollValidation on FIELD_DEFINITION
+directive @pollInputValidation on FIELD_DEFINITION
 directive @isPollOwner on FIELD_DEFINITION
 
 enum DataClass {
@@ -26,19 +26,19 @@ input CreatePollInput {
 }
 
 input AnswerEditData {
-  answerId: ID!
+  answerId: ID
   content: String!
 }
 
 input EditPollInput {
   pollId: ID!
-  question: String!
-  answers: [AnswerEditData]!
-  isAnonymous: Boolean!
-  dataClass: DataClass!
-  totalVotesCountMax: Int!
-  optionVotesCountMax: Int!
-  showStatusWhenVoting: Boolean!
+  question: String
+  answers: [AnswerEditData]
+  isAnonymous: Boolean
+  dataClass: DataClass
+  totalVotesCountMax: Int
+  optionVotesCountMax: Int
+  showStatusWhenVoting: Boolean
 }
 
 input FindPollInput {
@@ -64,12 +64,13 @@ type Poll {
 
 extend type Query {
   findPoll(input: FindPollInput): Poll
+  findAllPollsForOneOwner: [Poll]
 }
 
 extend type Mutation {
-  createPoll(input: CreatePollInput!): Poll! @pollValidation
-  editPoll(input: EditPollInput!): Poll! @isPollOwner
+  createPoll(input: CreatePollInput!): Poll! @pollInputValidation
+  editPoll(input: EditPollInput!): Poll! @isPollOwner @pollInputValidation
   openPoll(pollId: ID!): Boolean! @isPollOwner
-  # closePoll(pollId: ID!)
-  # deletePoll(pollId: ID!)
+  closePoll(pollId: ID!): Boolean! @isPollOwner
+  deletePoll(pollId: ID!): Boolean! @isPollOwner
 }

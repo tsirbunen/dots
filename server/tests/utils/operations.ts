@@ -4,16 +4,32 @@ import {
   VoteInputType,
   VoteType,
   FindPollInputType,
-  PollFullDataType
+  PollFullDataType,
+  EditPollInputType
 } from '../../types/types'
 import { getGraphQLClient } from './get-graphql-client'
-import { createPollMutation, findPollQuery, giveAVoteToAnswerMutation } from './test-queries'
+import {
+  closePollFromVotingMutation,
+  createPollMutation,
+  editPollMutation,
+  findAllPollsForOneOwnerQuery,
+  findPollQuery,
+  giveAVoteToAnswerMutation,
+  openPollForVotingMutation
+} from './test-queries'
 
-export async function createPollInDatabase(variables: CreatePollInputType): Promise<PollFullDataType> {
+export async function createPollInDatabase(variables: Partial<CreatePollInputType>): Promise<PollFullDataType> {
   const graphQLClient = getGraphQLClient()
   const query = createPollMutation
   const response: { createPoll: PollFullDataType } = await graphQLClient.request(query, { input: variables })
   return response.createPoll
+}
+
+export async function editPollInDatabase(variables: EditPollInputType, token?: string): Promise<PollFullDataType> {
+  const graphQLClient = token !== undefined ? getGraphQLClient(token) : getGraphQLClient()
+  const query = editPollMutation
+  const response: { editPoll: PollFullDataType } = await graphQLClient.request(query, { input: variables })
+  return response.editPoll
 }
 
 export async function giveAVoteToAnswerOptionInDatabase(variables: VoteInputType): Promise<VoteType> {
@@ -50,13 +66,30 @@ export async function giveMaxNumberOfVotesByPersonInPoll(
   }
 }
 
-export async function findPollInDatabase(variables: FindPollInputType): Promise<PollType | PollFullDataType> {
+export async function findPollInDatabase(variables: FindPollInputType): Promise<PollFullDataType> {
   const graphQLClient = getGraphQLClient()
   const query = findPollQuery
-  const response: { findPoll: PollType } = await graphQLClient.request(query, { input: variables })
+  const response: { findPoll: PollFullDataType } = await graphQLClient.request(query, { input: variables })
   return response.findPoll
 }
 
-function uuidv4() {
-  throw new Error('Function not implemented.')
+export async function findAllOwnerPollsInDatabase(token: string): Promise<PollFullDataType[]> {
+  const graphQLClient = getGraphQLClient(token)
+  const query = findAllPollsForOneOwnerQuery
+  const response: { findAllPollsForOneOwner: PollFullDataType[] } = await graphQLClient.request(query)
+  return response.findAllPollsForOneOwner
+}
+
+export async function openPollForVoting(pollId: string, token: string): Promise<boolean> {
+  const graphQLClient = getGraphQLClient(token)
+  const query = openPollForVotingMutation
+  const response: { openPoll: boolean } = await graphQLClient.request(query, { pollId })
+  return response.openPoll
+}
+
+export async function closePollFromVoting(pollId: string, token: string): Promise<boolean> {
+  const graphQLClient = getGraphQLClient(token)
+  const query = closePollFromVotingMutation
+  const response: { closePoll: boolean } = await graphQLClient.request(query, { pollId })
+  return response.closePoll
 }

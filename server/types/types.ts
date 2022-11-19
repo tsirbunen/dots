@@ -116,7 +116,7 @@ export const POLL_INPUT_FIELDS_VALIDATION_DATA: Record<PollValidationFieldEnum, 
   }
 }
 
-export type keyOfCreatePollInputType = keyof CreatePollInputType
+export type keyOfCreateOrEditPollInputType = 'totalVotesCountMax' | 'optionVotesCountMax' | 'answers'
 
 export enum PollState {
   EDIT = 'EDIT',
@@ -141,4 +141,8 @@ export interface Token {
   exp: number
   data: TokenDetails
   iat: number
+}
+
+export interface CustomError {
+  errorMessage: string
 }

@@ -1,4 +1,9 @@
 import { DataClassType } from '../../types/types'
+import {
+  getDataClassMustBeProvidedIfAnswersPresentErrorMessage,
+  getOptionAndTotalVotesMaximaMustBothBePresentIfOnePresentErrorMessage,
+  getSomeInputValueMustBeGivenForEditingPollErrorMessage
+} from '../../utils/error-messages'
 
 export const POLL_INPUT_DATA = [
   {
@@ -36,5 +41,117 @@ export const POLL_INPUT_DATA = [
     totalVotesCountMax: 3,
     optionVotesCountMax: 2,
     showStatusWhenVoting: false
+  }
+]
+
+export const EDIT_POLL_INPUT_VALID_DATA = [
+  {
+    pollId: 'to be set',
+    question: 'Edited question',
+    answers: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
+    isAnonymous: false,
+    dataClass: DataClassType.TEXT,
+    totalVotesCountMax: 2,
+    optionVotesCountMax: 2,
+    showStatusWhenVoting: true
+  },
+  {
+    pollId: 'to be set',
+    answers: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
+    isAnonymous: false,
+    dataClass: DataClassType.TEXT,
+    totalVotesCountMax: 2,
+    optionVotesCountMax: 2,
+    showStatusWhenVoting: true
+  },
+  {
+    pollId: 'to be set',
+    answers: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
+    isAnonymous: false,
+    dataClass: DataClassType.TEXT,
+    totalVotesCountMax: 2,
+    optionVotesCountMax: 2
+  },
+  {
+    pollId: 'to be set',
+    answers: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
+    isAnonymous: false,
+    dataClass: DataClassType.TEXT
+  },
+  {
+    pollId: 'to be set',
+    answers: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
+    dataClass: DataClassType.TEXT
+  },
+  {
+    pollId: 'to be set',
+    totalVotesCountMax: 2,
+    optionVotesCountMax: 2,
+    showStatusWhenVoting: true
+  },
+  {
+    pollId: 'to be set',
+    showStatusWhenVoting: true
+  }
+]
+
+export const EDIT_POLL_INPUT_INVALID_DATA = [
+  {
+    data: {
+      pollId: 'to be set',
+      question: 'Edited question',
+      answers: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
+      isAnonymous: false,
+      totalVotesCountMax: 2,
+      optionVotesCountMax: 2,
+      showStatusWhenVoting: true
+    },
+    errorMessage: getDataClassMustBeProvidedIfAnswersPresentErrorMessage()
+  },
+  {
+    data: {
+      pollId: 'to be set',
+      question: 'Edited question',
+      answers: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
+      isAnonymous: false,
+      dataClass: DataClassType.TEXT,
+      optionVotesCountMax: 2,
+      showStatusWhenVoting: true
+    },
+    errorMessage: getOptionAndTotalVotesMaximaMustBothBePresentIfOnePresentErrorMessage()
+  },
+  {
+    data: {
+      pollId: 'to be set',
+      question: 'Edited question',
+      answers: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
+      isAnonymous: false,
+      dataClass: DataClassType.TEXT,
+      totalVotesCountMax: 2,
+      showStatusWhenVoting: true
+    },
+    errorMessage: getOptionAndTotalVotesMaximaMustBothBePresentIfOnePresentErrorMessage()
+  },
+  {
+    data: {
+      pollId: 'to be set'
+    },
+    errorMessage: getSomeInputValueMustBeGivenForEditingPollErrorMessage()
+  }
+]
+
+export const POLL_INPUT_INVALID_DATA = [
+  {
+    data: {
+      ownerName: 'Darth Vader',
+      question: 'How many days should we stay on holiday?',
+      answers: ['7', '10', '14'],
+      // dataClass: DataClassType.NUMBER,
+      isAnonymous: true,
+      totalVotesCountMax: 2,
+      optionVotesCountMax: 1,
+      showStatusWhenVoting: true
+    },
+    missingField: 'dataClass'
   }
 ]

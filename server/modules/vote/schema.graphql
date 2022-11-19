@@ -3,6 +3,9 @@ type Vote {
   answerId: ID!
   voterId: ID!
   name: String
+  deletedAt: Timestamp
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
 }
 
 extend type Answer {

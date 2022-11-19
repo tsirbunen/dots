@@ -7,6 +7,7 @@
     "tsc": "tsc",
     "build": "node scripts/clear-build-folder.js && tsc && node scripts/copy-non-ts-files-to-build-folder.js",
     "test": "env NODE_ENV=test TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'tests/tests/**/*.ts'",
+    "test-single-file": "env NODE_ENV=test TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register ",
     "dev": "ts-node-dev index.ts",
     "lint": "eslint --ext .ts .",
     "start": "node build/index.js"

@@ -1,8 +1,9 @@
 import { Model } from 'objection'
-import { DataClassType, VoteType, PollFullDataType, AnswerType } from '../types/types'
+import { DataClassType, VoteType, PollFullDataType, AnswerType, CustomError, PollState } from '../types/types'
 
 import { ID, DATE, nullable } from '../utils/common-json-schemas'
 import {
+  getCannotVoteInPollIfPollNotInVoteStateErrorMessage,
   getMaxVotesPerAnswerAlreadyGivenErrorMessage,
   getMaxVotesPerPollAlreadyGivenErrorMessage
 } from '../utils/error-messages'
@@ -59,12 +60,15 @@ export class Answer extends BaseModel {
     }
   }
 
-  public static async giveAVoteToAnswer(input: VoteType): Promise<VoteType> {
+  public static async giveAVoteToAnswer(input: VoteType): Promise<VoteType | CustomError> {
     const existingValidAnswer = await this.findExistingAnswer(input)
     const pollWithThisVoterVotes = await this.findPollFullDataWithThisVoterVotes(
       existingValidAnswer.pollId,
       input.voterId
     )
+    if (pollWithThisVoterVotes.state !== PollState.VOTE) {
+      return { errorMessage: getCannotVoteInPollIfPollNotInVoteStateErrorMessage() }
+    }
     this.verifyVoterCanVoteThisAnswer(pollWithThisVoterVotes, input.answerId)
     return await Vote.query().insert(input).returning(['id', 'answerId', 'name'])
   }

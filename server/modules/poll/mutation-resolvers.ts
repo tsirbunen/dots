@@ -1,5 +1,5 @@
 import { Context } from '../../Context'
-import { CreatePollInputType, EditPollInputType, PollFullDataType, PollType } from '../../types/types'
+import { CreatePollInputType, CustomError, EditPollInputType, PollType } from '../../types/types'
 import { createJWT } from '../../utils/token-handling'
 
 import { PollProvider } from './provider'
@@ -12,22 +12,38 @@ interface PollMutationResolversType {
   ) => Promise<PollType & { token: string }>
   editPoll: (_parent: unknown, args: { input: EditPollInputType }, _context: Context) => Promise<PollType>
   openPoll: (_parent: unknown, args: { pollId: string }, _context: Context) => Promise<boolean>
+  closePoll: (_parent: unknown, args: { pollId: string }, _context: Context) => Promise<boolean>
+  deletePoll: (_parent: unknown, args: { pollId: string }, _context: Context) => Promise<boolean>
 }
 
 export const PollMutationResolvers: PollMutationResolversType = {
   createPoll: async (_parent, { input }, context) => {
     const provider = context.injector.get(PollProvider)
     const createdPoll = await provider.createPoll(input)
-    // TODO: Fetch all owner polls here!!!
-    const token = createJWT({ pollIds: [createdPoll.id], ownerId: createdPoll.ownerId })
+    const allPollsByOwner = await provider.findAllPollsForOneOwner(createdPoll.ownerId)
+    const token = createJWT({ pollIds: allPollsByOwner.map((poll) => poll.id), ownerId: createdPoll.ownerId })
     return { ...createdPoll, token }
   },
   editPoll: async (_parent, { input }, context) => {
     const provider = context.injector.get(PollProvider)
-    return await provider.editPoll(input)
+    const pollOrError = await provider.editPoll(input)
+    if ((pollOrError as CustomError).errorMessage) {
+      throw new Error((pollOrError as CustomError).errorMessage)
+    }
+    return pollOrError as PollType
   },
   openPoll: async (_parent, { pollId }, context) => {
     const provider = context.injector.get(PollProvider)
     return await provider.openPoll(pollId)
+  },
+  closePoll: async (_parent, { pollId }, context) => {
+    const provider = context.injector.get(PollProvider)
+    const x = await provider.closePoll(pollId)
+    console.log(x)
+    return x
+  },
+  deletePoll: async (_parent, { pollId }, context) => {
+    const provider = context.injector.get(PollProvider)
+    return await provider.deletePoll(pollId)
   }
 }

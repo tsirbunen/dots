@@ -23,7 +23,7 @@ export class Database {
   }
 
   static get instance(): Database {
-    if (Database.dbInstance === undefined) {
+    if (!Database.dbInstance) {
       Database.dbInstance = new Database()
     }
     return Database.dbInstance

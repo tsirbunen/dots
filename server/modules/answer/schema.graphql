@@ -10,6 +10,9 @@ type Answer {
   content: String!
   dataClass: DataClass
   votes: [Vote]
+  deletedAt: Timestamp
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
 }
 
 extend type Poll {

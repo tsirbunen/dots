@@ -2,11 +2,11 @@ import { Injectable } from 'graphql-modules'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Answer } from '../../models/answer-model'
-import { VoteInputType, VoteType, AnswerType } from '../../types/types'
+import { VoteInputType, VoteType, AnswerType, CustomError } from '../../types/types'
 
 @Injectable()
 export class AnswerProvider {
-  async giveAVoteToAnswer(input: VoteInputType): Promise<VoteType> {
+  async giveAVoteToAnswer(input: VoteInputType): Promise<VoteType | CustomError> {
     const inputToDatabase = {
       ...input,
       id: uuidv4()

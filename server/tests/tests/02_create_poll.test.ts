@@ -1,8 +1,8 @@
 import 'reflect-metadata'
 import 'mocha'
 import dns from 'dns'
-import { expect } from 'chai'
-import { POLL_INPUT_DATA } from '../data/polls-data'
+import { expect, assert } from 'chai'
+import { POLL_INPUT_DATA, POLL_INPUT_INVALID_DATA } from '../data/polls-data'
 import {
   assertPollFieldsArePracticallySameWhenPresent,
   assertObjectIsAPoll,
@@ -29,7 +29,6 @@ import {
   PollValidationFieldEnum,
   POLL_INPUT_FIELDS_VALIDATION_DATA
 } from '../../types/types'
-import { assert } from 'console'
 
 dns.setDefaultResultOrder('ipv4first')
 
@@ -44,7 +43,7 @@ describe('CREATE POLL', () => {
     for (let i = 0; i < POLL_INPUT_DATA.length; i++) {
       const pollInputData = { ...POLL_INPUT_DATA[i], ownerId: uuidv4() }
       const createdPoll = await createPollInDatabase(pollInputData)
-      assertObjectIsAPoll(createdPoll, false)
+      assertObjectIsAPoll(createdPoll)
       assertPollFieldsArePracticallySameWhenPresent(pollInputData, createdPoll)
       assertReturnedCreatedPollContainsAToken(createdPoll)
     }
@@ -133,6 +132,19 @@ describe('CREATE POLL', () => {
       const errorResponse = error as { response: { errors: { message: string }[] } }
       const errorMessage = errorResponse.response.errors[0].message
       expect(errorMessage).to.equal(getPollAnswerOptionsMustBeUniqueErrorMessage(pollInputData.answers))
+    }
+  })
+
+  it('Creating new poll fails if data is missing', async () => {
+    for (let i = 0; i < POLL_INPUT_INVALID_DATA.length; i++) {
+      const invalidPollInput = { ...POLL_INPUT_INVALID_DATA[i].data, ownerId: uuidv4() }
+      try {
+        await createPollInDatabase(invalidPollInput)
+      } catch (error) {
+        const errorResponse = error as { response: { errors: { message: string }[] } }
+        const errorMessage = errorResponse.response.errors[0].message
+        assert.include(errorMessage, POLL_INPUT_INVALID_DATA[i].missingField)
+      }
     }
   })
 

@@ -7,7 +7,7 @@ import { CustomScalarsModule } from '../modules/custom-scalars/module'
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { AnswerModule } from '../modules/answer/module'
 import { VoteModule } from '../modules/vote/module'
-import { pollValidation } from '../modules/directives/poll-validation'
+import { pollInputValidation } from '../modules/directives/poll-validation'
 import { OwnerModule } from '../modules/owner/module'
 import { isPollOwner } from '../modules/directives/is-poll-owner'
 
@@ -27,8 +27,8 @@ export const createGraphQLApp = (): Application => {
       let schema = makeExecutableSchema({ typeDefs, resolvers })
       const customDirectives = [
         {
-          name: 'pollValidation',
-          directive: pollValidation
+          name: 'pollInputValidation',
+          directive: pollInputValidation
         },
         {
           name: 'isPollOwner',
