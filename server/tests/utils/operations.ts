@@ -26,7 +26,7 @@ export async function createPollInDatabase(variables: Partial<CreatePollInputTyp
 }
 
 export async function editPollInDatabase(variables: EditPollInputType, token?: string): Promise<PollFullDataType> {
-  const graphQLClient = token !== undefined ? getGraphQLClient(token) : getGraphQLClient()
+  const graphQLClient = token ? getGraphQLClient(token) : getGraphQLClient()
   const query = editPollMutation
   const response: { editPoll: PollFullDataType } = await graphQLClient.request(query, { input: variables })
   return response.editPoll

@@ -13,7 +13,6 @@ import {
   getPollAnswerOptionsMustBeUniqueErrorMessage,
   getAnswerIsNotOfSpecifiedDataClassErrorMessage,
   getDataClassNotImplementedErrorMessage,
-  // getAnswerIdMustBeSpecifiedWhenEditingAnswerErrorMessage,
   getSomeInputValueMustBeGivenForEditingPollErrorMessage
 } from './error-messages'
 
@@ -55,7 +54,7 @@ export function verifyFieldValueIsInRequiredRangeIfPresent(
 }
 
 export function verifyDataClassSpecifiedIfAnswersGiven(input: CreatePollInputType | EditPollInputType): void {
-  if (input.answers !== undefined && input.dataClass === undefined) {
+  if (input.answers && !input.dataClass) {
     throw new Error(getDataClassMustBeProvidedIfAnswersPresentErrorMessage())
   }
 }
@@ -78,7 +77,7 @@ export function verifyAllAnswerContentsAreOfSpecifiedDataClassIfPresent(
   answers.forEach((answer) => {
     const content = typeof answer === 'object' ? answer.content : answer
     const errorMessage = getAnswerIsNotOfSpecifiedDataClassErrorMessage(answer, dataClass)
-    if (answer === undefined || answer === null || content.length === 0) {
+    if (!answer || content.length === 0) {
       throw new Error(errorMessage)
     }
     switch (dataClass) {

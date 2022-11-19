@@ -36,10 +36,6 @@ export function getDataClassMustBeProvidedIfAnswersPresentErrorMessage(): string
   return 'When answer options are provided, also the DataClass must be specified.'
 }
 
-// export function getAnswerIdMustBeSpecifiedWhenEditingAnswerErrorMessage(answer: unknown): string {
-//   return `Answer option id is missing for answer content ${JSON.stringify(answer)}.`
-// }
-
 export function getOptionAndTotalVotesMaximaMustBothBePresentIfOnePresentErrorMessage(): string {
   return 'When one of total votes and option votes maxima is given, both must be given.'
 }
