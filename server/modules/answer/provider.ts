@@ -11,7 +11,7 @@ export class AnswerProvider {
       ...input,
       id: uuidv4()
     }
-    if (input.name === null || input.name === undefined) {
+    if (!input.name) {
       inputToDatabase.name = 'Anonymous'
     }
     return await Answer.giveAVoteToAnswer(inputToDatabase)

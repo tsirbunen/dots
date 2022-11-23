@@ -18,33 +18,16 @@ export function assertObjectIsAPoll(pollCandidate: unknown) {
   assert.isNumber(poll.totalVotesCountMax)
   assert.isNumber(poll.optionVotesCountMax)
   assert.isBoolean(poll.showStatusWhenVoting)
-  assertIsNumberAndRepresentsAValidDateIfPresent(poll.createdAt)
-  assertIsNumberAndRepresentsAValidDateIfPresent(poll.updatedAt)
-  if (poll.deletedAt !== undefined && poll.deletedAt !== null) {
-    assertIsNumberAndRepresentsAValidDateIfPresent(poll.deletedAt)
-  }
+  assertCreatedAtUpdatedAtAndDeletedAtValuesAreValid(poll)
 }
 
-export function assertPollFieldsArePracticallySameWhenPresent(pollA: unknown, pollB: unknown): void {
-  const pollAPollType = pollA as PollFullDataType
-  const pollBPollType = pollB as PollFullDataType
+export function assertPollFieldsArePracticallyEqualWhenPresent(pollOrCreatePollInput: unknown, poll: unknown): void {
+  const pollA = pollOrCreatePollInput as PollFullDataType
+  const pollB = poll as PollFullDataType
   let pollKey: keyof PollFullDataType
-
-  for (pollKey in pollAPollType) {
-    if (pollKey in pollBPollType) {
-      if (pollKey !== 'answers') {
-        assertFieldValuesAreEqual(pollAPollType[pollKey], pollBPollType[pollKey])
-      }
-      if (pollKey === 'answers') {
-        const pollAAnswers =
-          pollAPollType.answers.length > 0 && typeof pollAPollType.answers[0] === 'object'
-            ? pollAPollType.answers.map((answer) => (answer as AnswerType).content)
-            : pollAPollType.answers
-        pollAAnswers.forEach((answerA, index) => {
-          const answerB = pollBPollType.answers[index].content
-          assertFieldValuesAreEqual(answerA, answerB)
-        })
-      }
+  for (pollKey in pollA) {
+    if (pollKey in pollB) {
+      assertFieldValuesAreEqual(pollA[pollKey], pollB[pollKey])
     }
   }
 }
@@ -63,14 +46,8 @@ export function assertObjectIsAVote(vote: unknown) {
   const voteCandidate = vote as VoteType
   expect(voteCandidate.id).to.be.a.uuid('v4')
   expect(voteCandidate.answerId).to.be.a.uuid('v4')
-  if (voteCandidate.name) {
-    assert.isString(voteCandidate.name)
-  }
-  assertIsNumberAndRepresentsAValidDateIfPresent(voteCandidate.createdAt)
-  assertIsNumberAndRepresentsAValidDateIfPresent(voteCandidate.updatedAt)
-  if (voteCandidate.deletedAt !== undefined && voteCandidate.deletedAt !== null) {
-    assertIsNumberAndRepresentsAValidDateIfPresent(voteCandidate.deletedAt)
-  }
+  if (voteCandidate.name) assert.isString(voteCandidate.name)
+  assertCreatedAtUpdatedAtAndDeletedAtValuesAreValid(voteCandidate)
 }
 
 export function assertVoteIsForCorrectAnswerOption(vote: VoteType, answerId: string) {
@@ -92,18 +69,10 @@ function assertObjectIsAnAnswerToPoll(answer: unknown, pollId?: string) {
   expect(answerCandidate.pollId).to.be.a.uuid('v4')
   expect(answerCandidate.content).to.be.a.string
   assert.oneOf(answerCandidate.dataClass, Object.keys(DataClassType))
+  ;(answerCandidate.votes ?? []).forEach((vote) => assertObjectIsAVote(vote))
+  if (pollId) assert(answerCandidate.pollId === pollId)
+  assertCreatedAtUpdatedAtAndDeletedAtValuesAreValid(answerCandidate)
   if (answerCandidate.votes) {
-    answerCandidate.votes.forEach((vote) => assertObjectIsAVote(vote))
-  }
-  if (pollId) {
-    assert(answerCandidate.pollId === pollId)
-  }
-  assertIsNumberAndRepresentsAValidDateIfPresent(answerCandidate.createdAt)
-  assertIsNumberAndRepresentsAValidDateIfPresent(answerCandidate.updatedAt)
-  if (answerCandidate.deletedAt !== undefined && answerCandidate.deletedAt !== null) {
-    assertIsNumberAndRepresentsAValidDateIfPresent(answerCandidate.deletedAt)
-  }
-  if (answerCandidate.votes !== undefined && answerCandidate.votes !== null) {
     assert.isArray(answerCandidate.votes)
     answerCandidate.votes.forEach((vote) => assertObjectIsAVote(vote))
   }
@@ -115,7 +84,17 @@ function assertAnswersHaveDifferentIdValues(answers: AnswerType[]) {
   assert(answerIds.size === answers.length)
 }
 
-function assertIsNumberAndRepresentsAValidDateIfPresent(dateAsNumber: unknown) {
+function assertCreatedAtUpdatedAtAndDeletedAtValuesAreValid(candidate: {
+  createdAt?: unknown
+  updatedAt?: unknown
+  deletedAt?: unknown
+}) {
+  if (candidate.createdAt !== undefined) assertIsNumberAndRepresentsAValidDate(candidate.createdAt)
+  if (candidate.updatedAt !== undefined) assertIsNumberAndRepresentsAValidDate(candidate.updatedAt)
+  if (candidate.deletedAt) assertIsNumberAndRepresentsAValidDate(candidate.deletedAt)
+}
+
+function assertIsNumberAndRepresentsAValidDate(dateAsNumber: unknown) {
   if (!dateAsNumber) return
   assert.isNumber(dateAsNumber)
   const dateCandidate = new Date(dateAsNumber as number)
@@ -123,13 +102,27 @@ function assertIsNumberAndRepresentsAValidDateIfPresent(dateAsNumber: unknown) {
 }
 
 function assertFieldValuesAreEqual(valueA: any, valueB: any) {
-  if (typeof valueA === 'string' || typeof valueA === 'number' || typeof valueA === 'boolean' || valueA === null) {
+  if (Array.isArray(valueA) && Array.isArray(valueB)) {
+    assert(valueA.length === valueB.length)
+    valueA.forEach((a, index) => assertFieldValuesAreEqual(a, valueB[index]))
+  } else if (
+    (typeof valueA === 'string' && typeof valueB === 'string') ||
+    (typeof valueA === 'number' && typeof valueB === 'number') ||
+    (typeof valueA === 'boolean' && typeof valueB === 'boolean') ||
+    valueA === null
+  ) {
     assert.equal(valueA, valueB)
-  } else if (typeof valueA === 'object') {
+  } else if (typeof valueA === 'object' && typeof valueB === 'object') {
     Object.keys(valueA).forEach((key) => {
       assertFieldValuesAreEqual(valueA[key], valueB[key])
     })
+  } else if ((valueA as AnswerType).content && !(valueB as AnswerType).content) {
+    assertFieldValuesAreEqual((valueA as AnswerType).content, valueB)
+  } else if (!(valueA as AnswerType).content && (valueB as AnswerType).content) {
+    assertFieldValuesAreEqual(valueA, (valueB as AnswerType).content)
   } else {
-    throw new Error(`"Assert field values are equal"-method not implemented for values like ${valueA}`)
+    throw new Error(
+      `"Assert field values are equal"-method not implemented for value pairs like ${valueA} and ${valueB}`
+    )
   }
 }

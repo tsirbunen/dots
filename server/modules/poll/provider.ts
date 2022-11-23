@@ -12,8 +12,7 @@ import {
   PollState,
   PollType
 } from '../../types/types'
-
-const RANDOM_CODE_LENGTH = 9
+import { RANDOM_CODE_LENGTH } from '../../utils/constant-values'
 
 @Injectable()
 export class PollProvider {
@@ -27,7 +26,7 @@ export class PollProvider {
     return await Poll.createPoll(databaseInput)
   }
 
-  async findPollByIdOrCode(input: FindPollInputType): Promise<PollType> {
+  async findPollByIdOrCode(input: FindPollInputType): Promise<PollType | CustomError> {
     return await Poll.findPollByIdOrCode(input)
   }
 

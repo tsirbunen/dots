@@ -16,23 +16,27 @@ import { assert, expect } from 'chai'
 import {
   getCannotVoteInPollIfPollNotInVoteStateErrorMessage,
   getMaxVotesPerAnswerAlreadyGivenErrorMessage,
-  getMaxVotesPerPollAlreadyGivenErrorMessage
+  getMaxVotesPerPollAlreadyGivenErrorMessage,
+  getValidAnswerWithThisIdDoesNotExistErrorMessage
 } from '../../utils/error-messages'
+import { getErrorMessageFromResponse } from '../utils/helpers'
+import { CreatePollInputType, PollFullDataType } from '../../types/types'
 
 dns.setDefaultResultOrder('ipv4first')
 
 const DATABASE = getDatabaseConnection()
+let pollInputData: CreatePollInputType
+let createdPoll: PollFullDataType
 
 describe('VOTE IN POLL', () => {
   beforeEach(async () => {
     await clearDatabase(DATABASE)
+    pollInputData = { ...POLL_INPUT_DATA[0], ownerId: uuidv4() }
+    createdPoll = await createPollInDatabase({ ...POLL_INPUT_DATA[0], ownerId: uuidv4() })
   })
 
   it('Votes can be given to answer options of an existing poll when max vote counts (per person) have not been reached', async () => {
-    const pollInputData = { ...POLL_INPUT_DATA[0], ownerId: uuidv4() }
-    const createdPoll = await createPollInDatabase(pollInputData)
-    const success = await openPollForVoting(createdPoll.id, createdPoll.token!)
-    assert(success)
+    await openPollForVoting(createdPoll.id, createdPoll.token!)
     for (let personCount = 0; personCount < 2; personCount++) {
       for (let answerIndex = 0; answerIndex < pollInputData.answers.length; answerIndex++) {
         const selectedAnswerToVoteId = createdPoll.answers[answerIndex].id
@@ -48,42 +52,33 @@ describe('VOTE IN POLL', () => {
     }
   })
 
-  it('Voting an answer option fails if the max vote count PER ANSWER per person has been reached', async () => {
-    const pollInputData = { ...POLL_INPUT_DATA[2], ownerId: uuidv4() }
-    const createdPoll = await createPollInDatabase(pollInputData)
-    const success = await openPollForVoting(createdPoll.id, createdPoll.token!)
-    assert(success)
+  it('Voting an answer option fails if the max vote count PER ANSWER per person (by voter) has been reached', async () => {
+    await openPollForVoting(createdPoll.id, createdPoll.token!)
     const selectedAnswerToVoteId = createdPoll.answers[0].id
-    let voterAId = uuidv4()
-    const giveAVoteInput = {
-      answerId: selectedAnswerToVoteId,
-      voterId: voterAId
-    }
     const maxVotesPerAnswerOption = createdPoll.optionVotesCountMax
-    for (let i = 0; i < maxVotesPerAnswerOption; i++) {
-      await giveAVoteToAnswerOptionInDatabase(giveAVoteInput)
-    }
-
-    const voterBId = uuidv4()
-    giveAVoteInput.voterId = voterBId
-    for (let i = 0; i < maxVotesPerAnswerOption; i++) {
-      await giveAVoteToAnswerOptionInDatabase(giveAVoteInput)
+    const personsVoting = 2
+    let giveAVoteInput: { answerId: string; voterId: string }
+    for (let i = 0; i < personsVoting; i++) {
+      let voterId = uuidv4()
+      giveAVoteInput = {
+        answerId: selectedAnswerToVoteId,
+        voterId: voterId
+      }
+      for (let i = 0; i < maxVotesPerAnswerOption; i++) {
+        await giveAVoteToAnswerOptionInDatabase(giveAVoteInput)
+      }
     }
 
     try {
-      await giveAVoteToAnswerOptionInDatabase(giveAVoteInput)
+      await giveAVoteToAnswerOptionInDatabase(giveAVoteInput!)
     } catch (error) {
-      const errorResponse = error as { response: { errors: { message: string }[] } }
-      const errorMessage = errorResponse.response.errors[0].message
+      const errorMessage = getErrorMessageFromResponse(error)
       expect(errorMessage).to.equal(getMaxVotesPerAnswerAlreadyGivenErrorMessage(maxVotesPerAnswerOption))
     }
   })
 
   it('Voting an answer option fails if the max vote count PER POLL per person has been reached', async () => {
-    const pollInputData = { ...POLL_INPUT_DATA[2], ownerId: uuidv4() }
-    const createdPoll = await createPollInDatabase(pollInputData)
-    const success = await openPollForVoting(createdPoll.id, createdPoll.token!)
-    assert(success)
+    await openPollForVoting(createdPoll.id, createdPoll.token!)
     const voterAId = uuidv4()
     let answerTracker = { index: 0 }
     await giveMaxNumberOfVotesByPersonInPoll(createdPoll, voterAId, answerTracker)
@@ -98,16 +93,12 @@ describe('VOTE IN POLL', () => {
       }
       await giveAVoteToAnswerOptionInDatabase(giveAVoteInput)
     } catch (error) {
-      const errorResponse = error as { response: { errors: { message: string }[] } }
-      const errorMessage = errorResponse.response.errors[0].message
+      const errorMessage = getErrorMessageFromResponse(error)
       expect(errorMessage).to.equal(getMaxVotesPerPollAlreadyGivenErrorMessage(createdPoll.totalVotesCountMax))
     }
   })
 
   it('A vote cannot be given in a poll if that poll is not in the "voting" state', async () => {
-    const ownerId = uuidv4()
-    const pollInputData = { ...POLL_INPUT_DATA[0], ownerId }
-    const createdPoll = await createPollInDatabase(pollInputData)
     const voterId = uuidv4()
     const giveAVoteInput = {
       answerId: createdPoll.answers[0].id,
@@ -117,22 +108,33 @@ describe('VOTE IN POLL', () => {
     try {
       await giveAVoteToAnswerOptionInDatabase(giveAVoteInput)
     } catch (error) {
-      const errorResponse = error as { response: { errors: { message: string }[] } }
-      const errorMessage = errorResponse.response.errors[0].message
+      const errorMessage = getErrorMessageFromResponse(error)
       assert.include(errorMessage, getCannotVoteInPollIfPollNotInVoteStateErrorMessage())
     }
 
-    const successOpen = await openPollForVoting(createdPoll.id, createdPoll.token!)
-    assert(successOpen)
-    const successClose = await closePollFromVoting(createdPoll.id, createdPoll.token!)
-    assert(successClose)
+    await openPollForVoting(createdPoll.id, createdPoll.token!)
+    await closePollFromVoting(createdPoll.id, createdPoll.token!)
 
     try {
       await giveAVoteToAnswerOptionInDatabase(giveAVoteInput)
     } catch (error) {
-      const errorResponse = error as { response: { errors: { message: string }[] } }
-      const errorMessage = errorResponse.response.errors[0].message
+      const errorMessage = getErrorMessageFromResponse(error)
       assert.include(errorMessage, getCannotVoteInPollIfPollNotInVoteStateErrorMessage())
+    }
+  })
+
+  it('A vote cannot be given if an answer with the answerId provided does not exist', async () => {
+    const nonExistingAnswerId = uuidv4()
+    const giveAVoteInput = {
+      answerId: nonExistingAnswerId,
+      voterId: uuidv4()
+    }
+
+    try {
+      await giveAVoteToAnswerOptionInDatabase(giveAVoteInput)
+    } catch (error) {
+      const errorMessage = getErrorMessageFromResponse(error)
+      assert.include(errorMessage, getValidAnswerWithThisIdDoesNotExistErrorMessage(nonExistingAnswerId))
     }
   })
 

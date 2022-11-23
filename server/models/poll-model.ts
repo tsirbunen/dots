@@ -7,7 +7,9 @@ import {
   FindPollInputType,
   PollState,
   EditPollInputType,
-  CustomError
+  CustomError,
+  AnswerEditDataType,
+  DataClassType
 } from '../types/types'
 import { ID, nullable, DATE } from '../utils/common-json-schemas'
 import {
@@ -18,12 +20,20 @@ import {
 } from '../utils/constant-values'
 import {
   getCannotEditPollThatIsNotInEditStateErrorMessage,
-  getFindPollBytIdOrCodeRequiresIdOrCode
+  getFailedEditingPollErrorMessage,
+  getFindPollByIdOrCodeRequiresIdOrCode,
+  getValidOwnerWithThisIdOrCodeDoesNotExistErrorMessage,
+  getValidPollWithThisIdDoesNotExistErrorMessage
 } from '../utils/error-messages'
 import { Answer } from './answer-model'
 import { BaseModel } from './base_model'
 import { Owner } from './owner-model'
 
+interface PollAnswersGroupedForUpdate {
+  answersToDeleteIds: string[]
+  answersToPatch: Array<Required<AnswerEditDataType>>
+  answersToCreate: AnswerEditDataType[]
+}
 export class Poll extends BaseModel {
   static get tableName(): string {
     return 'Polls'
@@ -105,96 +115,32 @@ export class Poll extends BaseModel {
 
   public static async createPoll(input: CreatePollDatabaseInputType): Promise<PollType> {
     return await this.performWithinTransaction(async (trx: Transaction): Promise<PollType> => {
-      const existingOwners = await Owner.query(trx).where('id', input.ownerId)
-      if (existingOwners.length === 0) {
-        await Owner.query(trx).insert({ id: input.ownerId, name: input.ownerName }).returning('*')
-      }
-      const answers = input.answers
-      const dataClass = input.dataClass
-      const cleanedInput: Partial<CreatePollDatabaseInputType> = input
-      delete cleanedInput.answers
-      delete cleanedInput.dataClass
-      delete cleanedInput.ownerName
-      const createdPoll = await Poll.query(trx).insert(cleanedInput).returning('*')
-      await Promise.all(
-        answers.map(async (answer) => {
-          const a = await Answer.query(trx)
-            .insert({
-              id: uuidv4(),
-              pollId: createdPoll.id,
-              content: answer,
-              dataClass
-            })
-            .returning('*')
-          return a
-        })
-      )
+      await this.createOwnerIfDoesNotExist(input.ownerId, input.ownerName, trx)
+      const createdPoll = await this.createPollInDatabase(input, trx)
+      await this.createPollAnswersForNewPoll(input.answers, createdPoll.id, input.dataClass, trx)
       return createdPoll
     })
   }
 
-  public static async findPollByIdOrCode(input: FindPollInputType): Promise<PollType> {
+  public static async findPollByIdOrCode(input: FindPollInputType): Promise<PollType | CustomError> {
     const queryBy = input.id !== undefined ? 'id' : 'code'
     const queryValue = input[queryBy]
-    if (queryValue === undefined) throw new Error(getFindPollBytIdOrCodeRequiresIdOrCode())
-    const polls = await Poll.query().where(queryBy, queryValue).where('deletedAt', null).returning('*')
-    return polls[0]
+    if (queryValue === undefined) return { errorMessage: getFindPollByIdOrCodeRequiresIdOrCode() }
+    const poll = await Poll.query().where(queryBy, queryValue).where('deletedAt', null).returning('*').first()
+    if (!poll) return { errorMessage: getValidOwnerWithThisIdOrCodeDoesNotExistErrorMessage(queryValue) }
+    return poll
   }
 
   public static async findAllPollsForOneOwner(ownerId: string): Promise<PollType[]> {
-    const polls = await Poll.query().where('ownerId', ownerId).where('deletedAt', null).returning('*')
-    return polls
+    return await Poll.query().where('ownerId', ownerId).where('deletedAt', null).returning('*')
   }
 
   public static async editPoll(input: EditPollInputType): Promise<PollType | CustomError> {
     return await this.performWithinTransaction(async (trx: Transaction): Promise<PollType | CustomError> => {
-      const oldPolls = await Poll.query(trx).where('id', input.pollId).withGraphFetched({ answers: true })
-      if (oldPolls[0].state !== PollState.EDIT) {
-        return { errorMessage: getCannotEditPollThatIsNotInEditStateErrorMessage() }
-      }
-      let oldPollAnswers: Answer[] = []
-      if (input.answers !== undefined) {
-        const oldPolls = await Poll.query(trx).where('id', input.pollId).withGraphFetched({ answers: true })
-        oldPollAnswers = (oldPolls[0] as unknown as { answers: Answer[] }).answers
-      }
-      const inputAnswers = input.answers ?? []
-      const inputAnswerIds = inputAnswers
-        .filter((answer) => answer.answerId !== undefined)
-        .map((answer) => answer.answerId)
-      const oldAnswersToDeleteIds = oldPollAnswers
-        .filter((oldAnswer) => !inputAnswerIds.includes(oldAnswer.id))
-        .map((answer) => answer.id)
-      const answersToPatch = inputAnswers.filter((answer) => answer.answerId !== undefined) as Array<{
-        answerId: string
-        content: string
-      }>
-      const newAnswersToCreate = inputAnswers.filter((answer) => answer.answerId === undefined)
-
-      const pollPatch: Partial<EditPollInputType> = { ...input }
-      delete pollPatch.pollId
-      if (pollPatch.answers !== undefined) delete pollPatch.answers
-      if (pollPatch.dataClass !== undefined) delete pollPatch.dataClass
-      const patchIsEmpty = Object.keys(pollPatch).length === 0
-
-      const [_deletedOldAnswers, _patchedAnswers, _createdNewAnswers, patchedPolls] = await Promise.all([
-        oldAnswersToDeleteIds.map(async (oldAnswerId) => await Answer.query(trx).delete().where('id', oldAnswerId)),
-        answersToPatch.map(async (answerToPatch) => {
-          return await Answer.query(trx).patch({ content: answerToPatch.content }).where('id', answerToPatch.answerId)
-        }),
-        newAnswersToCreate.map(async (answer) => {
-          return await Answer.query(trx).insert({
-            id: uuidv4(),
-            pollId: input.pollId,
-            content: answer.content,
-            dataClass: input.dataClass
-          })
-        }),
-        patchIsEmpty
-          ? await Poll.query(trx).where('id', input.pollId).returning('*')
-          : await Poll.query(trx).patch(pollPatch).where('id', input.pollId).returning('*')
-      ])
-
-      return patchedPolls[0]
+      const pollToBeEdited = await this.findPollByIdWithAnswersForEditing(input.pollId, trx)
+      if ((pollToBeEdited as CustomError).errorMessage) return pollToBeEdited
+      await this.updateAnswersDataInDatabase(pollToBeEdited, input.answers, input.dataClass, trx)
+      return await this.patchPollInDatabase(input, trx)
     })
   }
 
@@ -209,8 +155,109 @@ export class Poll extends BaseModel {
   }
 
   public static async deletePoll(pollId: string): Promise<boolean> {
-    // TODO: Tarkista, katoaako muista tauluista on cascade data!!!
     await Poll.query().delete().where('id', pollId)
     return true
+  }
+
+  private static async createOwnerIfDoesNotExist(ownerId: string, ownerName: string, trx: Transaction): Promise<void> {
+    const existingOwner = await Owner.query(trx).where('id', ownerId).first()
+    if (!existingOwner) {
+      await Owner.query(trx).insert({ id: ownerId, name: ownerName }).returning('*')
+    }
+  }
+
+  private static async createPollInDatabase(input: CreatePollDatabaseInputType, trx: Transaction): Promise<PollType> {
+    const inputToInsert: Partial<CreatePollDatabaseInputType> = { ...input }
+    delete inputToInsert.answers
+    delete inputToInsert.dataClass
+    delete inputToInsert.ownerName
+    return await Poll.query(trx).insert(inputToInsert).returning('*')
+  }
+
+  private static async createPollAnswersForNewPoll(
+    answers: string[],
+    pollId: string,
+    dataClass: DataClassType,
+    trx: Transaction
+  ): Promise<void> {
+    await Promise.all(
+      answers.map(async (answer) => {
+        const answerDataToInsert = { id: uuidv4(), pollId, content: answer, dataClass }
+        return await Answer.query(trx).insert(answerDataToInsert).returning('*')
+      })
+    )
+  }
+
+  private static async findPollByIdWithAnswersForEditing(
+    pollId: string,
+    trx: Transaction
+  ): Promise<(PollType & { answers: AnswerEditDataType[] }) | CustomError> {
+    const poll = await Poll.query(trx).where('id', pollId).withGraphFetched({ answers: true }).first()
+    if (!poll) return { errorMessage: getValidPollWithThisIdDoesNotExistErrorMessage(pollId) }
+    if (poll.state !== PollState.EDIT) {
+      return { errorMessage: getCannotEditPollThatIsNotInEditStateErrorMessage() }
+    }
+    return poll as unknown as PollType & { answers: AnswerEditDataType[] }
+  }
+
+  private static async updateAnswersDataInDatabase(
+    poll: unknown,
+    newAnswers: AnswerEditDataType[] | undefined,
+    dataClass: DataClassType | undefined,
+    trx: Transaction
+  ): Promise<void> {
+    const pollWithAnswers = poll as PollType & { answers: Answer[] }
+    const { answersToDeleteIds, answersToPatch, answersToCreate } = await this.groupPollAnswersForUpdating(
+      pollWithAnswers,
+      newAnswers
+    )
+
+    await Promise.all([
+      answersToDeleteIds.map(async (oldAnswerId) => await Answer.query(trx).delete().where('id', oldAnswerId)),
+      answersToPatch.map(async (answerToPatch) => {
+        return await Answer.query(trx).patch({ content: answerToPatch.content }).where('id', answerToPatch.answerId)
+      }),
+      answersToCreate.map(async (answer) => {
+        const dataToInsert = { id: uuidv4(), pollId: pollWithAnswers.id, content: answer.content, dataClass }
+        return await Answer.query(trx).insert(dataToInsert)
+      })
+    ])
+  }
+
+  private static async patchPollInDatabase(input: EditPollInputType, trx: Transaction): Promise<Poll | CustomError> {
+    const pollPatch = this.preparePollPatchFromInputData(input)
+    const pollPatchIsEmpty = Object.keys(pollPatch).length === 0
+    const poll = pollPatchIsEmpty
+      ? await Poll.query(trx).where('id', input.pollId).returning('*').first()
+      : await Poll.query(trx).patch(pollPatch).where('id', input.pollId).returning('*').first()
+    if (!poll) return { errorMessage: getFailedEditingPollErrorMessage(input.pollId) }
+    return poll
+  }
+
+  private static preparePollPatchFromInputData(input: EditPollInputType): Partial<EditPollInputType> {
+    const pollPatch: Partial<EditPollInputType> = { ...input }
+    delete pollPatch.pollId
+    if (pollPatch.answers) delete pollPatch.answers
+    if (pollPatch.dataClass) delete pollPatch.dataClass
+    return pollPatch
+  }
+
+  private static async groupPollAnswersForUpdating(
+    poll: unknown,
+    answers: AnswerEditDataType[] | undefined
+  ): Promise<PollAnswersGroupedForUpdate> {
+    const oldPollAnswers = (poll as { answers: Answer[] }).answers
+    const newAnswers = answers ?? []
+    const inputAnswerIds = newAnswers.filter((answer) => answer.answerId).map((answer) => answer.answerId)
+    const answersToDeleteIds = oldPollAnswers
+      .filter((oldAnswer) => !inputAnswerIds.includes(oldAnswer.id))
+      .map((answer) => answer.id)
+    const answersToPatch = newAnswers.filter((answer) => answer.answerId) as Array<Required<AnswerEditDataType>>
+    const answersToCreate = newAnswers.filter((answer) => !answer.answerId)
+    return {
+      answersToDeleteIds,
+      answersToPatch,
+      answersToCreate
+    }
   }
 }

@@ -4,7 +4,7 @@ import dns from 'dns'
 import { expect, assert } from 'chai'
 import { POLL_INPUT_DATA, POLL_INPUT_INVALID_DATA } from '../data/polls-data'
 import {
-  assertPollFieldsArePracticallySameWhenPresent,
+  assertPollFieldsArePracticallyEqualWhenPresent,
   assertObjectIsAPoll,
   assertReturnedCreatedPollContainsAToken
 } from '../utils/assertions'
@@ -20,15 +20,13 @@ import {
   TOTAL_VOTES_COUNT_MAX,
   TOTAL_VOTES_COUNT_MIN
 } from '../../utils/constant-values'
+import { getPollAnswerOptionsMustBeUniqueErrorMessage } from '../../utils/error-messages'
+import { PollValidationFieldEnum } from '../../types/types'
 import {
-  getPollAnswerOptionsMustBeUniqueErrorMessage,
-  getPollInputFieldValueNotInRangeErrorMessage
-} from '../../utils/error-messages'
-import {
-  PollInputFieldValidationDataType,
-  PollValidationFieldEnum,
-  POLL_INPUT_FIELDS_VALIDATION_DATA
-} from '../../types/types'
+  getErrorMessageFromResponse,
+  getAnswerOptionsWithInvalidCountsForCreatePoll,
+  handleCheckingPollFieldValueNotInRangeExpectedErrorMessage
+} from '../utils/helpers'
 
 dns.setDefaultResultOrder('ipv4first')
 
@@ -44,7 +42,7 @@ describe('CREATE POLL', () => {
       const pollInputData = { ...POLL_INPUT_DATA[i], ownerId: uuidv4() }
       const createdPoll = await createPollInDatabase(pollInputData)
       assertObjectIsAPoll(createdPoll)
-      assertPollFieldsArePracticallySameWhenPresent(pollInputData, createdPoll)
+      assertPollFieldsArePracticallyEqualWhenPresent(pollInputData, createdPoll)
       assertReturnedCreatedPollContainsAToken(createdPoll)
     }
   })
@@ -58,13 +56,7 @@ describe('CREATE POLL', () => {
       try {
         await createPollInDatabase(pollInputData)
       } catch (error) {
-        const errorResponse = error as { response: { errors: { message: string }[] } }
-        const errorMessage = errorResponse.response.errors[0].message
-        const validationData: PollInputFieldValidationDataType =
-          POLL_INPUT_FIELDS_VALIDATION_DATA[PollValidationFieldEnum.TOTAL_VOTES_COUNT]
-        expect(errorMessage).to.equal(
-          getPollInputFieldValueNotInRangeErrorMessage(validationData.title, validationData.min, validationData.max)
-        )
+        handleCheckingPollFieldValueNotInRangeExpectedErrorMessage(error, PollValidationFieldEnum.TOTAL_VOTES_COUNT)
       }
     }
   })
@@ -78,31 +70,14 @@ describe('CREATE POLL', () => {
       try {
         await createPollInDatabase(pollInputData)
       } catch (error) {
-        const errorResponse = error as { response: { errors: { message: string }[] } }
-        const errorMessage = errorResponse.response.errors[0].message
-        const validationData: PollInputFieldValidationDataType =
-          POLL_INPUT_FIELDS_VALIDATION_DATA[PollValidationFieldEnum.OPTION_VOTES_COUNT]
-        expect(errorMessage).to.equal(
-          getPollInputFieldValueNotInRangeErrorMessage(validationData.title, validationData.min, validationData.max)
-        )
+        handleCheckingPollFieldValueNotInRangeExpectedErrorMessage(error, PollValidationFieldEnum.OPTION_VOTES_COUNT)
       }
     }
   })
 
   it('Creating new poll fails if given number of answers is out of acceptable range', async () => {
     const pollInputData = { ...POLL_INPUT_DATA[0], ownerId: '' }
-    const oneTooFewAnswerOptions = []
-    for (let i = 0; i < OPTION_COUNT_MIN - 1; i++) {
-      oneTooFewAnswerOptions.push(`Answer option ${i}`)
-    }
-    const oneTooManyAnswerOptions = []
-    for (let i = 0; i < OPTION_COUNT_MAX + 1; i++) {
-      oneTooManyAnswerOptions.push(`Answer option ${i}`)
-    }
-    const invalidAnswerOptionsInputs = [oneTooFewAnswerOptions, oneTooManyAnswerOptions]
-    invalidAnswerOptionsInputs.forEach((answerOptionsList) =>
-      assert(answerOptionsList.length < OPTION_COUNT_MIN || answerOptionsList.length > OPTION_COUNT_MAX)
-    )
+    const invalidAnswerOptionsInputs = getAnswerOptionsWithInvalidCountsForCreatePoll()
 
     for (let invalidAnswerOptionsInput of invalidAnswerOptionsInputs) {
       pollInputData.answers = invalidAnswerOptionsInput
@@ -110,13 +85,7 @@ describe('CREATE POLL', () => {
       try {
         await createPollInDatabase(pollInputData)
       } catch (error) {
-        const errorResponse = error as { response: { errors: { message: string }[] } }
-        const errorMessage = errorResponse.response.errors[0].message
-        const validationData: PollInputFieldValidationDataType =
-          POLL_INPUT_FIELDS_VALIDATION_DATA[PollValidationFieldEnum.ANSWERS_COUNT]
-        expect(errorMessage).to.equal(
-          getPollInputFieldValueNotInRangeErrorMessage(validationData.title, validationData.min, validationData.max)
-        )
+        handleCheckingPollFieldValueNotInRangeExpectedErrorMessage(error, PollValidationFieldEnum.ANSWERS_COUNT)
       }
     }
   })
@@ -129,8 +98,7 @@ describe('CREATE POLL', () => {
     try {
       await createPollInDatabase(pollInputData)
     } catch (error) {
-      const errorResponse = error as { response: { errors: { message: string }[] } }
-      const errorMessage = errorResponse.response.errors[0].message
+      const errorMessage = getErrorMessageFromResponse(error)
       expect(errorMessage).to.equal(getPollAnswerOptionsMustBeUniqueErrorMessage(pollInputData.answers))
     }
   })
@@ -141,8 +109,7 @@ describe('CREATE POLL', () => {
       try {
         await createPollInDatabase(invalidPollInput)
       } catch (error) {
-        const errorResponse = error as { response: { errors: { message: string }[] } }
-        const errorMessage = errorResponse.response.errors[0].message
+        const errorMessage = getErrorMessageFromResponse(error)
         assert.include(errorMessage, POLL_INPUT_INVALID_DATA[i].missingField)
       }
     }

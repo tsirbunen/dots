@@ -146,12 +146,83 @@ export const POLL_INPUT_INVALID_DATA = [
       ownerName: 'Darth Vader',
       question: 'How many days should we stay on holiday?',
       answers: ['7', '10', '14'],
-      // dataClass: DataClassType.NUMBER,
       isAnonymous: true,
       totalVotesCountMax: 2,
       optionVotesCountMax: 1,
       showStatusWhenVoting: true
     },
     missingField: 'dataClass'
+  },
+  {
+    data: {
+      ownerName: 'Darth Vader',
+      answers: ['7', '10', '14'],
+      dataClass: DataClassType.NUMBER,
+      isAnonymous: true,
+      totalVotesCountMax: 2,
+      optionVotesCountMax: 1,
+      showStatusWhenVoting: true
+    },
+    missingField: 'question'
+  },
+  {
+    data: {
+      ownerName: 'Darth Vader',
+      question: 'How many days should we stay on holiday?',
+      dataClass: DataClassType.NUMBER,
+      isAnonymous: true,
+      totalVotesCountMax: 2,
+      optionVotesCountMax: 1,
+      showStatusWhenVoting: true
+    },
+    missingField: 'answers'
+  },
+  {
+    data: {
+      ownerName: 'Darth Vader',
+      question: 'How many days should we stay on holiday?',
+      answers: ['7', '10', '14'],
+      dataClass: DataClassType.NUMBER,
+      totalVotesCountMax: 2,
+      optionVotesCountMax: 1,
+      showStatusWhenVoting: true
+    },
+    missingField: 'isAnonymous'
+  },
+  {
+    data: {
+      ownerName: 'Darth Vader',
+      question: 'How many days should we stay on holiday?',
+      answers: ['7', '10', '14'],
+      dataClass: DataClassType.NUMBER,
+      isAnonymous: true,
+      optionVotesCountMax: 1,
+      showStatusWhenVoting: true
+    },
+    missingField: 'totalVotesCountMax'
+  },
+  {
+    data: {
+      ownerName: 'Darth Vader',
+      question: 'How many days should we stay on holiday?',
+      answers: ['7', '10', '14'],
+      dataClass: DataClassType.NUMBER,
+      isAnonymous: true,
+      totalVotesCountMax: 2,
+      showStatusWhenVoting: true
+    },
+    missingField: 'optionVotesCountMax'
+  },
+  {
+    data: {
+      ownerName: 'Darth Vader',
+      question: 'How many days should we stay on holiday?',
+      answers: ['7', '10', '14'],
+      dataClass: DataClassType.NUMBER,
+      isAnonymous: true,
+      totalVotesCountMax: 2,
+      optionVotesCountMax: 1
+    },
+    missingField: 'showStatusWhenVoting'
   }
 ]

@@ -20,7 +20,7 @@ export function getPollAnswerOptionsMustBeUniqueErrorMessage(answers: unknown[])
   return `Poll answer options must be unique. This is not true for answer set ${JSON.stringify(answers)}`
 }
 
-export function getFindPollBytIdOrCodeRequiresIdOrCode(): string {
+export function getFindPollByIdOrCodeRequiresIdOrCode(): string {
   return 'Find poll by ID or CODE needs either the ID or the CODE!'
 }
 
@@ -58,4 +58,19 @@ export function getCannotEditPollThatIsNotInEditStateErrorMessage(): string {
 
 export function getCannotVoteInPollIfPollNotInVoteStateErrorMessage(): string {
   return 'Cannot vote in a poll that is not in the "voting" state!'
+}
+
+export function getValidAnswerWithThisIdDoesNotExistErrorMessage(answerId: string): string {
+  return `Valid answer with id ${answerId} does not exist in the database!`
+}
+
+export function getValidPollWithThisIdDoesNotExistErrorMessage(pollId: string): string {
+  return `Valid poll with id ${pollId} does not exist in the database!`
+}
+
+export function getValidOwnerWithThisIdOrCodeDoesNotExistErrorMessage(ownerIdOrCode: string): string {
+  return `Owner with id or code ${ownerIdOrCode} could not be found in the database!`
+}
+export function getFailedEditingPollErrorMessage(pollId: string): string {
+  return `Failed editing poll with id ${pollId}`
 }

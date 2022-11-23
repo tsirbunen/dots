@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { Model } from 'objection'
 import { DataClassType, VoteType, PollFullDataType, AnswerType, CustomError, PollState } from '../types/types'
 
@@ -5,7 +6,9 @@ import { ID, DATE, nullable } from '../utils/common-json-schemas'
 import {
   getCannotVoteInPollIfPollNotInVoteStateErrorMessage,
   getMaxVotesPerAnswerAlreadyGivenErrorMessage,
-  getMaxVotesPerPollAlreadyGivenErrorMessage
+  getMaxVotesPerPollAlreadyGivenErrorMessage,
+  getValidAnswerWithThisIdDoesNotExistErrorMessage,
+  getValidPollWithThisIdDoesNotExistErrorMessage
 } from '../utils/error-messages'
 
 import { BaseModel } from './base_model'
@@ -61,11 +64,8 @@ export class Answer extends BaseModel {
   }
 
   public static async giveAVoteToAnswer(input: VoteType): Promise<VoteType | CustomError> {
-    const existingValidAnswer = await this.findExistingAnswer(input)
-    const pollWithThisVoterVotes = await this.findPollFullDataWithThisVoterVotes(
-      existingValidAnswer.pollId,
-      input.voterId
-    )
+    const existingAnswer = await this.findAnswerById(input.answerId)
+    const pollWithThisVoterVotes = await this.findPollWithThisVoterVotes(existingAnswer.pollId, input.voterId)
     if (pollWithThisVoterVotes.state !== PollState.VOTE) {
       return { errorMessage: getCannotVoteInPollIfPollNotInVoteStateErrorMessage() }
     }
@@ -77,44 +77,41 @@ export class Answer extends BaseModel {
     return await Answer.query().where('pollId', pollId).where('deletedAt', null).returning('*')
   }
 
-  public static async findExistingAnswer(input: VoteType): Promise<AnswerType> {
-    const existingValidAnswer = await Answer.query()
-      .where('id', input.answerId)
-      .where('deletedAt', null)
-      .returning('id')
-    if (existingValidAnswer.length === 0) {
-      throw new Error(`Valid answer for id ${input.answerId} does not exist!`)
+  private static async findAnswerById(answerId: string): Promise<AnswerType> {
+    const existingValidAnswer = await Answer.query().where('id', answerId).where('deletedAt', null).first()
+    if (!existingValidAnswer) {
+      throw new Error(getValidAnswerWithThisIdDoesNotExistErrorMessage(answerId))
     }
-    return existingValidAnswer[0]
+    return existingValidAnswer
   }
 
-  public static async findPollFullDataWithThisVoterVotes(pollId: string, voterId: string): Promise<PollFullDataType> {
+  private static async findPollWithThisVoterVotes(pollId: string, voterId: string): Promise<PollFullDataType> {
     const pollsWithThisVoterVotes = await Poll.query()
       .where('id', pollId)
       .where('deletedAt', null)
       .withGraphFetched('[answers.[votes(onlyThisVoter)]]')
       .modifiers({
         onlyThisVoter: (builder) => {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           builder.where('voterId', voterId)
         }
       })
-    return pollsWithThisVoterVotes[0] as unknown as PollFullDataType
+      .first()
+    if (!pollsWithThisVoterVotes) {
+      throw new Error(getValidPollWithThisIdDoesNotExistErrorMessage(pollId))
+    }
+    return pollsWithThisVoterVotes as unknown as PollFullDataType
   }
 
-  public static verifyVoterCanVoteThisAnswer(pollWithThisVoterVotes: PollFullDataType, answerId: string): void {
+  private static verifyVoterCanVoteThisAnswer(pollWithThisVoterVotes: PollFullDataType, answerId: string): void {
     let voterVotesInPollTotal = 0
-    let canGiveVoteToThisAnswer = true
+    let voterVotesForThisAnswer = 0
     pollWithThisVoterVotes.answers.forEach((answer) => {
-      const answerVotesByThisVoter = answer.votes?.length ?? 0
-      voterVotesInPollTotal += answerVotesByThisVoter
-      if (answer.id === answerId && pollWithThisVoterVotes.optionVotesCountMax === answerVotesByThisVoter) {
-        console.log('answer option limit', answer.votes?.length)
-        canGiveVoteToThisAnswer = false
-      }
+      const answerVotes = answer.votes?.length ?? 0
+      voterVotesInPollTotal += answerVotes
+      if (answer.id === answerId) voterVotesForThisAnswer = answerVotes
     })
 
-    if (!canGiveVoteToThisAnswer) {
+    if (voterVotesForThisAnswer >= pollWithThisVoterVotes.optionVotesCountMax) {
       throw new Error(getMaxVotesPerAnswerAlreadyGivenErrorMessage(pollWithThisVoterVotes.optionVotesCountMax))
     }
     if (voterVotesInPollTotal >= pollWithThisVoterVotes.totalVotesCountMax) {

@@ -1,7 +1,8 @@
 import { Model } from 'objection'
-import { OwnerType } from '../types/types'
+import { CustomError, OwnerType } from '../types/types'
 
 import { ID, DATE, nullable } from '../utils/common-json-schemas'
+import { getValidOwnerWithThisIdOrCodeDoesNotExistErrorMessage } from '../utils/error-messages'
 
 import { BaseModel } from './base_model'
 import { Poll } from './poll-model'
@@ -39,8 +40,11 @@ export class Owner extends BaseModel {
     }
   }
 
-  public static async findOwnerById(ownerId: string): Promise<OwnerType> {
-    const owners = await Owner.query().where('id', ownerId).where('deletedAt', null).returning('*')
-    return owners[0]
+  public static async findOwnerById(ownerId: string): Promise<OwnerType | CustomError> {
+    const owner = await Owner.query().where('id', ownerId).where('deletedAt', null).returning('*').first()
+    if (!owner) {
+      return { errorMessage: getValidOwnerWithThisIdOrCodeDoesNotExistErrorMessage(ownerId) }
+    }
+    return owner
   }
 }

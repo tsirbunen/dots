@@ -11,6 +11,7 @@ import { getGraphQLClient } from './get-graphql-client'
 import {
   closePollFromVotingMutation,
   createPollMutation,
+  deletePollMutation,
   editPollMutation,
   findAllPollsForOneOwnerQuery,
   findPollQuery,
@@ -92,4 +93,11 @@ export async function closePollFromVoting(pollId: string, token: string): Promis
   const query = closePollFromVotingMutation
   const response: { closePoll: boolean } = await graphQLClient.request(query, { pollId })
   return response.closePoll
+}
+
+export async function deletePollFromDatabase(pollId: string, token: string): Promise<boolean> {
+  const graphQLClient = getGraphQLClient(token)
+  const query = deletePollMutation
+  const response: { deletePoll: boolean } = await graphQLClient.request(query, { pollId })
+  return response.deletePoll
 }

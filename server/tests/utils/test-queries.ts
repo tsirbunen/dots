@@ -70,6 +70,12 @@ export const closePollFromVotingMutation = gql`
   }
 `
 
+export const deletePollMutation = gql`
+  mutation deletePoll($pollId: ID!) {
+    deletePoll(pollId: $pollId)
+  }
+`
+
 export const giveAVoteToAnswerMutation = gql`
   mutation giveAVoteToAnswer($input: GiveAVoteToAnswerInput!) {
     giveAVoteToAnswer(input: $input) {

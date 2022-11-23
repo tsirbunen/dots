@@ -30,3 +30,31 @@ export async function clearDatabase(databaseConnection: Knex) {
 export async function closeDatabaseConnection(databaseConnection: Knex): Promise<void> {
   return databaseConnection.destroy()
 }
+
+export async function getAllVotesInDatabase(databaseConnection: Knex) {
+  const votesInDatabase = await databaseConnection.raw(`
+  SELECT * FROM "Votes";
+`)
+  return votesInDatabase.rows
+}
+
+export async function getAllAnswersInDatabase(databaseConnection: Knex) {
+  const answersInDatabase = await databaseConnection.raw(`
+  SELECT * FROM "Answers";
+`)
+  return answersInDatabase.rows
+}
+
+export async function getAllPollsInDatabase(databaseConnection: Knex) {
+  const pollsInDatabase = await databaseConnection.raw(`
+  SELECT * FROM "Polls";
+`)
+  return pollsInDatabase.rows
+}
+
+export async function getAllOwnersInDatabase(databaseConnection: Knex) {
+  const ownersInDatabase = await databaseConnection.raw(`
+  SELECT * FROM "Owners";
+`)
+  return ownersInDatabase.rows
+}

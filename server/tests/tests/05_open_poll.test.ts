@@ -11,52 +11,45 @@ import { assert } from 'chai'
 
 import { handleAssertNotAuthenticatedError } from '../../utils/handle-not-authenticated-error'
 import { getCannotEditPollThatIsNotInEditStateErrorMessage } from '../../utils/error-messages'
+import { getErrorMessageFromResponse } from '../utils/helpers'
+import { PollFullDataType } from '../../types/types'
 
 dns.setDefaultResultOrder('ipv4first')
 
 const DATABASE = getDatabaseConnection()
+let createdFirstPoll: PollFullDataType
 
 describe('OPEN POLL', () => {
   beforeEach(async () => {
     await clearDatabase(DATABASE)
+    createdFirstPoll = await createPollInDatabase({ ...POLL_INPUT_DATA[0], ownerId: uuidv4() })
   })
 
   it('A poll can be opened for voting by the poll owner', async () => {
-    const ownerId = uuidv4()
-    const pollInputData = { ...POLL_INPUT_DATA[0], ownerId }
-    const createdPoll = await createPollInDatabase(pollInputData)
-    const success = await openPollForVoting(createdPoll.id, createdPoll.token!)
+    const success = await openPollForVoting(createdFirstPoll.id, createdFirstPoll.token!)
     assert(success)
   })
 
   it('A poll cannot be opened for voting by others than the poll owner', async () => {
-    const falseOwnerId = uuidv4()
-    let pollInputData = { ...POLL_INPUT_DATA[0], ownerId: falseOwnerId }
-    const createdPollFalseOwner = await createPollInDatabase(pollInputData)
-
-    const trueOwnerId = uuidv4()
-    pollInputData = { ...POLL_INPUT_DATA[0], ownerId: trueOwnerId }
-    const createdPollTrueOwner = await createPollInDatabase(pollInputData)
+    const secondOwnerId = uuidv4()
+    const pollInputDataSecondOwner = { ...POLL_INPUT_DATA[0], ownerId: secondOwnerId }
+    const createdPollSecondOwner = await createPollInDatabase(pollInputDataSecondOwner)
     try {
-      await openPollForVoting(createdPollTrueOwner.id, createdPollFalseOwner.token!)
+      await openPollForVoting(createdPollSecondOwner.id, createdFirstPoll.token!)
     } catch (error) {
       handleAssertNotAuthenticatedError(error)
     }
   })
 
   it('A poll cannot be edited if it has been opened for voting', async () => {
-    const ownerId = uuidv4()
-    const pollInputData = { ...POLL_INPUT_DATA[0], ownerId }
-    const createdPoll = await createPollInDatabase(pollInputData)
-    const success = await openPollForVoting(createdPoll.id, createdPoll.token!)
+    const success = await openPollForVoting(createdFirstPoll.id, createdFirstPoll.token!)
     assert(success)
     try {
       const editPollInput = EDIT_POLL_INPUT_VALID_DATA[0]
-      editPollInput.pollId = createdPoll.id
-      await editPollInDatabase(editPollInput, createdPoll.token!)
+      editPollInput.pollId = createdFirstPoll.id
+      await editPollInDatabase(editPollInput, createdFirstPoll.token!)
     } catch (error) {
-      const errorResponse = error as { response: { errors: { message: string }[] } }
-      const errorMessage = errorResponse.response.errors[0].message
+      const errorMessage = getErrorMessageFromResponse(error)
       assert.include(errorMessage, getCannotEditPollThatIsNotInEditStateErrorMessage())
     }
   })

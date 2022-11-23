@@ -16,6 +16,7 @@ Install knex globally:
 
 Run database migrations (in directory `server`)
 `npx knex migrate:latest`
+npx knex migrate:make <nimi tiedostolle>
 
 docker images
 docker pull postgres
@@ -28,6 +29,9 @@ docker image prune
 docker ps -a
 docker rm ID_or_Name ID_or_Name
 docker run --rm image_name
+
+sudo lsof -i :5432
+sudo kill -9 <pid>
 
 #### running server
 
@@ -51,3 +55,8 @@ Then, in another shell, in directory `/server` run the tests with the command:
 `npm run test`
 
 NOTE: Running tests directly from VSC is not currently supported! Use console.
+
+To run tests in a single file:
+`npm run test-single-file <path to file>`
+for example
+`npm run test-single-file tests/tests/04_edit_poll.test.ts`
