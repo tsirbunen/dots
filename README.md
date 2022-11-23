@@ -1,8 +1,17 @@
-# DOTS
+# DOTS - simple dot voting
+
+**_Just create a poll, ask your friends to vote, and view the results._**
+**_No need to create an account or to come up with a password._**
 
 <br/>
 
 ## OVERVIEW OF THE DOTS
+
+DOTS system features a mobile ui and a web ui both supported by a server connected to a database.
+
+### mobile ui
+
+### web ui (intended mainly for mobile use)
 
 ### server
 
@@ -26,7 +35,7 @@ The DOTS-program can be run locally in development mode with the following instr
 Start a PostgreSQL database locally with Docker:
 `docker run --name postgres_for_dots -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=possupossu -e POSTGRES_DB=dots -d --rm postgres`
 
-To get rid of possible earlier started one, first list the processes
+To get rid of possible earlier started database, first list the processes
 `sudo lsof -i :5432`
 and then kill them
 `sudo kill -9 <pid>`
@@ -37,7 +46,7 @@ Install knex globally:
 Run database migrations (in directory `server`)
 `npx knex migrate:latest`
 
-Make a new migration (in directory `server`)
+To make changes to the database with a new migration (in directory `server`)
 `npx knex migrate:make <some name for the file>`
 
 #### running server
@@ -64,7 +73,7 @@ Then, in another shell, in directory `/server` run the tests with the command:
 
 NOTE: Running tests directly from VSC is not currently supported! Use console.
 
-To run tests in a single file:
+To run tests of a single file run
 `npm run test-single-file <path to file>`
-for example
+For example
 `npm run test-single-file tests/tests/04_edit_poll.test.ts`
