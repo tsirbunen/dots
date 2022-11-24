@@ -1,5 +1,4 @@
 import { Context } from '../../Context'
-import { handleThrowErrorIfHasErrorMessage } from '../../tests/utils/helpers'
 import { CreatePollInputType, EditPollInputType, PollType } from '../../types/types'
 import { createJWT } from '../../utils/token-handling'
 
@@ -27,9 +26,8 @@ export const PollMutationResolvers: PollMutationResolversType = {
   },
   editPoll: async (_parent, { input }, context) => {
     const provider = context.injector.get(PollProvider)
-    const pollOrError = await provider.editPoll(input)
-    handleThrowErrorIfHasErrorMessage(pollOrError)
-    return pollOrError as PollType
+    const poll = await provider.editPoll(input)
+    return poll
   },
   openPoll: async (_parent, { pollId }, context) => {
     const provider = context.injector.get(PollProvider)

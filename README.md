@@ -22,7 +22,7 @@ DOTS system features a mobile ui and a web ui both supported by a server connect
 - In the center of the DOTS "data model" is a **POLL**. A poll has an **OWNER** and multiple voting options or **ANSWERS**. Each answer can have multiple **VOTES**.
 - The main functionalities of the server are the following:
   1. creating a new poll
-  2. giving a vote to a poll's option
+  2. giving a vote to a poll's answer option
   3. retrieving a poll with its data (answers and votes)
 - Perhaps the best way to better understand the DOTS server is to study the tests, starting with [tests for creating a new poll](/server/tests/tests/02_create_poll.test.ts).
 

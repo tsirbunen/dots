@@ -6,7 +6,6 @@ import { createRandomCode } from '../../utils/create-random-code'
 import {
   CreatePollDatabaseInputType,
   CreatePollInputType,
-  CustomError,
   EditPollInputType,
   FindPollInputType,
   PollState,
@@ -26,7 +25,7 @@ export class PollProvider {
     return await Poll.createPoll(databaseInput)
   }
 
-  async findPollByIdOrCode(input: FindPollInputType): Promise<PollType | CustomError> {
+  async findPollByIdOrCode(input: FindPollInputType): Promise<PollType> {
     return await Poll.findPollByIdOrCode(input)
   }
 
@@ -34,7 +33,7 @@ export class PollProvider {
     return await Poll.findAllPollsForOneOwner(ownerId)
   }
 
-  async editPoll(input: EditPollInputType): Promise<PollType | CustomError> {
+  async editPoll(input: EditPollInputType): Promise<PollType> {
     return await Poll.editPoll(input)
   }
 

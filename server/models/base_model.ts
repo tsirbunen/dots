@@ -9,7 +9,7 @@ export class BaseModel extends Model {
       return outcome
     } catch (error) {
       await trx.rollback()
-      throw new Error(JSON.stringify(error))
+      throw error
     }
   }
 }

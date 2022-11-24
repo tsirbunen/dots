@@ -19,7 +19,7 @@ export function pollInputValidation(originalSchema: GraphQLSchema, directiveName
       if (pollInputValidationDirective != null) {
         const { resolve = defaultFieldResolver } = fieldConfig
         fieldConfig.resolve = function (source, args, context, info) {
-          if (args.input !== undefined) {
+          if (args.input) {
             const pollInput = args.input as CreatePollInputType | EditPollInputType
             verifyTotalAndOptionMaximaBothPresentIfOnePresent(pollInput)
             verifyNumbersAndCountsInRequiredRangesIfPresent(pollInput)

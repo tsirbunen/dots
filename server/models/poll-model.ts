@@ -7,7 +7,6 @@ import {
   FindPollInputType,
   PollState,
   EditPollInputType,
-  CustomError,
   AnswerEditDataType,
   DataClassType
 } from '../types/types'
@@ -122,12 +121,12 @@ export class Poll extends BaseModel {
     })
   }
 
-  public static async findPollByIdOrCode(input: FindPollInputType): Promise<PollType | CustomError> {
+  public static async findPollByIdOrCode(input: FindPollInputType): Promise<PollType> {
     const queryBy = input.id !== undefined ? 'id' : 'code'
     const queryValue = input[queryBy]
-    if (queryValue === undefined) return { errorMessage: getFindPollByIdOrCodeRequiresIdOrCode() }
+    if (!queryValue) throw new Error(getFindPollByIdOrCodeRequiresIdOrCode())
     const poll = await Poll.query().where(queryBy, queryValue).where('deletedAt', null).returning('*').first()
-    if (!poll) return { errorMessage: getValidOwnerWithThisIdOrCodeDoesNotExistErrorMessage(queryValue) }
+    if (!poll) throw new Error(getValidOwnerWithThisIdOrCodeDoesNotExistErrorMessage(queryValue))
     return poll
   }
 
@@ -135,10 +134,9 @@ export class Poll extends BaseModel {
     return await Poll.query().where('ownerId', ownerId).where('deletedAt', null).returning('*')
   }
 
-  public static async editPoll(input: EditPollInputType): Promise<PollType | CustomError> {
-    return await this.performWithinTransaction(async (trx: Transaction): Promise<PollType | CustomError> => {
+  public static async editPoll(input: EditPollInputType): Promise<PollType> {
+    return await this.performWithinTransaction(async (trx: Transaction): Promise<PollType> => {
       const pollToBeEdited = await this.findPollByIdWithAnswersForEditing(input.pollId, trx)
-      if ((pollToBeEdited as CustomError).errorMessage) return pollToBeEdited
       await this.updateAnswersDataInDatabase(pollToBeEdited, input.answers, input.dataClass, trx)
       return await this.patchPollInDatabase(input, trx)
     })
@@ -191,12 +189,10 @@ export class Poll extends BaseModel {
   private static async findPollByIdWithAnswersForEditing(
     pollId: string,
     trx: Transaction
-  ): Promise<(PollType & { answers: AnswerEditDataType[] }) | CustomError> {
+  ): Promise<PollType & { answers: AnswerEditDataType[] }> {
     const poll = await Poll.query(trx).where('id', pollId).withGraphFetched({ answers: true }).first()
-    if (!poll) return { errorMessage: getValidPollWithThisIdDoesNotExistErrorMessage(pollId) }
-    if (poll.state !== PollState.EDIT) {
-      return { errorMessage: getCannotEditPollThatIsNotInEditStateErrorMessage() }
-    }
+    if (!poll) throw new Error(getValidPollWithThisIdDoesNotExistErrorMessage(pollId))
+    if (poll.state !== PollState.EDIT) throw new Error(getCannotEditPollThatIsNotInEditStateErrorMessage())
     return poll as unknown as PollType & { answers: AnswerEditDataType[] }
   }
 
@@ -224,13 +220,13 @@ export class Poll extends BaseModel {
     ])
   }
 
-  private static async patchPollInDatabase(input: EditPollInputType, trx: Transaction): Promise<Poll | CustomError> {
+  private static async patchPollInDatabase(input: EditPollInputType, trx: Transaction): Promise<Poll> {
     const pollPatch = this.preparePollPatchFromInputData(input)
     const pollPatchIsEmpty = Object.keys(pollPatch).length === 0
     const poll = pollPatchIsEmpty
       ? await Poll.query(trx).where('id', input.pollId).returning('*').first()
       : await Poll.query(trx).patch(pollPatch).where('id', input.pollId).returning('*').first()
-    if (!poll) return { errorMessage: getFailedEditingPollErrorMessage(input.pollId) }
+    if (!poll) throw new Error(getFailedEditingPollErrorMessage(input.pollId))
     return poll
   }
 

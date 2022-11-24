@@ -1,5 +1,4 @@
 import { Context } from '../../Context'
-import { handleThrowErrorIfHasErrorMessage } from '../../tests/utils/helpers'
 import { FindPollInputType, PollType } from '../../types/types'
 import { getIdOfOwnerPerformingQuery } from '../../utils/get-id-of-owner-performing-query'
 
@@ -15,9 +14,8 @@ interface PollQueryResolversType {
 export const PollQueryResolvers: PollQueryResolversType = {
   findPoll: async (_parent, { input }, context) => {
     const provider = context.injector.get(PollProvider)
-    const pollOrError = await provider.findPollByIdOrCode(input)
-    handleThrowErrorIfHasErrorMessage(pollOrError)
-    return pollOrError as QueriedPoll
+    const poll = await provider.findPollByIdOrCode(input)
+    return poll as QueriedPoll
   },
 
   findAllPollsForOneOwner: async (_parent, _args, context) => {

@@ -142,7 +142,3 @@ export interface Token {
   data: TokenDetails
   iat: number
 }
-
-export interface CustomError {
-  errorMessage: string
-}

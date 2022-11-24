@@ -1,5 +1,5 @@
 import { Model } from 'objection'
-import { CustomError, OwnerType } from '../types/types'
+import { OwnerType } from '../types/types'
 
 import { ID, DATE, nullable } from '../utils/common-json-schemas'
 import { getValidOwnerWithThisIdOrCodeDoesNotExistErrorMessage } from '../utils/error-messages'
@@ -40,11 +40,9 @@ export class Owner extends BaseModel {
     }
   }
 
-  public static async findOwnerById(ownerId: string): Promise<OwnerType | CustomError> {
+  public static async findOwnerById(ownerId: string): Promise<OwnerType> {
     const owner = await Owner.query().where('id', ownerId).where('deletedAt', null).returning('*').first()
-    if (!owner) {
-      return { errorMessage: getValidOwnerWithThisIdOrCodeDoesNotExistErrorMessage(ownerId) }
-    }
+    if (!owner) throw new Error(getValidOwnerWithThisIdOrCodeDoesNotExistErrorMessage(ownerId))
     return owner
   }
 }

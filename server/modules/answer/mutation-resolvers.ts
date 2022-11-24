@@ -1,5 +1,5 @@
 import { Context } from '../../Context'
-import { CustomError, VoteInputType, VoteType } from '../../types/types'
+import { VoteInputType, VoteType } from '../../types/types'
 import { AnswerProvider } from './provider'
 
 interface AnswerMutationResolversType {
@@ -9,10 +9,7 @@ interface AnswerMutationResolversType {
 export const AnswerMutationResolvers: AnswerMutationResolversType = {
   giveAVoteToAnswer: async (_parent, { input }, context) => {
     const provider = context.injector.get(AnswerProvider)
-    const voteOrError = await provider.giveAVoteToAnswer(input)
-    if ((voteOrError as CustomError).errorMessage) {
-      throw new Error((voteOrError as CustomError).errorMessage)
-    }
-    return voteOrError as VoteType
+    const vote = await provider.giveAVoteToAnswer(input)
+    return vote as VoteType
   }
 }

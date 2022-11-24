@@ -3,15 +3,12 @@ import {
   PollInputFieldValidationDataType,
   POLL_INPUT_FIELDS_VALIDATION_DATA,
   PollValidationFieldEnum,
-  PollFullDataType,
-  CreatePollInputType,
-  CustomError
+  PollFullDataType
 } from '../../types/types'
 import { v4 as uuidv4 } from 'uuid'
 import { OPTION_COUNT_MIN, OPTION_COUNT_MAX } from '../../utils/constant-values'
 import { getPollInputFieldValueNotInRangeErrorMessage } from '../../utils/error-messages'
 import { POLL_INPUT_DATA } from '../data/polls-data'
-import { assertObjectIsAVote } from './assertions'
 import {
   createPollInDatabase,
   openPollForVoting,
@@ -29,12 +26,6 @@ import {
 export function getErrorMessageFromResponse(error: unknown): string {
   const errorResponse = error as { response: { errors: { message: string }[] } }
   return errorResponse.response.errors[0].message
-}
-
-export function handleThrowErrorIfHasErrorMessage(dataWithPossibleErrorMessage: unknown) {
-  if ((dataWithPossibleErrorMessage as CustomError).errorMessage) {
-    throw new Error((dataWithPossibleErrorMessage as CustomError).errorMessage)
-  }
 }
 
 export function getExpectedErrorMessageForPollFieldValueNotInRange(validationField: PollValidationFieldEnum): string {

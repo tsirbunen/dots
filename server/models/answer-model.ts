@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { Model } from 'objection'
-import { DataClassType, VoteType, PollFullDataType, AnswerType, CustomError, PollState } from '../types/types'
+import { DataClassType, VoteType, PollFullDataType, AnswerType, PollState } from '../types/types'
 
 import { ID, DATE, nullable } from '../utils/common-json-schemas'
 import {
@@ -63,11 +63,11 @@ export class Answer extends BaseModel {
     }
   }
 
-  public static async giveAVoteToAnswer(input: VoteType): Promise<VoteType | CustomError> {
+  public static async giveAVoteToAnswer(input: VoteType): Promise<VoteType> {
     const existingAnswer = await this.findAnswerById(input.answerId)
     const pollWithThisVoterVotes = await this.findPollWithThisVoterVotes(existingAnswer.pollId, input.voterId)
     if (pollWithThisVoterVotes.state !== PollState.VOTE) {
-      return { errorMessage: getCannotVoteInPollIfPollNotInVoteStateErrorMessage() }
+      throw new Error(getCannotVoteInPollIfPollNotInVoteStateErrorMessage())
     }
     this.verifyVoterCanVoteThisAnswer(pollWithThisVoterVotes, input.answerId)
     return await Vote.query().insert(input).returning(['id', 'answerId', 'name'])
