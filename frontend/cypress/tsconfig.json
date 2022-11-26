@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "types": ["node", "cypress", "cypress-react-selector"],
+    "jsx": "react",
+    "esModuleInterop": true
+  }
+}

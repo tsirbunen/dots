@@ -11,9 +11,11 @@ DOTS system features a mobile ui and a web ui both supported by a server connect
 
 ### mobile ui
 
-### web ui (intended mainly for mobile use)
+### web ui
 
-- DOTS frontend is a Next.js React Typescript app.
+- DOTS frontend is a [Next.js](https://nextjs.org) - [React](https://reactjs.org) - [Typescript](https://www.typescriptlang.org) app.
+- For testing, [Cypress](https://docs.cypress.io/guides/overview/why-cypress) E2E testing was selected. To make the Cypress-experience more "cucumber-like" and to be able to include feature-files a [cucumber preprocessor](https://www.npmjs.com/package/@badeball/cypress-cucumber-preprocessor) was plugged in.
+- Note that the web ui was designed mainly with only mobile users in mind.
 
 ### server
 
@@ -32,7 +34,7 @@ DOTS system features a mobile ui and a web ui both supported by a server connect
 
 The DOTS-program can be run locally in development mode with the following instructions:
 
-#### running the database (locally)
+#### running database
 
 Start a PostgreSQL database locally with Docker:
 `docker run --name postgres_for_dots -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=possupossu -e POSTGRES_DB=dots -d --rm postgres`
@@ -45,38 +47,40 @@ and then kill them
 Install knex globally:
 `npm install -g knex`
 
-Run database migrations (in directory `server`)
+Run database migrations (in directory /server)
 `npx knex migrate:latest`
 
-To make changes to the database with a new migration (in directory `server`)
+To make changes to the database with a new migration (in directory /server)
 `npx knex migrate:make <some name for the file>`
-
-#### running the frontend
-
-In a shell, in directory `/frontend` start the frontend with the command:
-`npm run dev`
-Then open the browser at [http://localhost:3000](http://localhost:3000).
 
 #### running server
 
-In a shell, in directory `/server` start a server with the command:
+Before starting the server, make sure you have a database running.
+In a shell, in directory /server start a server with the command:
 `npm run dev`
 
-#### debugging server
+##### debugging server
 
-When using VSC, debugging mode can be starting by launching `server` from the "RUN AND DEBUG" options. Launching server debugging causes server to be built and the resulting js-files to be debugged. If changes to ts-files are made, the debugger needs to be restarted.
+When using VSC, debugging mode can be starting by launching **server** from the "RUN AND DEBUG" options. Launching server debugging causes server to be built and the resulting js-files to be debugged. If changes to ts-files are made, the debugger needs to be restarted.
 ![Launch server image](/assets/image_launch_server.png)
 
+#### running frontend
+
+Before starting the frontend, make sure you have both a database and a server running.
+In a shell, in directory /frontend start the frontend with the command:
+`npm run dev`
+Then open the browser at [http://localhost:3000](http://localhost:3000).
 <br/>
 
 ### RUNNING TESTS
 
-#### server tests
+#### testing server
 
-In one shell, in directory `/server` first start a server with the command:
+Before starting the server, make sure you have a database running.
+In one shell, in directory /server first start a server with the command:
 `npm run dev`
 
-Then, in another shell, in directory `/server` run the tests with the command:
+Then, in another shell, in directory /server run the tests with the command:
 `npm run test`
 
 NOTE: Running tests directly from VSC is not currently supported! Use console.
@@ -85,3 +89,23 @@ To run tests of a single file run
 `npm run test-single-file <path to file>`
 For example
 `npm run test-single-file tests/tests/04_edit_poll.test.ts`
+
+#### testing frontend
+
+Before starting testing the frontend, make sure you have both a database and a server running.
+In one shell, in directory /frontend first start a frontend with the command:
+`npm run dev`
+There are two options for running the cypress tests:
+
+1. For one, open a new shell, cd to directory /frontend, and open the cypress LaunchPad with
+   `npm run cypress:open`
+   In the opening window, select "E2E Testing" by clicking it (see image below).
+   ![Cypress LaunchPad](/assets/image_cypress_launchpad.png)
+   Then select Chrome browser
+   ![Cypress Browser selection](/assets/image_cypress_select_browser.png)
+   And finally click the feature files you wish to run (one by one).
+   ![Cypress Feature](/assets/image_cypress_feature.png)
+   Cypress shows you the testing process live.
+2. Alternatively you can open a new shell, cd to directory /frontend, and run the tests with
+   `npm run cypress:run`
+   In this case some testing information is logged to console. Also, you can view a Mochawesome html results file (by opening a file in the /cypress/results directory with, for example, the help of VSC plugin "Open in browser").
