@@ -13,9 +13,11 @@ DOTS system features a mobile ui and a web ui both supported by a server connect
 
 ### web ui (intended mainly for mobile use)
 
+- DOTS frontend is a Next.js React Typescript app.
+
 ### server
 
-- DOTS server is a [Fastify](https://www.fastify.io) server added with [GraphQL Helix](https://github.com/contra/graphql-helix) capabilities. The GraphQl schema is built with [GraphQL Modules](https://the-guild.dev/graphql/modules/docs) that enables adding small units piece-by-piece.
+- DOTS server is a Typescript [Fastify](https://www.fastify.io) server added with [GraphQL Helix](https://github.com/contra/graphql-helix) capabilities. The GraphQl schema is built with [GraphQL Modules](https://the-guild.dev/graphql/modules/docs) that enables adding small units piece-by-piece.
 - In the DOTS there are only a couple of main entities. Each of the entities has a dedicated GraphQL module and an ORM model.
 - PostgreSQL is used as the permanent data storage, and [Objection](https://vincit.github.io/objection.js/) and [Knex](https://knexjs.org/guide/) are used to manage the database.
 - For testing, [Mocha](https://mochajs.org) and [Chai](https://www.chaijs.com) were selected.
@@ -30,7 +32,7 @@ DOTS system features a mobile ui and a web ui both supported by a server connect
 
 The DOTS-program can be run locally in development mode with the following instructions:
 
-#### running the database
+#### running the database (locally)
 
 Start a PostgreSQL database locally with Docker:
 `docker run --name postgres_for_dots -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=possupossu -e POSTGRES_DB=dots -d --rm postgres`
@@ -48,6 +50,12 @@ Run database migrations (in directory `server`)
 
 To make changes to the database with a new migration (in directory `server`)
 `npx knex migrate:make <some name for the file>`
+
+#### running the frontend
+
+In a shell, in directory `/frontend` start the frontend with the command:
+`npm run dev`
+Then open the browser at [http://localhost:3000](http://localhost:3000).
 
 #### running server
 
