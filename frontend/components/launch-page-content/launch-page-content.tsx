@@ -1,16 +1,14 @@
-import { Box } from '@chakra-ui/react'
-
-import UseInstructions from './use-instructions'
-import ModeSelectionButtons from './mode-selection-buttons'
+import InstructionsForUse from './instructions-for-use'
+import ModeOfUseSelectionButtons from './mode-of-use-selection-buttons'
 import AppTitle from './app-title'
 
 const LaunchPageContent = () => {
   return (
-    <Box>
+    <div>
       <AppTitle />
-      <UseInstructions />
-      <ModeSelectionButtons />
-    </Box>
+      <InstructionsForUse />
+      <ModeOfUseSelectionButtons />
+    </div>
   )
 }
 

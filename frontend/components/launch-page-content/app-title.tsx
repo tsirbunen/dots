@@ -2,7 +2,7 @@ import { Text, Box } from '@chakra-ui/react'
 import { useTranslation } from '../../hooks/use-translation'
 
 import { ThemeColor } from '../../theme/theme'
-import BlinkingDotsLine from '../blinking-dots-line'
+import BlinkingDotsLine from '../blinking-dots/blinking-dots-line'
 
 import { appTitleContainerStyle, appTitleStyle } from './styles'
 

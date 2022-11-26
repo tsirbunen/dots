@@ -5,7 +5,7 @@ import { Phrase } from '../../localization/translations'
 
 import { howDoesItWorkStyle, instructionPhraseStyle } from './styles'
 
-const UseInstructions = () => {
+const InstructionsForUse = () => {
   const { translate } = useTranslation()
 
   const instructionPhrases = () => {
@@ -29,4 +29,4 @@ const UseInstructions = () => {
   )
 }
 
-export default UseInstructions
+export default InstructionsForUse

@@ -6,7 +6,7 @@ import { Phrase } from '../../localization/translations'
 import SimpleButton from '../small-button/simple-button'
 import { modeSelectionButtonsContainerStyle } from './styles'
 
-const ModeSelectionButtons = () => {
+const ModeOfUseSelectionButtons = () => {
   const { translate } = useTranslation()
 
   const modePhrases = () => {
@@ -29,4 +29,4 @@ const ModeSelectionButtons = () => {
   )
 }
 
-export default ModeSelectionButtons
+export default ModeOfUseSelectionButtons
