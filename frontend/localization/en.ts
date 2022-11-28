@@ -13,5 +13,7 @@ export const EN_TRANSLATIONS: Translations = {
   use_instruction_7: 'Results are examined.',
   mode_create_a_poll: 'create a poll',
   mode_vote_in_a_poll: 'vote in a poll',
-  mode_view_a_poll: 'view a poll'
+  mode_view_a_poll: 'view a poll',
+  language_FI: 'Finnish',
+  language_EN: 'English'
 }

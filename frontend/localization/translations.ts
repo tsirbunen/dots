@@ -14,4 +14,6 @@ export type Translations = {
   mode_create_a_poll: string
   mode_vote_in_a_poll: string
   mode_view_a_poll: string
+  language_FI: string
+  language_EN: string
 }

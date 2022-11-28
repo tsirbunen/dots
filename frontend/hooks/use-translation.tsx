@@ -1,6 +1,8 @@
 import { Translations, Phrase } from '../localization/translations'
 import { EN_TRANSLATIONS } from '../localization/en'
 import { FI_TRANSLATIONS } from '../localization/fi'
+import { useContext } from 'react'
+import { AppState, AppStateContext } from '../state/state-context'
 
 export enum Language {
   FI = 'FI',
@@ -11,15 +13,15 @@ type UseTranslation = {
   translate: (phrase: Phrase) => string
 }
 
-const TRANSLATIONS: Record<Language, Translations> = {
+export const TRANSLATIONS: Record<Language, Translations> = {
   FI: FI_TRANSLATIONS,
   EN: EN_TRANSLATIONS
 }
 
 export const useTranslation = (): UseTranslation => {
-  // TODO: Add here retrieving the selected language from State!
+  const { state } = useContext(AppStateContext) as { state: AppState }
   const translate = (phrase: Phrase) => {
-    const selectedLanguage = Language.EN
+    const selectedLanguage = state.language ?? Language.EN
     const translations = TRANSLATIONS[selectedLanguage]
     return translations[phrase]
   }

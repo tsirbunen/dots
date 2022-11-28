@@ -20,6 +20,10 @@ Then('the use instructions is visible', () => {
   launchPage.verifyUseInstructionsAreVisible()
 })
 
+Then('the language toggle is visible', () => {
+  launchPage.verifyUseInstructionsAreVisible()
+})
+
 Then('the use mode selection buttons are visible', () => {
   launchPage.verifySelectionButtonsForModesOfUseAreVisible()
 })

@@ -1,7 +1,7 @@
 import { ThemeColor } from '../../theme/theme'
 
 export const simpleButtonStyles = {
-  marginBottom: '30px',
+  marginBottom: '20px',
   marginLeft: '10px',
   marginRight: '10px',
   borderRadius: '4px',

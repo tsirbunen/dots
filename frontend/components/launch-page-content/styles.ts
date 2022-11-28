@@ -3,7 +3,7 @@ import { ThemeColor } from '../../theme/theme'
 
 export const appTitleContainerStyle = {
   flexDirection: 'column' as ChakraProps['flexDirection'],
-  margin: '20px',
+  margin: '10px',
   maxWidth: '800px'
 }
 
@@ -19,7 +19,7 @@ export const howDoesItWorkStyle = {
   color: ThemeColor.SHADE_1,
   fontWeight: 'bold',
   align: 'center' as SystemProps['textAlign'],
-  marginTop: '40px',
+  marginTop: '50px',
   marginBottom: '10px'
 }
 
@@ -32,5 +32,5 @@ export const instructionPhraseStyle = {
 
 export const modeSelectionButtonsContainerStyle = {
   flexDirection: 'column' as ChakraProps['flexDirection'],
-  marginTop: '50px'
+  marginTop: '30px'
 }

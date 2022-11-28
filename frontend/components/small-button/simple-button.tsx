@@ -9,7 +9,7 @@ type SmallButtonProps = {
 
 const SimpleButton = ({ text, onClick }: SmallButtonProps) => {
   return (
-    <Button variant="solid" {...simpleButtonStyles} data-cy={`small-button-${text}`} onClick={onClick}>
+    <Button size="sm" variant="solid" {...simpleButtonStyles} data-cy={`small-button-${text}`} onClick={onClick}>
       {text}
     </Button>
   )
