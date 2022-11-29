@@ -1,15 +1,15 @@
-import { createEsbuildPlugin } from '@badeball/cypress-cucumber-preprocessor/esbuild'
-import createBundler from '@bahmutov/cypress-esbuild-preprocessor'
-import nodePolyfills from '@esbuild-plugins/node-modules-polyfill'
 import { addCucumberPreprocessorPlugin } from '@badeball/cypress-cucumber-preprocessor'
+import { preprocessor } from '@badeball/cypress-cucumber-preprocessor/browserify'
+import browserify from '@cypress/browserify-preprocessor'
 
 const configuration = async (on, config) => {
   await addCucumberPreprocessorPlugin(on, config)
 
   on(
     'file:preprocessor',
-    createBundler({
-      plugins: [nodePolyfills(), createEsbuildPlugin(config)]
+    preprocessor(config, {
+      ...browserify.defaultOptions,
+      typescript: require.resolve('typescript')
     })
   )
   return config

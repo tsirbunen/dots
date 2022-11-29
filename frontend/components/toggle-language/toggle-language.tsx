@@ -1,19 +1,21 @@
 import React, { useContext } from 'react'
 import { Box, Button, Center, IconButton, Popover, PopoverContent, PopoverTrigger, Portal } from '@chakra-ui/react'
 import { MdLanguage } from 'react-icons/md'
-import {
-  iconButtonStyle,
-  popoverContentStyle,
-  customButtonBoxStyle,
-  iconStyle,
-  buttonInvertedStyles,
-  buttonStyles
-} from './styles'
+
 import { Language, useTranslation } from '../../hooks/use-translation'
 import { AppStateContext, AppState } from '../../state/state-context'
 import { AppStateAction, AppStateActionEnum } from '../../state/reducer'
 
 import { Phrase } from '../../localization/translations'
+import {
+  buttonInvertedStyles,
+  buttonStyles,
+  customButtonBoxStyle,
+  iconButtonStyle,
+  iconStyle,
+  popoverContentStyle
+} from '../../common/common-styles'
+import { headerToggleLanguageContainerStyle } from './styles'
 
 export const DATA_CY_LANGUAGE_TOGGLE = 'language-toggle-icon-button'
 export const DATA_CY_LANGUAGE = 'language'
@@ -32,6 +34,7 @@ const ToggleLanguage = ({ isLaunchPage }: { isLaunchPage: boolean }) => {
   }
 
   const languages = Object.values(Language)
+  const containerStyle = isLaunchPage ? {} : headerToggleLanguageContainerStyle
 
   return (
     <div>
@@ -40,7 +43,7 @@ const ToggleLanguage = ({ isLaunchPage }: { isLaunchPage: boolean }) => {
           <IconButton
             {...iconButtonStyle}
             isRound
-            aria-label="Set app language"
+            aria-label={DATA_CY_LANGUAGE_TOGGLE}
             icon={<MdLanguage {...iconStyle} />}
             data-cy={DATA_CY_LANGUAGE_TOGGLE}
           />
@@ -48,7 +51,7 @@ const ToggleLanguage = ({ isLaunchPage }: { isLaunchPage: boolean }) => {
 
         <Portal>
           <PopoverContent {...popoverContentStyle}>
-            <Center flexDirection={isLaunchPage ? 'row' : 'column'}>
+            <Center flexDirection={isLaunchPage ? 'row' : 'column'} {...containerStyle}>
               {languages.map((language) => {
                 const styles = language === state.language ? buttonStyles : buttonInvertedStyles
                 return (

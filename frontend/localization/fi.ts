@@ -11,9 +11,13 @@ export const FI_TRANSLATIONS: Translations = {
   use_instruction_5: 'Osallistujat tulevat tälle sivulle.',
   use_instruction_6: 'Kaikki äänestävät.',
   use_instruction_7: 'Analysoidaan tulokset.',
-  mode_create_a_poll: 'luo uusi',
-  mode_vote_in_a_poll: 'äänestä',
-  mode_view_a_poll: 'tarkastele',
+  mode_create_poll: 'luo uusi',
+  mode_vote_in_poll: 'äänestä',
+  mode_view_poll: 'tarkastele',
   language_FI: 'suomi',
-  language_EN: 'englanti'
+  language_EN: 'englanti',
+  navigation_route_launch_page: 'koti',
+  navigation_route_create_poll: 'uusi',
+  navigation_route_vote_in_poll: 'äänestä',
+  navigation_route_view_poll: 'tarkastele'
 }

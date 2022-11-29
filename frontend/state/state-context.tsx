@@ -7,7 +7,7 @@ export type AppState = {
 }
 
 const initialAppState = {
-  language: Language.EN
+  language: 'EN' as Language //Language.EN
 }
 
 export const AppStateContext = createContext({})

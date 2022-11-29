@@ -26,7 +26,7 @@ const AppTitle = () => {
         >
           {translate('app_short_description')}
         </Text>
-        <BlinkingDotsLine />
+        <BlinkingDotsLine isSmall={false} />
       </Box>
     </Center>
   )

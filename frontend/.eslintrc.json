@@ -5,5 +5,10 @@
     "prefer-const": "error",
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "@typescript-eslint/no-explicit-any": "error"
+  },
+  "env": {
+    "node": true,
+    "browser": true,
+    "es6": true
   }
 }

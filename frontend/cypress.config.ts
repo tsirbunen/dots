@@ -16,8 +16,9 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       return configuration(on, config)
     },
-    specPattern: '**/e2e/**/*.feature',
+    specPattern: './***/**/*.feature',
     supportFile: './cypress/support/e2e.ts',
-    chromeWebSecurity: false
+    chromeWebSecurity: false,
+    baseUrl: 'http://localhost:3000'
   }
 })

@@ -11,9 +11,13 @@ export type Translations = {
   use_instruction_5: string
   use_instruction_6: string
   use_instruction_7: string
-  mode_create_a_poll: string
-  mode_vote_in_a_poll: string
-  mode_view_a_poll: string
+  mode_create_poll: string
+  mode_vote_in_poll: string
+  mode_view_poll: string
   language_FI: string
   language_EN: string
+  navigation_route_launch_page: string
+  navigation_route_create_poll: string
+  navigation_route_vote_in_poll: string
+  navigation_route_view_poll: string
 }

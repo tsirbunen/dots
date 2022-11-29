@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 const DOT_SIZE = 18
+const DOT_SIZE_SMALL = 12
 const DOT_COLORS = [
   '#c37d92',
   '#846267',
@@ -19,9 +20,10 @@ const DOT_COLORS = [
 
 type BlinkingDotProps = {
   dotIndex: number
+  isSmall: boolean
 }
 
-const BlinkingDot = ({ dotIndex }: BlinkingDotProps) => {
+const BlinkingDot = ({ dotIndex, isSmall }: BlinkingDotProps) => {
   const [dotColor, setDotColor] = useState<string>()
   useEffect(() => {
     const interval = setInterval(() => {
@@ -31,13 +33,14 @@ const BlinkingDot = ({ dotIndex }: BlinkingDotProps) => {
     }, 300 + dotIndex * 100)
     return () => clearInterval(interval)
   }, [dotIndex])
+  const dotSize = isSmall ? `${DOT_SIZE_SMALL}px` : `${DOT_SIZE}px`
 
   const blinkingDotStyle = {
     backgroundColor: dotColor,
-    width: `${DOT_SIZE}px`,
-    height: `${DOT_SIZE}px`,
+    width: dotSize,
+    height: dotSize,
     margin: '5px',
-    borderRadius: `${DOT_SIZE}px`
+    borderRadius: dotSize
   }
 
   return <div style={{ ...blinkingDotStyle }} data-cy={`blinking-dot-${dotIndex}`} />

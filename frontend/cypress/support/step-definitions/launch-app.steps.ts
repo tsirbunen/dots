@@ -1,11 +1,11 @@
 import { Given, Then } from '@badeball/cypress-cucumber-preprocessor'
-import { LaunchPage } from '../../e2e/components/launch-page'
+import { LaunchPage } from '../../components/launch-page'
 
 const launchPage = new LaunchPage()
 
 Given('one has navigated to the DOTS app url', () => {
   launchPage.visitDotsApp()
-  launchPage.verifyLaunchPageIsVisible()
+  launchPage.verifyPageIsVisible()
 })
 
 Then('the app title is visible', () => {
