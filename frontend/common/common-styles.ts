@@ -26,16 +26,17 @@ export const iconStyle = {
   fontSize: '1.5em'
 }
 
-export const buttonInvertedStyles = {
-  bg: ThemeColor.SHADE_2,
-  color: ThemeColor.CONTRAST,
-  _focus: { outline: 'none' },
-  _hover: { bg: ThemeColor.CONTRAST, color: ThemeColor.BACKGROUND }
-}
-
 export const buttonStyles = {
+  size: 'sm',
+  variant: 'solid',
   bg: ThemeColor.CONTRAST,
   color: ThemeColor.BACKGROUND,
   _focus: { outline: 'none' },
   _hover: { bg: ThemeColor.CONTRAST, color: ThemeColor.BACKGROUND }
+}
+
+export const buttonInvertedStyles = {
+  ...buttonStyles,
+  bg: ThemeColor.SHADE_2,
+  color: ThemeColor.CONTRAST
 }

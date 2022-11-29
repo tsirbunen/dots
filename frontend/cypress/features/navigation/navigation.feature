@@ -4,11 +4,11 @@ Feature: Navigation
 
     Scenario: One can navigate to other pages from the launch page
         Given one has navigated to the DOTS app url
-        When one clicks the "<target route>" button
+        When one clicks the "<use mode>" button
         Then one is taken to "<target page>"
 
         Examples:
-            | target route | target page       |
+            | use mode     | target page       |
             | create poll  | create-poll-page  |
             | vote in poll | vote-in-poll-page |
             | view poll    | view-poll-page    |

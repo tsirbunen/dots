@@ -10,6 +10,7 @@ import {
   customButtonBoxStyle,
   iconButtonStyle
 } from '../../common/common-styles'
+import { hamburgerMenuContainer } from './styles'
 
 export const DATA_CY_ROUTE_BUTTON = 'route-button'
 export const DATA_CY_MENU_BUTTON = 'menu-button'
@@ -66,14 +67,12 @@ const HamburgerMenu = () => {
       </PopoverTrigger>
       <Portal>
         <PopoverContent {...popoverContentStyle}>
-          <Center flexDirection="column" alignItems="flex-start" marginLeft="15px">
+          <Center {...hamburgerMenuContainer}>
             {navigationTargets.map((target) => {
-              const isSelected = target.route === currentPathname
-              const styles = isSelected ? buttonStyles : buttonInvertedStyles
+              const styles = `/${target.route}` === currentPathname ? buttonStyles : buttonInvertedStyles
               return (
                 <Flex key={target.label} {...customButtonBoxStyle}>
                   <Button
-                    variant="solid"
                     onClick={() => navigateToRoute(target.route)}
                     {...styles}
                     data-cy={`${DATA_CY_ROUTE_BUTTON}-${target.route}`}

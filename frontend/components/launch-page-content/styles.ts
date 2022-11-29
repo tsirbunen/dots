@@ -14,6 +14,12 @@ export const appTitleStyle = {
   color: ThemeColor.SHADE_1
 }
 
+export const appShortDescriptionStyle = {
+  fontSize: '1em',
+  fontWeight: 'normal',
+  align: 'center' as SystemProps['textAlign']
+}
+
 export const howDoesItWorkStyle = {
   fontSize: '1em',
   color: ThemeColor.SHADE_1,

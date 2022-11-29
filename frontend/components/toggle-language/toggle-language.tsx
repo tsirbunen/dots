@@ -57,9 +57,7 @@ const ToggleLanguage = ({ isLaunchPage }: { isLaunchPage: boolean }) => {
                 return (
                   <Box key={language} {...customButtonBoxStyle}>
                     <Button
-                      variant="solid"
                       {...styles}
-                      size="sm"
                       data-cy={`${DATA_CY_LANGUAGE}-${language}`}
                       onClick={() => changeAppLanguage(language)}
                     >

@@ -1,6 +1,8 @@
 import { ThemeColor } from '../../theme/theme'
 
-export const simpleButtonStyles = {
+export const smallButtonStyles = {
+  size: 'sm',
+  variant: 'solid',
   marginBottom: '20px',
   marginLeft: '10px',
   marginRight: '10px',

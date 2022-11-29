@@ -5,8 +5,8 @@ import { App } from '../../components/app'
 const launchPage = new LaunchPage()
 const app = new App()
 
-When('one clicks the {string} button', (targetRoute: string) => {
-  launchPage.clickRouteButton(targetRoute)
+When('one clicks the {string} button', (useMode: string) => {
+  launchPage.clickUseModeButton(useMode)
 })
 
 Then('one is taken to {string}', (targetPage: string) => {

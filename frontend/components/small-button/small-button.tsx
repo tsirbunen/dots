@@ -1,8 +1,8 @@
 import React from 'react'
 import { Button } from '@chakra-ui/react'
-import { simpleButtonStyles } from './styles'
+import { smallButtonStyles } from './styles'
 
-export const DATA_CY_SIMPLE_BUTTON = 'simple-button'
+export const DATA_CY_SMALL_BUTTON = 'simple-button'
 type SmallButtonProps = {
   text: string
   onClick: () => void
@@ -11,13 +11,7 @@ type SmallButtonProps = {
 
 const SimpleButton = ({ text, onClick, dataCyPostfix }: SmallButtonProps) => {
   return (
-    <Button
-      size="sm"
-      variant="solid"
-      {...simpleButtonStyles}
-      data-cy={`${DATA_CY_SIMPLE_BUTTON}-${dataCyPostfix}`}
-      onClick={onClick}
-    >
+    <Button {...smallButtonStyles} data-cy={`${DATA_CY_SMALL_BUTTON}-${dataCyPostfix}`} onClick={onClick}>
       {text}
     </Button>
   )

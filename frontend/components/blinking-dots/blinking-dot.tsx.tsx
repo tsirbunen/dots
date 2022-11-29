@@ -25,6 +25,7 @@ type BlinkingDotProps = {
 
 const BlinkingDot = ({ dotIndex, isSmall }: BlinkingDotProps) => {
   const [dotColor, setDotColor] = useState<string>()
+
   useEffect(() => {
     const interval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * DOT_COLORS.length)
@@ -33,6 +34,7 @@ const BlinkingDot = ({ dotIndex, isSmall }: BlinkingDotProps) => {
     }, 300 + dotIndex * 100)
     return () => clearInterval(interval)
   }, [dotIndex])
+
   const dotSize = isSmall ? `${DOT_SIZE_SMALL}px` : `${DOT_SIZE}px`
 
   const blinkingDotStyle = {

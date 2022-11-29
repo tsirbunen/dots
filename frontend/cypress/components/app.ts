@@ -1,23 +1,27 @@
 import { Base } from './base'
-import { CreatePollPage } from './create-poll-page'
-import { ViewPollPage } from './view-poll-page'
-import { VoteInPollPage } from './vote-in-poll-page'
 import { DATA_CY_MENU_BUTTON, DATA_CY_ROUTE_BUTTON } from '../../components/layout-with-header/hamburger-menu'
-import { LaunchPage } from './launch-page'
+import { DATA_CY_LAUNCH_PAGE } from '../../components/launch-page-content/launch-page-content'
+import { DATA_CY_CREATE_POLL_PAGE } from '../../pages/create-poll'
+import { DATA_CY_VIEW_POLL_PAGE } from '../../pages/view-poll'
+import { DATA_CY_VOTE_IN_POLL_PAGE } from '../../pages/vote-in-poll'
 
 const CLIENT = 'localhost'
 const CLIENT_BASE_URL = `http://${CLIENT}:3000`
 const MENU_NAVIGATION_TARGETS_COUNT = 4
 
 export class App extends Base {
+  navigateToDotsApp() {
+    cy.visit(CLIENT_BASE_URL)
+  }
+
   verifyPageIsVisible(targetPage: string) {
-    let page: CreatePollPage | VoteInPollPage | ViewPollPage
-    if (targetPage.includes('create')) page = new CreatePollPage()
-    else if (targetPage.includes('vote')) page = new VoteInPollPage()
-    else if (targetPage.includes('view')) page = new ViewPollPage()
-    else if (targetPage.includes('launch')) page = new LaunchPage()
+    let pageName: string
+    if (targetPage.includes('create')) pageName = DATA_CY_CREATE_POLL_PAGE
+    else if (targetPage.includes('vote')) pageName = DATA_CY_VOTE_IN_POLL_PAGE
+    else if (targetPage.includes('view')) pageName = DATA_CY_VIEW_POLL_PAGE
+    else if (targetPage.includes('launch')) pageName = DATA_CY_LAUNCH_PAGE
     else throw new Error(`Cannot navigate to page ${targetPage}!`)
-    page.verifyPageIsVisible()
+    this.verifyDataCyIsVisible(pageName)
   }
 
   navigateToPage(route: string) {
@@ -29,11 +33,10 @@ export class App extends Base {
   }
 
   verifyHamburgerMenuIsOpen() {
-    this._verifyDataCyBeginsWithInstancesAreVisible(DATA_CY_ROUTE_BUTTON, MENU_NAVIGATION_TARGETS_COUNT)
+    this.verifyDataCyBeginsWithInstancesAreVisible(DATA_CY_ROUTE_BUTTON, MENU_NAVIGATION_TARGETS_COUNT)
   }
 
   clickMenuNavigationButton(targetRoute: string) {
-    const dataCy = `${DATA_CY_ROUTE_BUTTON}-${targetRoute}`
-    cy.getByDataCy(dataCy).click()
+    cy.getByDataCy(`${DATA_CY_ROUTE_BUTTON}-${targetRoute}`).click()
   }
 }

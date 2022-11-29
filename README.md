@@ -1,11 +1,11 @@
 # DOTS - simple dot voting
 
 **_Just create a poll, ask your friends to vote, and view the results._**
-**_No need to create an account or to come up with a password._**
+**_No need to create an account nor to come up with a password._**
 
 <br/>
 
-## OVERVIEW OF THE DOTS
+## OVERVIEW OF THE DOTS APP
 
 DOTS system features a mobile ui and a web ui both supported by a server connected to a database.
 
@@ -16,6 +16,13 @@ DOTS system features a mobile ui and a web ui both supported by a server connect
 - DOTS frontend is a [Next.js](https://nextjs.org) - [React](https://reactjs.org) - [Typescript](https://www.typescriptlang.org) app.
 - For testing, [Cypress](https://docs.cypress.io/guides/overview/why-cypress) E2E testing was selected. To make the Cypress-experience more "cucumber-like" and to be able to include feature-files a [cucumber preprocessor](https://www.npmjs.com/package/@badeball/cypress-cucumber-preprocessor) was plugged in.
 - Note that the web ui was designed mainly with only mobile users in mind.
+- The main functionalities of the web ui are the following:
+
+  1. A launch page shortly explaining how to use the app and containing buttons to enable navigation to main use modes (create poll, vote in poll and view poll).
+  2. Language toggle button to enable switching between English and Finnish (visible on all pages).
+  3. App header containing a hamburger menu to enable navigating within the app.
+
+- To get an understanding of how the web ui works, perhaps a good way is to start is to examine the [feature-files](/frontend/cypress/features/launch-app/launch-app.feature) and to run Cypress testing in the visual "open" mode (see instructions below).
 
 ### server
 
@@ -23,7 +30,7 @@ DOTS system features a mobile ui and a web ui both supported by a server connect
 - In the DOTS there are only a couple of main entities. Each of the entities has a dedicated GraphQL module and an ORM model.
 - PostgreSQL is used as the permanent data storage, and [Objection](https://vincit.github.io/objection.js/) and [Knex](https://knexjs.org/guide/) are used to manage the database.
 - For testing, [Mocha](https://mochajs.org) and [Chai](https://www.chaijs.com) were selected.
-- In the center of the DOTS "data model" is a **POLL**. A poll has an **OWNER** and multiple voting options or **ANSWERS**. Each answer can have multiple **VOTES**.
+- In the center of the DOTS "data model" is a **poll**. A poll has an **owner** and multiple voting options or **answers**. Each answer can have multiple **votes**.
 - The main functionalities of the server are the following:
   1. creating a new poll
   2. giving a vote to a poll's answer option
@@ -59,12 +66,10 @@ Before starting the server, make sure you have a database running.
 In a shell, in directory /server start a server with the command:
 `npm run dev`
 
-##### debugging server
-
-When using VSC, debugging mode can be starting by launching **server** from the "RUN AND DEBUG" options. Launching server debugging causes server to be built and the resulting js-files to be debugged. If changes to ts-files are made, the debugger needs to be restarted.
+When using VSC, **debugging** mode can be starting by launching **server** from the "RUN AND DEBUG" options. Launching server debugging causes server to be built and the resulting js-files to be debugged. If changes to ts-files are made, the debugger needs to be restarted.
 ![Launch server image](/assets/image_launch_server.png)
 
-#### running frontend
+#### running web ui
 
 Before starting the frontend, make sure you have both a database and a server running.
 In a shell, in directory /frontend start the frontend with the command:
@@ -90,7 +95,7 @@ To run tests of a single file run
 For example
 `npm run test-single-file tests/tests/04_edit_poll.test.ts`
 
-#### testing frontend
+#### testing web ui
 
 Before starting testing the frontend, make sure you have both a database and a server running.
 In one shell, in directory /frontend first start a frontend with the command:
