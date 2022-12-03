@@ -3,11 +3,13 @@
 **_Just create a poll, ask your friends to vote, and view the results._**
 **_No need to create an account nor to come up with a password._**
 
-<br/>
-
 ## OVERVIEW OF THE DOTS APP
 
-DOTS system features a mobile ui and a web ui both supported by a server connected to a database.
+DOTS project features a mobile ui and a web ui supported by a common server connected to a database.
+
+You will not find many comments within the code. Instead, you will find that, first, all constants, classes, methods, etc. have been carefully named with descriptive "phrases". Second, components and functions have been refactored to quite a small size so that it is clear what they do. Together these measures should make reading of the code resemble following a smoothly flowing story.
+
+Presumably in several cases the chosen design is an overkill / unnecessarily complicated (like whether to build a REST or GraphQL API). However, the main purpose of this project was to practice new concepts, so that may be forgiven :)
 
 ### mobile ui
 
@@ -22,7 +24,7 @@ DOTS system features a mobile ui and a web ui both supported by a server connect
   2. Language toggle button to enable switching between English and Finnish (visible on all pages).
   3. App header containing a hamburger menu to enable navigating within the app.
 
-- To get an understanding of how the web ui works, perhaps a good way is to start is to examine the [feature-files](/frontend/cypress/features/launch-app/launch-app.feature) and to run Cypress testing in the visual "open" mode (see instructions below).
+- To get an understanding of how the web ui works, perhaps a good way is to start is to examine the [feature-files](/frontend/cypress/features/launch-app/launch-app.feature) and to run Cypress testing in the visual "open" mode (see instructions below). Or, start with the [\_app.tsx-file](/frontend/pages/_app.tsx) and continue top-down.
 
 ### server
 

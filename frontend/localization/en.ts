@@ -1,3 +1,4 @@
+import { VOTING_OPTIONS_MIN } from '../utils/constant-values'
 import { Translations } from './translations'
 
 export const EN_TRANSLATIONS: Translations = {
@@ -19,5 +20,28 @@ export const EN_TRANSLATIONS: Translations = {
   navigation_route_launch_page: 'home',
   navigation_route_create_poll: 'create',
   navigation_route_vote_in_poll: 'vote',
-  navigation_route_view_poll: 'view'
+  navigation_route_view_poll: 'view',
+  route_text_create_poll: 'create a poll',
+  route_text_vote_in_poll: 'vote in a poll',
+  route_text_view_poll: 'view a poll',
+  too_short: 'too short',
+  too_long: 'too long',
+  required: 'required',
+  too_many_options: 'Too many options...',
+  too_little_options: 'Add at least one more...',
+  options_must_be_unique: 'Voting options must be unique!',
+  set_min_voting_options: `SET MIN ${VOTING_OPTIONS_MIN} VOTING OPTIONS`,
+  add_voting_option_modal_title: 'Add voting option',
+  placeholder_type_option_here: 'Type the voting option here...',
+  set_voting_question: 'SET VOTING QUESTION',
+  add_voting_question_modal_title: 'Set voting question',
+  placeholder_type_question_here: 'Type the question here...',
+  max_votes_per_person_title: 'Max total votes / person',
+  mox_votes_per_option_title: 'Max votes / option / person',
+  voting_is_anonymous: 'Voting is anonymous',
+  show_status_when_voting: 'Poll status is shown when voting',
+  general_add: 'Add',
+  general_reset: 'Reset',
+  general_submit: 'Submit',
+  at_time_of_day: 'at'
 }

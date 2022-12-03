@@ -1,7 +1,7 @@
 import { Text, Box, Center } from '@chakra-ui/react'
 import { useTranslation } from '../../hooks/use-translation'
 import { ThemeColor } from '../../theme/theme'
-import BlinkingDotsLine from '../blinking-dots/blinking-dots-line'
+import BlinkingDotsLine from '../widgets/blinking-dots/blinking-dots-line'
 import { appShortDescriptionStyle, appTitleContainerStyle, appTitleStyle } from './styles'
 
 export const DATA_CY_APP_TITLE = 'app-title'

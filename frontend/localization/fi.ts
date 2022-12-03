@@ -1,3 +1,4 @@
+import { VOTING_OPTIONS_MIN } from '../utils/constant-values'
 import { Translations } from './translations'
 
 export const FI_TRANSLATIONS: Translations = {
@@ -19,5 +20,28 @@ export const FI_TRANSLATIONS: Translations = {
   navigation_route_launch_page: 'koti',
   navigation_route_create_poll: 'uusi',
   navigation_route_vote_in_poll: 'äänestä',
-  navigation_route_view_poll: 'tarkastele'
+  navigation_route_view_poll: 'tarkastele',
+  route_text_create_poll: 'luo äänestys',
+  route_text_vote_in_poll: 'äänestä',
+  route_text_view_poll: 'tarkastele',
+  too_short: 'liian lyhyt',
+  too_long: 'liian pitkä',
+  required: 'pakollinen',
+  too_many_options: 'Liian monta vaihtoehtoa',
+  too_little_options: 'Lisää ainakin yksi...',
+  options_must_be_unique: 'Vaihtoehtojen oltava uniikkeja!',
+  set_min_voting_options: `ASETA MIN ${VOTING_OPTIONS_MIN} VAIHTOEHTOA`,
+  add_voting_option_modal_title: 'Lisää vaihtoehto',
+  placeholder_type_option_here: 'Kirjoita vaihtoehto tähän...',
+  set_voting_question: 'MISTÄ ÄÄNESTETÄÄN?',
+  add_voting_question_modal_title: 'Mistä äänestetään?',
+  placeholder_type_question_here: 'Kirjoita aihe tähän...',
+  max_votes_per_person_title: 'Max ääniä / hlö',
+  mox_votes_per_option_title: 'Max ääniä / vaihtoehto / hlö',
+  voting_is_anonymous: 'Anonyymi äänestys',
+  show_status_when_voting: 'Näytä tilanne äänestettäessä',
+  general_add: 'Lisää',
+  general_reset: 'Tyhjennä',
+  general_submit: 'Lähetä',
+  at_time_of_day: 'klo'
 }

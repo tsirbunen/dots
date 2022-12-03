@@ -1,4 +1,5 @@
 import { extendTheme } from '@chakra-ui/react'
+import { checkboxTheme } from './checkbox-theme'
 
 export enum ThemeColorCodes {
   BACKGROUND = '#01161e',
@@ -35,6 +36,9 @@ export const theme = extendTheme({
   },
   config: {
     useSystemColorMode: false
+  },
+  components: {
+    Checkbox: checkboxTheme
   }
 })
 

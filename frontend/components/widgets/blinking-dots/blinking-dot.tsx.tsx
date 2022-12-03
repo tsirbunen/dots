@@ -1,22 +1,8 @@
 import { useEffect, useState } from 'react'
+import { DOT_COLORS } from '../../../utils/constant-values'
+import { getBlinkingDotStyle } from './styles'
 
-const DOT_SIZE = 18
-const DOT_SIZE_SMALL = 12
-const DOT_COLORS = [
-  '#c37d92',
-  '#846267',
-  '#ee4266',
-  '#ffd23f',
-  '#3bceac',
-  '#0ead69',
-  '#a4243b',
-  '#0a9396',
-  '#d8c99b',
-  '#d8973c',
-  '#bd632f',
-  '#273e47',
-  '#ff595e'
-]
+export const DATA_CY_BLINKING_DOT = 'blinking_dot'
 
 type BlinkingDotProps = {
   dotIndex: number
@@ -35,17 +21,8 @@ const BlinkingDot = ({ dotIndex, isSmall }: BlinkingDotProps) => {
     return () => clearInterval(interval)
   }, [dotIndex])
 
-  const dotSize = isSmall ? `${DOT_SIZE_SMALL}px` : `${DOT_SIZE}px`
-
-  const blinkingDotStyle = {
-    backgroundColor: dotColor,
-    width: dotSize,
-    height: dotSize,
-    margin: '5px',
-    borderRadius: dotSize
-  }
-
-  return <div style={{ ...blinkingDotStyle }} data-cy={`blinking-dot-${dotIndex}`} />
+  const blinkingDotStyle = getBlinkingDotStyle(isSmall, dotColor)
+  return <div style={{ ...blinkingDotStyle }} data-cy={`${DATA_CY_BLINKING_DOT}-${dotIndex}`} />
 }
 
 export default BlinkingDot

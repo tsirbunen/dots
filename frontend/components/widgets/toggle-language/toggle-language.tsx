@@ -2,11 +2,11 @@ import React, { useContext } from 'react'
 import { Box, Button, Center, IconButton, Popover, PopoverContent, PopoverTrigger, Portal } from '@chakra-ui/react'
 import { MdLanguage } from 'react-icons/md'
 
-import { Language, useTranslation } from '../../hooks/use-translation'
-import { AppStateContext, AppState } from '../../state/state-context'
-import { AppStateAction, AppStateActionEnum } from '../../state/reducer'
+import { Language, useTranslation } from '../../../hooks/use-translation'
+import { AppStateContext, AppState } from '../../../state/state-context'
+import { AppStateAction, AppStateActionEnum } from '../../../state/reducer'
 
-import { Phrase } from '../../localization/translations'
+import { Phrase } from '../../../localization/translations'
 import {
   buttonInvertedStyles,
   buttonStyles,
@@ -14,7 +14,7 @@ import {
   iconButtonStyle,
   iconStyle,
   popoverContentStyle
-} from '../../common/common-styles'
+} from '../../../common/common-styles'
 import { headerToggleLanguageContainerStyle } from './styles'
 
 export const DATA_CY_LANGUAGE_TOGGLE = 'language-toggle-icon-button'

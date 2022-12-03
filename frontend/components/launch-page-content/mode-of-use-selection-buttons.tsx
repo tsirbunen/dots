@@ -3,7 +3,8 @@ import { useRouter } from 'next/router'
 import { useTranslation } from '../../hooks/use-translation'
 import { FI_TRANSLATIONS } from '../../localization/fi'
 import { Phrase } from '../../localization/translations'
-import SimpleButton from '../small-button/small-button'
+import SmallButton from '../widgets/small-button/small-button'
+
 import { modeSelectionButtonsContainerStyle } from './styles'
 
 export const DATA_CY_USE_MODE = 'use-mode'
@@ -34,7 +35,7 @@ const ModeOfUseSelectionButtons = () => {
         return (
           <Center key={phrase} data-cy={`${DATA_CY_USE_MODE}-${index}`}>
             <Box>
-              <SimpleButton
+              <SmallButton
                 text={translate(phrase).toUpperCase()}
                 onClick={() => navigateToRoute(phrase)}
                 dataCyPostfix={phrase}

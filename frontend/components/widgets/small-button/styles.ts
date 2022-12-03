@@ -1,4 +1,4 @@
-import { ThemeColor } from '../../theme/theme'
+import { ThemeColor } from '../../../theme/theme'
 
 export const smallButtonStyles = {
   size: 'sm',

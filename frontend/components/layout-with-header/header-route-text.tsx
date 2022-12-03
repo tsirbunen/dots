@@ -1,17 +1,17 @@
 import React from 'react'
 import { Center, Text } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import BlinkingDotsLine from '../widgets/blinking-dots/blinking-dots-line'
-import { appTitleStyle, headerTitleContainer, routeTextStyle } from './styles'
+import { headerTitleContainer, routeTextStyle } from './styles'
 import { useTranslation } from '../../hooks/use-translation'
 import { Phrase } from '../../localization/translations'
 
 export const MOBILE_WIDTH_LOWER_LIMIT = 375
 
-const HeaderTitle = () => {
+const HeaderRouteText = () => {
   const { translate } = useTranslation()
   const router = useRouter()
   const pathName = router.pathname
+
   const getRouteText = (path: string) => {
     let phrase: Phrase | undefined
     if (path.includes('create')) phrase = 'route_text_create_poll'
@@ -23,11 +23,9 @@ const HeaderTitle = () => {
 
   return (
     <Center {...headerTitleContainer}>
-      {/* <Text {...appTitleStyle}>{translate('app_title')}</Text> */}
-      <BlinkingDotsLine isSmall={true} />
       <Text {...routeTextStyle}>{getRouteText(pathName)}</Text>
     </Center>
   )
 }
 
-export default HeaderTitle
+export default HeaderRouteText

@@ -7,6 +7,10 @@ export class Base {
     cy.getByDataCy(dataCy).should('not.be.visible')
   }
 
+  verifyDataCyDoesNotExist(dataCy: string) {
+    cy.getByDataCy(dataCy).should('not.exist')
+  }
+
   verifyDataCyBeginsWithInstancesAreVisible(beginsWith: string, count?: number) {
     cy.getByDataCyBeginsWith(beginsWith, count).should('be.visible')
   }

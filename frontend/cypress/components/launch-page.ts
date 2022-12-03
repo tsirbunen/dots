@@ -1,5 +1,5 @@
-import { DATA_CY_SMALL_BUTTON } from '../../components/small-button/small-button'
-import { DATA_CY_LANGUAGE, DATA_CY_LANGUAGE_TOGGLE } from '../../components/toggle-language/toggle-language'
+import { DATA_CY_SMALL_BUTTON } from '../../components/widgets/small-button/small-button'
+import { DATA_CY_LANGUAGE, DATA_CY_LANGUAGE_TOGGLE } from '../../components/widgets/toggle-language/toggle-language'
 import { Language, TRANSLATIONS } from '../../hooks/use-translation'
 import { FI_TRANSLATIONS } from '../../localization/fi'
 import { Base } from './base'

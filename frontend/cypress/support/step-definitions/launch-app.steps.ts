@@ -7,7 +7,7 @@ import {
 } from '../../../components/launch-page-content/instructions-for-use'
 import { DATA_CY_LAUNCH_PAGE } from '../../../components/launch-page-content/launch-page-content'
 import { DATA_CY_USE_MODE } from '../../../components/launch-page-content/mode-of-use-selection-buttons'
-import { DATA_CY_LANGUAGE_TOGGLE } from '../../../components/toggle-language/toggle-language'
+import { DATA_CY_LANGUAGE_TOGGLE } from '../../../components/widgets/toggle-language/toggle-language'
 import { FI_TRANSLATIONS } from '../../../localization/fi'
 import { App } from '../../components/app'
 import { LaunchPage } from '../../components/launch-page'

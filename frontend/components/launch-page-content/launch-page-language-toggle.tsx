@@ -1,4 +1,4 @@
-import ToggleLanguage from '../toggle-language/toggle-language'
+import ToggleLanguage from '../widgets/toggle-language/toggle-language'
 import { Center } from '@chakra-ui/react'
 
 const LaunchPageLanguageToggle = () => {
