@@ -1,0 +1,32 @@
+fragment PollData on Poll {
+  id
+  owner {
+    id
+    name
+  }
+  code
+  question
+  options {
+    id
+    content
+    dataClass
+    votes {
+      id
+      optionId
+      voterId
+      name
+    }
+  }
+  isAnonymous
+  totalVotesCountMax
+  optionVotesCountMax
+  showStatusWhenVoting
+  state
+  token
+}
+
+query FindPollsByCode($codes: [String!]!) {
+  findPollsByCode(codes: $codes) {
+    ...PollData
+  }
+}

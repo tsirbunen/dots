@@ -18,6 +18,7 @@ export class PollProvider {
   async createPoll(input: CreatePollInputType): Promise<PollType> {
     const databaseInput: CreatePollDatabaseInputType = {
       ...input,
+      ownerName: input.ownerName ? input.ownerName : null,
       id: uuidv4(),
       code: createRandomCode(RANDOM_CODE_LENGTH),
       state: PollState.EDIT
@@ -29,23 +30,31 @@ export class PollProvider {
     return await Poll.findPollByIdOrCode(input)
   }
 
-  async findAllPollsForOneOwner(ownerId: string): Promise<PollType[]> {
-    return await Poll.findAllPollsForOneOwner(ownerId)
+  async findPollsByCode(codes: string[]): Promise<PollType[]> {
+    return await Poll.findPollsByCode(codes)
   }
 
-  async editPoll(input: EditPollInputType): Promise<PollType> {
-    return await Poll.editPoll(input)
+  async findAllPollsOwnedByOwner(ownerId: string): Promise<PollType[]> {
+    return await Poll.findAllPollsOwnedByOwner(ownerId)
   }
 
-  async openPoll(pollId: string): Promise<boolean> {
-    return await Poll.openPoll(pollId)
+  async getPollCountInDatabase(): Promise<number> {
+    return await Poll.getPollCountInDatabase()
   }
 
-  async closePoll(pollId: string): Promise<boolean> {
-    return await Poll.closePoll(pollId)
+  async editPoll(input: EditPollInputType, personId?: string): Promise<PollType> {
+    return await Poll.editPoll(input, personId)
   }
 
-  async deletePoll(pollId: string): Promise<boolean> {
-    return await Poll.deletePoll(pollId)
+  async openPoll(pollId: string, personId?: string): Promise<PollType> {
+    return await Poll.openPoll(pollId, personId)
+  }
+
+  async closePoll(pollId: string, personId?: string): Promise<PollType> {
+    return await Poll.closePoll(pollId, personId)
+  }
+
+  async deletePoll(pollId: string, personId?: string): Promise<PollType> {
+    return await Poll.deletePoll(pollId, personId)
   }
 }

@@ -25,7 +25,6 @@ export const startServer = async (): Promise<void> => {
   })
 
   server.get('/health', async (_request, reply) => {
-    // TODO: Add some checks here (for example verify connection to database)!
     await reply.send('ok')
   })
 
@@ -76,7 +75,8 @@ export const startServer = async (): Promise<void> => {
     }
   })
 
-  // TODO: Change to use "options" as an argument for the listen-method below once it starts working
+  // TODO: Change to use "options" as an argument for the listen-method below once
+  // the library has been fixed and it starts working
   try {
     const PORT = 3001
     const HOST = '0.0.0.0'

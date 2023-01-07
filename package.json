@@ -4,8 +4,17 @@
   "description": "DOTS all components",
   "main": "index.js",
   "scripts": {
+    "generate:types": "graphql-codegen --config graphql-codegen.yml",
     "build-server": "cd server && npm run build"
   },
   "author": "Satu Hyvärinen",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@graphql-codegen/cli": "^2.16.2",
+    "@graphql-codegen/near-operation-file-preset": "^2.4.4",
+    "@graphql-codegen/typescript": "^2.8.6",
+    "@graphql-codegen/typescript-operations": "^2.5.11",
+    "@graphql-codegen/typescript-react-apollo": "^3.3.7",
+    "@graphql-codegen/typescript-resolvers": "^2.7.11"
+  }
 }

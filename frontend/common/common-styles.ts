@@ -14,7 +14,7 @@ export const iconButtonStyle = {
 
 export const popoverContentStyle = {
   width: '150px',
-  backgroundColor: ThemeColor.BACKGROUND,
+  backgroundColor: 'transparent',
   borderColor: 'transparent',
   paddingBottom: '5px'
 }

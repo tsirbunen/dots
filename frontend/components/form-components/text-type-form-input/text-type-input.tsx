@@ -1,32 +1,34 @@
 import { EditIcon } from '@chakra-ui/icons'
 import { Box, Flex, IconButton, Text, useDisclosure } from '@chakra-ui/react'
-import { Control, Controller, ControllerRenderProps, FieldValues } from 'react-hook-form'
+import { Control, Controller, ControllerRenderProps } from 'react-hook-form'
 import { useTranslation } from '../../../hooks/use-translation'
-import { ThemeColorCodes } from '../../../theme/theme'
-import { TextDateTimeItemsInputConstantsPackage } from '../../../utils/constant-values'
 import InputModal from '../../widgets/input-modal/input-modal'
-import { TextDateTimeDataHolder } from '../../forms/data-models/text-date-time-data-holder'
+import { TextDateTimeDataHolder } from '../create-poll-form/text-date-time-data-holder'
 import { iconButtonStyle, iconStyle, textContainerStyle, titleBaseStyle, textInputContainerStyle } from './styles'
+import { CreatePollFormData } from '../create-poll-form/create-or-edit-poll-form-core'
+import { TextDateTimeItemsInputConstantsPackage } from '../../../types/types'
+import BlinkingText from '../../widgets/blinking-text/blinking-text'
 
 export const DATA_CY_FORM_TEXT_INPUT = 'form_text_input'
 export const DATA_CY_FORM_TEXT_INPUT_BUTTON = 'form_text_input_button'
-export type TextInputFieldType = 'question'
+export type TextInputFieldType = 'question' | 'ownerName'
 
 type TextTypeFormInputProps = {
-  control: Control<FieldValues, unknown> | undefined
-  textConstantsPackage: TextDateTimeItemsInputConstantsPackage
+  control: Control<CreatePollFormData, unknown> | undefined
+  textPackage: TextDateTimeItemsInputConstantsPackage
   fieldType: TextInputFieldType
+  disabled?: boolean
 }
 
-const TextTypeFormInput = ({ control, textConstantsPackage, fieldType }: TextTypeFormInputProps) => {
+const TextTypeFormInput = ({ control, textPackage, fieldType, disabled }: TextTypeFormInputProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { translate } = useTranslation()
 
   const onTextSave = (
-    field: ControllerRenderProps<FieldValues, TextInputFieldType>,
+    field: ControllerRenderProps<CreatePollFormData, TextInputFieldType>,
     newValue: string | TextDateTimeDataHolder
   ) => {
-    if (typeof newValue !== 'string') throw new Error(textConstantsPackage.wrong_data_type_error)
+    if (typeof newValue !== 'string') throw new Error(textPackage.wrong_data_type_error)
     field.onChange(newValue)
     onClose()
   }
@@ -37,8 +39,7 @@ const TextTypeFormInput = ({ control, textConstantsPackage, fieldType }: TextTyp
       control={control}
       render={({ field }) => {
         const fieldValue = field.value as string
-        const textStyle = fieldValue ? titleBaseStyle : { ...titleBaseStyle, color: ThemeColorCodes.ERROR }
-
+        const textStyle = fieldValue ? titleBaseStyle : { ...titleBaseStyle }
         return (
           <Box {...textInputContainerStyle}>
             <InputModal
@@ -47,18 +48,24 @@ const TextTypeFormInput = ({ control, textConstantsPackage, fieldType }: TextTyp
               onlyTextInput={true}
               saveData={(newValue: string | TextDateTimeDataHolder) => onTextSave(field, newValue)}
               originalText={fieldValue}
-              textConstantsPackage={textConstantsPackage}
+              textPackage={textPackage}
             />
             <Flex {...textContainerStyle}>
-              <Text {...textStyle} data-cy={`${DATA_CY_FORM_TEXT_INPUT}-${fieldType}`}>
-                {fieldValue ? fieldValue : translate(textConstantsPackage.requiredInfoTextKey)}
-              </Text>
+              {fieldValue ? (
+                <Text {...textStyle} data-cy={`${DATA_CY_FORM_TEXT_INPUT}-${fieldType}`}>
+                  {fieldValue ? fieldValue : translate(textPackage.requiredInfoTextKey)}
+                </Text>
+              ) : (
+                <BlinkingText text={translate(textPackage.requiredInfoTextKey)} />
+              )}
+
               <IconButton
                 aria-label={`${DATA_CY_FORM_TEXT_INPUT_BUTTON}-${fieldType}`}
                 {...iconButtonStyle}
                 icon={<EditIcon {...iconStyle} />}
                 onClick={onOpen}
                 data-cy={`${DATA_CY_FORM_TEXT_INPUT_BUTTON}-${fieldType}`}
+                disabled={disabled}
               />
             </Flex>
           </Box>

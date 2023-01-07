@@ -2,16 +2,12 @@ import 'reflect-metadata'
 import 'mocha'
 import dns from 'dns'
 import { expect, assert } from 'chai'
-import { POLL_INPUT_DATA, POLL_INPUT_INVALID_DATA } from '../data/polls-data'
-import {
-  assertPollFieldsArePracticallyEqualWhenPresent,
-  assertObjectIsAPoll,
-  assertReturnedCreatedPollContainsAToken
-} from '../utils/assertions'
+import { POLL_INPUT_VALID, POLL_INPUT_INVALID } from '../data/polls-data'
+import { assertPollsArePracticallyEqual, assertObjectIsAPoll, assertPollContainsAToken } from '../utils/assertions'
 import { v4 as uuidv4 } from 'uuid'
 
 import { createPollInDatabase } from '../utils/operations'
-import { clearDatabase, closeDatabaseConnection, getDatabaseConnection } from '../utils/handle-database'
+import { clearDatabase, closeDatabaseConnection, getDatabaseConnection } from '../utils/handle-database-connections'
 import {
   OPTION_COUNT_MAX,
   OPTION_COUNT_MIN,
@@ -20,12 +16,12 @@ import {
   TOTAL_VOTES_COUNT_MAX,
   TOTAL_VOTES_COUNT_MIN
 } from '../../utils/constant-values'
-import { getPollAnswerOptionsMustBeUniqueErrorMessage } from '../../utils/error-messages'
+import { getOptionsMustBeUniqueErrorMessage } from '../../utils/error-messages'
 import { PollValidationFieldEnum } from '../../types/types'
 import {
   getErrorMessageFromResponse,
-  getAnswerOptionsWithInvalidCountsForCreatePoll,
-  handleCheckingPollFieldValueNotInRangeExpectedErrorMessage
+  getOptionsWithInvalidCounts,
+  verifyValueNotInExpectedRangeErrorMessage
 } from '../utils/helpers'
 
 dns.setDefaultResultOrder('ipv4first')
@@ -37,80 +33,80 @@ describe('CREATE POLL', () => {
     await clearDatabase(DATABASE)
   })
 
-  it('A new poll can be created if proper input data is used in creating the poll', async () => {
-    for (let i = 0; i < POLL_INPUT_DATA.length; i++) {
-      const pollInputData = { ...POLL_INPUT_DATA[i], ownerId: uuidv4() }
+  it('New polls can be created if valid data is given as input', async () => {
+    for (let i = 0; i < POLL_INPUT_VALID.length; i++) {
+      const pollInputData = { ...POLL_INPUT_VALID[i], ownerId: uuidv4() }
       const createdPoll = await createPollInDatabase(pollInputData)
       assertObjectIsAPoll(createdPoll)
-      assertPollFieldsArePracticallyEqualWhenPresent(pollInputData, createdPoll)
-      assertReturnedCreatedPollContainsAToken(createdPoll)
+      assertPollsArePracticallyEqual(pollInputData, createdPoll)
+      assertPollContainsAToken(createdPoll)
     }
   })
 
   it('Creating new poll fails if given max total votes count is out of acceptable range', async () => {
-    const pollInputData = { ...POLL_INPUT_DATA[0], ownerId: '' }
+    const pollInputData = { ...POLL_INPUT_VALID[0], ownerId: '' }
     const invalidTotalVotesCounts = [TOTAL_VOTES_COUNT_MIN - 1, TOTAL_VOTES_COUNT_MAX + 1]
-    for (let invalidTotalVotesCount of invalidTotalVotesCounts) {
-      pollInputData.totalVotesCountMax = invalidTotalVotesCount
+    for (let invalidCount of invalidTotalVotesCounts) {
+      pollInputData.totalVotesCountMax = invalidCount
       pollInputData.ownerId = uuidv4()
       try {
         await createPollInDatabase(pollInputData)
       } catch (error) {
-        handleCheckingPollFieldValueNotInRangeExpectedErrorMessage(error, PollValidationFieldEnum.TOTAL_VOTES_COUNT)
+        verifyValueNotInExpectedRangeErrorMessage(error, PollValidationFieldEnum.TOTAL_VOTES_COUNT)
       }
     }
   })
 
   it('Creating new poll fails if given max option votes count is out of acceptable range', async () => {
-    const pollInputData = { ...POLL_INPUT_DATA[0], ownerId: '' }
+    const pollInputData = { ...POLL_INPUT_VALID[0], ownerId: '' }
     const invalidOptionVotesCounts = [OPTION_VOTES_COUNT_MIN - 1, OPTION_VOTES_COUNT_MAX + 1]
-    for (let invalidOptionVotesCount of invalidOptionVotesCounts) {
-      pollInputData.optionVotesCountMax = invalidOptionVotesCount
+    for (let invalidCount of invalidOptionVotesCounts) {
+      pollInputData.optionVotesCountMax = invalidCount
       pollInputData.ownerId = uuidv4()
       try {
         await createPollInDatabase(pollInputData)
       } catch (error) {
-        handleCheckingPollFieldValueNotInRangeExpectedErrorMessage(error, PollValidationFieldEnum.OPTION_VOTES_COUNT)
+        verifyValueNotInExpectedRangeErrorMessage(error, PollValidationFieldEnum.OPTION_VOTES_COUNT)
       }
     }
   })
 
-  it('Creating new poll fails if given number of answers is out of acceptable range', async () => {
-    const pollInputData = { ...POLL_INPUT_DATA[0], ownerId: '' }
-    const invalidAnswerOptionsInputs = getAnswerOptionsWithInvalidCountsForCreatePoll()
+  it('Creating new polls fails if given number of options is out of acceptable range', async () => {
+    const pollInputData = { ...POLL_INPUT_VALID[0], ownerId: '' }
+    const invalidOptionsInputs = getOptionsWithInvalidCounts()
 
-    for (let invalidAnswerOptionsInput of invalidAnswerOptionsInputs) {
-      pollInputData.answers = invalidAnswerOptionsInput
+    for (let invalidOptionsInput of invalidOptionsInputs) {
+      pollInputData.options = invalidOptionsInput
       pollInputData.ownerId = uuidv4()
       try {
         await createPollInDatabase(pollInputData)
       } catch (error) {
-        handleCheckingPollFieldValueNotInRangeExpectedErrorMessage(error, PollValidationFieldEnum.ANSWERS_COUNT)
+        verifyValueNotInExpectedRangeErrorMessage(error, PollValidationFieldEnum.OPTIONS_COUNT)
       }
     }
   })
 
-  it('Creating new poll fails if all answer options are not unique', async () => {
-    const pollInputData = { ...POLL_INPUT_DATA[0], ownerId: uuidv4() }
+  it('Creating a new poll fails if options are not unique', async () => {
+    const pollInput = { ...POLL_INPUT_VALID[0], ownerId: uuidv4() }
     const notUnique = 'Not unique'
-    pollInputData.answers = [notUnique, notUnique, 'unique']
-    assert(OPTION_COUNT_MIN < pollInputData.answers.length && pollInputData.answers.length < OPTION_COUNT_MAX)
+    pollInput.options = [notUnique, notUnique, 'unique']
+    assert(OPTION_COUNT_MIN < pollInput.options.length && pollInput.options.length < OPTION_COUNT_MAX)
     try {
-      await createPollInDatabase(pollInputData)
+      await createPollInDatabase(pollInput)
     } catch (error) {
       const errorMessage = getErrorMessageFromResponse(error)
-      expect(errorMessage).to.equal(getPollAnswerOptionsMustBeUniqueErrorMessage(pollInputData.answers))
+      expect(errorMessage).to.equal(getOptionsMustBeUniqueErrorMessage(pollInput.options))
     }
   })
 
   it('Creating new poll fails if data is missing', async () => {
-    for (let i = 0; i < POLL_INPUT_INVALID_DATA.length; i++) {
-      const invalidPollInput = { ...POLL_INPUT_INVALID_DATA[i].data, ownerId: uuidv4() }
+    for (let i = 0; i < POLL_INPUT_INVALID.length; i++) {
+      const invalidInput = { ...POLL_INPUT_INVALID[i].data, ownerId: uuidv4() }
       try {
-        await createPollInDatabase(invalidPollInput)
+        await createPollInDatabase(invalidInput)
       } catch (error) {
         const errorMessage = getErrorMessageFromResponse(error)
-        assert.include(errorMessage, POLL_INPUT_INVALID_DATA[i].missingField)
+        assert.include(errorMessage, POLL_INPUT_INVALID[i].missingField)
       }
     }
   })

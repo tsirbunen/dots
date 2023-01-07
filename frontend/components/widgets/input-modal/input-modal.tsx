@@ -3,12 +3,15 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from '../../../hooks/use-translation'
-import { TextDateTimeDataHolder, TextDateTimeDataType } from '../../forms/data-models/text-date-time-data-holder'
-import { modalInputValidationSchema } from '../../forms/validation/validation'
+import {
+  TextDateTimeDataHolder,
+  TextDateTimeDataType
+} from '../../form-components/create-poll-form/text-date-time-data-holder'
+import { modalInputValidationSchema } from '../../form-components/create-poll-form/validation'
 import DataTypeSelector from './data-type-selector'
 import TextInput from './text-input'
 import { getModalContentStyle } from './styles'
-import { TextDateTimeItemsInputConstantsPackage } from '../../../utils/constant-values'
+import { TextDateTimeItemsInputConstantsPackage } from '../../../types/types'
 
 export const DATA_CY_INPUT_MODAL = 'input_modal'
 
@@ -29,17 +32,10 @@ type InputModalProps = {
   onlyTextInput: boolean
   saveData: (newValue: string | TextDateTimeDataHolder) => void
   originalText?: string | undefined
-  textConstantsPackage: TextDateTimeItemsInputConstantsPackage
+  textPackage: TextDateTimeItemsInputConstantsPackage
 }
 
-const InputModal = ({
-  isOpen,
-  onClose,
-  onlyTextInput,
-  saveData,
-  originalText,
-  textConstantsPackage
-}: InputModalProps) => {
+const InputModal = ({ isOpen, onClose, onlyTextInput, saveData, originalText, textPackage }: InputModalProps) => {
   const { translate } = useTranslation()
   const [modalWidth, setModalWidth] = useState(350)
   const [dataType, setDataType] = useState<TextDateTimeDataType>(TextDateTimeDataType.PLAIN_TEXT)
@@ -60,12 +56,7 @@ const InputModal = ({
     mode: 'all',
     defaultValues: initialValues,
     resolver: yupResolver(
-      modalInputValidationSchema(
-        translate,
-        dataType,
-        textConstantsPackage.minTextLength,
-        textConstantsPackage.maxTextLength
-      )
+      modalInputValidationSchema(translate, dataType, textPackage.minTextLength, textPackage.maxTextLength)
     ),
     shouldFocusError: true
   })
@@ -81,7 +72,7 @@ const InputModal = ({
       <ModalOverlay />
       <ModalContent {...getModalContentStyle(modalWidth)} data-cy={DATA_CY_INPUT_MODAL}>
         <form>
-          <ModalHeader>{translate(textConstantsPackage.modalTitleKey)}</ModalHeader>
+          <ModalHeader>{translate(textPackage.modalTitleKey)}</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             {!onlyTextInput && (
@@ -95,7 +86,7 @@ const InputModal = ({
               <TextInput
                 onlyTextInput={onlyTextInput}
                 saveData={saveData}
-                placeholder={translate(textConstantsPackage.placeholderKey) ?? ''}
+                placeholder={translate(textPackage.placeholderKey) ?? ''}
                 control={control}
                 reset={reset}
                 errors={errors}

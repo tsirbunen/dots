@@ -9,18 +9,18 @@ import {
 
 export interface VoteType {
   id: string
-  answerId: string
+  optionId: string
   voterId: string
-  name?: string
+  name?: string | null
   deletedAt?: Date | null
   createdAt?: Date
   updatedAt?: Date
 }
 
 export interface VoteInputType {
-  answerId: string
+  optionId: string
   voterId: string
-  name?: string
+  name?: string | null
 }
 
 export type CreatePollDatabaseInputType = CreatePollInputType & { id: string; code: string; state: PollState }
@@ -34,7 +34,7 @@ export interface FindPollInputType {
   id?: string
   code?: string
 }
-export interface AnswerType {
+export interface OptionType {
   id: string
   pollId: string
   content: string
@@ -46,23 +46,23 @@ export interface AnswerType {
 }
 export interface CreatePollInputType {
   ownerId: string
-  ownerName: string
+  ownerName: string | null
   question: string
-  answers: string[]
+  options: string[]
   dataClass: DataClassType
   isAnonymous: boolean
   totalVotesCountMax: number
   optionVotesCountMax: number
   showStatusWhenVoting: boolean
 }
-export interface AnswerEditDataType {
-  answerId?: string
+export interface OptionEditDataType {
+  optionId?: string
   content: string
 }
 export interface EditPollInputType {
   pollId: string
   question?: string
-  answers?: AnswerEditDataType[]
+  options?: OptionEditDataType[]
   dataClass?: DataClassType
   isAnonymous?: boolean
   totalVotesCountMax?: number
@@ -85,10 +85,10 @@ export interface PollType {
   updatedAt: Date
 }
 
-export type PollFullDataType = Omit<PollType, 'ownerId'> & { owner: OwnerType; answers: AnswerType[]; token?: string }
+export type PollFullDataType = Omit<PollType, 'ownerId'> & { owner: PersonType; options: OptionType[]; token?: string }
 
 export enum PollValidationFieldEnum {
-  ANSWERS_COUNT = 'ANSWERS_COUNT',
+  OPTIONS_COUNT = 'OPTIONS_COUNT',
   TOTAL_VOTES_COUNT = 'TOTAL_VOTES_COUNT',
   OPTION_VOTES_COUNT = 'OPTION_VOTES_COUNT'
 }
@@ -101,7 +101,7 @@ export interface PollInputFieldValidationDataType {
 }
 
 export const POLL_INPUT_FIELDS_VALIDATION_DATA: Record<PollValidationFieldEnum, PollInputFieldValidationDataType> = {
-  ANSWERS_COUNT: { min: OPTION_COUNT_MIN, max: OPTION_COUNT_MAX, title: 'Answer options count', key: 'answers' },
+  OPTIONS_COUNT: { min: OPTION_COUNT_MIN, max: OPTION_COUNT_MAX, title: 'Options count', key: 'options' },
   TOTAL_VOTES_COUNT: {
     min: TOTAL_VOTES_COUNT_MIN,
     max: TOTAL_VOTES_COUNT_MAX,
@@ -116,7 +116,7 @@ export const POLL_INPUT_FIELDS_VALIDATION_DATA: Record<PollValidationFieldEnum, 
   }
 }
 
-export type keyOfCreateOrEditPollInputType = 'totalVotesCountMax' | 'optionVotesCountMax' | 'answers'
+export type keyOfCreateOrEditPollInputType = 'totalVotesCountMax' | 'optionVotesCountMax' | 'options'
 
 export enum PollState {
   EDIT = 'EDIT',
@@ -124,7 +124,7 @@ export enum PollState {
   CLOSED = 'CLOSED'
 }
 
-export interface OwnerType {
+export interface PersonType {
   id: string
   name: string
   deletedAt?: Date | null

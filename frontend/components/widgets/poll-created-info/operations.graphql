@@ -1,0 +1,6 @@
+mutation OpenPoll($pollId: ID!) {
+  openPoll(pollId: $pollId) {
+    id
+    state
+  }
+}

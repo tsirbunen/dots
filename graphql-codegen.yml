@@ -1,0 +1,25 @@
+overwrite: true
+schema: ./server/modules/*/schema.graphql
+generates:
+  server/types/graphql-schema-types.generated.ts:
+    plugins:
+      - typescript
+  frontend/types/graphql-schema-types.generated.ts:
+    plugins:
+      - typescript
+  ./frontend:
+    preset: near-operation-file
+    documents: ./frontend/**/*/operations.graphql
+    presetConfig:
+      extension: .generated.ts
+      baseTypesPath: types/graphql-schema-types.generated.ts
+    plugins:
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      maybeValue: T | null
+      withHOC: false
+      withHooks: false
+      withComponent: false
+      scalars:
+        Timestamp: number

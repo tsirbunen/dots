@@ -15,9 +15,9 @@ enum PollState {
 
 input CreatePollInput {
   ownerId: ID!
-  ownerName: String!
+  ownerName: String
   question: String!
-  answers: [String!]!
+  options: [String!]!
   isAnonymous: Boolean!
   dataClass: DataClass!
   totalVotesCountMax: Int!
@@ -25,15 +25,15 @@ input CreatePollInput {
   showStatusWhenVoting: Boolean!
 }
 
-input AnswerEditData {
-  answerId: ID
+input OptionEditData {
+  optionId: ID
   content: String!
 }
 
 input EditPollInput {
   pollId: ID!
   question: String
-  answers: [AnswerEditData]
+  options: [OptionEditData]
   isAnonymous: Boolean
   dataClass: DataClass
   totalVotesCountMax: Int
@@ -64,13 +64,14 @@ type Poll {
 
 extend type Query {
   findPoll(input: FindPollInput): Poll
-  findAllPollsForOneOwner: [Poll]
+  getPollCountInDatabase: Int
+  findPollsByCode(codes: [String!]!): [Poll]
 }
 
 extend type Mutation {
   createPoll(input: CreatePollInput!): Poll! @pollInputValidation
   editPoll(input: EditPollInput!): Poll! @isPollOwner @pollInputValidation
-  openPoll(pollId: ID!): Boolean! @isPollOwner
-  closePoll(pollId: ID!): Boolean! @isPollOwner
-  deletePoll(pollId: ID!): Boolean! @isPollOwner
+  openPoll(pollId: ID!): Poll! @isPollOwner
+  closePoll(pollId: ID!): Poll! @isPollOwner
+  deletePoll(pollId: ID!): Poll! @isPollOwner
 }

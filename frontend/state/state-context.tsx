@@ -1,13 +1,21 @@
 import React, { createContext, useReducer } from 'react'
 import { Language } from '../hooks/use-translation'
-import { reducer } from './reducer'
+import { Poll } from '../types/types'
+import { AppStateAction, reducer } from './reducer'
+
+export type AppStateContextType = {
+  state: AppState
+  dispatch: React.Dispatch<AppStateAction>
+}
 
 export type AppState = {
   language: Language
+  polls: Record<string, Poll>
 }
 
 const initialAppState = {
-  language: 'EN' as Language //Language.EN
+  language: 'EN' as Language,
+  polls: {}
 }
 
 export const AppStateContext = createContext({})

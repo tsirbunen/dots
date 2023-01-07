@@ -1,6 +1,6 @@
 type Vote {
   id: ID!
-  answerId: ID!
+  optionId: ID!
   voterId: ID!
   name: String
   deletedAt: Timestamp
@@ -8,6 +8,6 @@ type Vote {
   updatedAt: Timestamp!
 }
 
-extend type Answer {
-  votes(answerId: ID): [Vote]
+extend type Option {
+  votes(optionId: ID): [Vote]
 }

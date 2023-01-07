@@ -1,0 +1,24 @@
+input GiveAVoteToOptionInput {
+  optionId: ID!
+  voterId: ID!
+  name: String
+}
+
+type Option {
+  id: ID!
+  pollId: ID!
+  content: String!
+  dataClass: DataClass
+  votes: [Vote]
+  deletedAt: Timestamp
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+}
+
+extend type Poll {
+  options(pollId: ID): [Option]
+}
+
+extend type Mutation {
+  giveAVoteToOption(input: GiveAVoteToOptionInput!): Vote
+}

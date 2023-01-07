@@ -7,8 +7,6 @@
 
 DOTS project features a mobile ui and a web ui supported by a common server connected to a database.
 
-You will not find many comments within the code. Instead, you will find that, first, all constants, classes, methods, etc. have been carefully named with descriptive "phrases". Second, components and functions have been refactored to quite a small size so that it is clear what they do. Together these measures should make reading of the code resemble following a smoothly flowing story.
-
 Presumably in several cases the chosen design is an overkill / unnecessarily complicated (like whether to build a REST or GraphQL API). However, the main purpose of this project was to practice new concepts, so that may be forgiven :)
 
 ### mobile ui
@@ -32,11 +30,11 @@ Presumably in several cases the chosen design is an overkill / unnecessarily com
 - In the DOTS there are only a couple of main entities. Each of the entities has a dedicated GraphQL module and an ORM model.
 - PostgreSQL is used as the permanent data storage, and [Objection](https://vincit.github.io/objection.js/) and [Knex](https://knexjs.org/guide/) are used to manage the database.
 - For testing, [Mocha](https://mochajs.org) and [Chai](https://www.chaijs.com) were selected.
-- In the center of the DOTS "data model" is a **poll**. A poll has an **owner** and multiple voting options or **answers**. Each answer can have multiple **votes**.
+- In the center of the DOTS "data model" is a **poll**. A poll has an **owner** and multiple voting options or **options**. Each option can have multiple **votes**.
 - The main functionalities of the server are the following:
   1. creating a new poll
-  2. giving a vote to a poll's answer option
-  3. retrieving a poll with its data (answers and votes)
+  2. giving a vote to a poll's option
+  3. retrieving a poll with its data (options and votes)
 - Perhaps the best way to better understand the DOTS server is to study the tests, starting with [tests for creating a new poll](/server/tests/tests/02_create_poll.test.ts).
 
 ## RUNNING THE DOTS

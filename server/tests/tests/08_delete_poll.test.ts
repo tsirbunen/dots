@@ -4,11 +4,16 @@ import dns from 'dns'
 
 import { deletePollFromDatabase } from '../utils/operations'
 import {
-  assertPollOwnerAnswerAndVoteCountsInDatabaseMatchExpectedCounts,
-  createPollsByDifferentOwnersEachWithVotesForAnswersInDatabase
+  assertPollOwnerOptionAndVoteCountsInDatabaseMatchExpectedCounts,
+  createPollsByDifferentOwnersEachWithVotesForOptionsInDatabase
 } from '../utils/helpers'
 
-import { getDatabaseConnection, clearDatabase, closeDatabaseConnection } from '../utils/handle-database'
+import {
+  getDatabaseConnection,
+  clearDatabase,
+  closeDatabaseConnection,
+  getAllPollsInDatabase
+} from '../utils/handle-database-connections'
 
 import { PollFullDataType } from '../../types/types'
 import { handleAssertNotAuthenticatedError } from '../../utils/handle-not-authenticated-error'
@@ -18,12 +23,13 @@ dns.setDefaultResultOrder('ipv4first')
 const DATABASE = getDatabaseConnection()
 let poll: {
   pollToDelete: PollFullDataType
-  ownersCount: number
+  personsCount: number
   pollsByOwnerCount: number
   pollsCount: number
-  totalNumberOfAnswers: number
+  codes: Record<string, string[]>
+  totalNumberOfOptions: number
   totalNumberOfVotes: number
-  answersInPollToDeleteCount: number
+  optionsInPollToDeleteCount: number
   votesInPollToDeleteCount: number
   lastPoll: PollFullDataType
 }
@@ -31,30 +37,33 @@ let poll: {
 describe('DELETE POLL', () => {
   beforeEach(async () => {
     await clearDatabase(DATABASE)
-    poll = await createPollsByDifferentOwnersEachWithVotesForAnswersInDatabase()
+    poll = await createPollsByDifferentOwnersEachWithVotesForOptionsInDatabase()
   })
 
   it('A poll (and data related to that poll and only to that poll) can be deleted from database by the poll owner', async () => {
-    await assertPollOwnerAnswerAndVoteCountsInDatabaseMatchExpectedCounts(
+    const pollCodes = poll.codes[poll.pollToDelete.owner.id]
+    await assertPollOwnerOptionAndVoteCountsInDatabaseMatchExpectedCounts(
       DATABASE,
       poll.pollToDelete,
       poll.pollsByOwnerCount,
       poll.pollsCount,
-      poll.ownersCount,
-      poll.totalNumberOfAnswers,
-      poll.totalNumberOfVotes
+      poll.personsCount,
+      poll.totalNumberOfOptions,
+      poll.totalNumberOfVotes,
+      pollCodes
     )
 
     await deletePollFromDatabase(poll.pollToDelete.id, poll.pollToDelete.token!)
 
-    await assertPollOwnerAnswerAndVoteCountsInDatabaseMatchExpectedCounts(
+    await assertPollOwnerOptionAndVoteCountsInDatabaseMatchExpectedCounts(
       DATABASE,
       poll.pollToDelete,
       poll.pollsByOwnerCount - 1,
       poll.pollsCount - 1,
-      poll.ownersCount,
-      poll.totalNumberOfAnswers - poll.answersInPollToDeleteCount,
-      poll.totalNumberOfVotes - poll.votesInPollToDeleteCount
+      poll.personsCount,
+      poll.totalNumberOfOptions - poll.optionsInPollToDeleteCount,
+      poll.totalNumberOfVotes - poll.votesInPollToDeleteCount,
+      pollCodes
     )
   })
 
@@ -65,14 +74,16 @@ describe('DELETE POLL', () => {
     } catch (error) {
       handleAssertNotAuthenticatedError(error)
     }
-    await assertPollOwnerAnswerAndVoteCountsInDatabaseMatchExpectedCounts(
+    const pollCodes = poll.codes[poll.pollToDelete.owner.id]
+    await assertPollOwnerOptionAndVoteCountsInDatabaseMatchExpectedCounts(
       DATABASE,
       poll.pollToDelete,
       poll.pollsByOwnerCount,
       poll.pollsCount,
-      poll.ownersCount,
-      poll.totalNumberOfAnswers,
-      poll.totalNumberOfVotes
+      poll.personsCount,
+      poll.totalNumberOfOptions,
+      poll.totalNumberOfVotes,
+      pollCodes
     )
   })
   after(async () => {

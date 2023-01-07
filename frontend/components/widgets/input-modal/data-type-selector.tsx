@@ -1,6 +1,6 @@
 import { Box, Radio, RadioGroup, Stack } from '@chakra-ui/react'
 import { ThemeColorCodes } from '../../../theme/theme'
-import { TextDateTimeDataType } from '../../forms/data-models/text-date-time-data-holder'
+import { TextDateTimeDataType } from '../../form-components/create-poll-form/text-date-time-data-holder'
 import { dataTypeSelectorContainerStyle, getBorderStyle } from './styles'
 
 export const DATA_CY_MODAL_DATA_TYPE_SELECTOR = 'MODAL_DATA_TYPE_SELECTOR'

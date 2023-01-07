@@ -30,6 +30,10 @@ export const errorStyle = {
   marginLeft: '18px'
 }
 
+export const blinkingStyle = {
+  marginLeft: '18px'
+}
+
 export const iconButtonStyle = {
   padding: '4px',
   bg: ThemeColor.SHADE_2,

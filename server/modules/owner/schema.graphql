@@ -1,8 +1,0 @@
-type Owner {
-  id: ID!
-  name: String
-}
-
-extend type Poll {
-  owner(ownerId: ID): Owner
-}

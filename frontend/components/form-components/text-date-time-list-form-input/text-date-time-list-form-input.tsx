@@ -1,33 +1,27 @@
 import { PlusSquareIcon } from '@chakra-ui/icons'
 import { Box, Flex, IconButton, Text, useDisclosure } from '@chakra-ui/react'
-import {
-  Control,
-  FieldValues,
-  Controller,
-  ControllerRenderProps,
-  FieldErrorsImpl,
-  FieldError,
-  Merge
-} from 'react-hook-form'
+import { Control, Controller, ControllerRenderProps } from 'react-hook-form'
 import { useTranslation } from '../../../hooks/use-translation'
-import { TextDateTimeItemsInputConstantsPackage } from '../../../utils/constant-values'
 import ListItemDeletable from './list-item-deletable'
 import {
+  blinkingStyle,
   errorStyle,
   iconButtonStyle,
   iconStyle,
   listItemsAndEditButtonContainer,
   listItemsContainer,
-  parameterContainerStyle,
-  errorText
+  parameterContainerStyle
 } from './styles'
-import { TextDateTimeDataHolder } from '../../forms/data-models/text-date-time-data-holder'
+import { TextDateTimeDataHolder } from '../create-poll-form/text-date-time-data-holder'
 import InputModal from '../../widgets/input-modal/input-modal'
+import { CreatePollFormData } from '../create-poll-form/create-or-edit-poll-form-core'
+import { TextDateTimeItemsInputConstantsPackage } from '../../../types/types'
+import BlinkingText from '../../widgets/blinking-text/blinking-text'
 
 type TextDateTimeListFormInputProps = {
-  control: Control<FieldValues, TextDateTimeInputFieldType> | undefined
-  errors: FieldError | Merge<FieldError, FieldErrorsImpl<FieldValues>> | undefined
-  textConstantsPackage: TextDateTimeItemsInputConstantsPackage
+  control: Control<CreatePollFormData, TextDateTimeInputFieldType> | undefined
+  errorMessage: string | undefined
+  textPackage: TextDateTimeItemsInputConstantsPackage
   fieldType: TextDateTimeInputFieldType
 }
 
@@ -38,8 +32,8 @@ export type TextDateTimeInputFieldType = 'votingOptions'
 const TextDateTimeListFormInput = ({
   control,
   fieldType,
-  errors,
-  textConstantsPackage
+  errorMessage,
+  textPackage
 }: TextDateTimeListFormInputProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { translate } = useTranslation()
@@ -53,9 +47,9 @@ const TextDateTimeListFormInput = ({
     onChange(updatedItems)
   }
 
-  const addItem = (newItem: unknown, field: ControllerRenderProps<FieldValues, TextDateTimeInputFieldType>) => {
+  const addItem = (newItem: unknown, field: ControllerRenderProps<CreatePollFormData, TextDateTimeInputFieldType>) => {
     if (!(newItem instanceof TextDateTimeDataHolder)) {
-      throw new Error(textConstantsPackage.wrong_data_type_error)
+      throw new Error(textPackage.wrong_data_type_error)
     }
     const updatedItems = [...field.value, newItem]
     field.onChange(updatedItems)
@@ -63,22 +57,18 @@ const TextDateTimeListFormInput = ({
   }
 
   const renderRequiredText = () => {
-    return (
-      <Text data-cy={translate(textConstantsPackage.requiredInfoTextKey)} {...errorText}>
-        {translate(textConstantsPackage.requiredInfoTextKey)}
-      </Text>
-    )
+    return <BlinkingText text={translate(textPackage.requiredInfoTextKey)} />
   }
 
   const renderListItems = (
     fieldValue: TextDateTimeDataHolder[],
-    field: ControllerRenderProps<FieldValues, TextDateTimeInputFieldType>
+    field: ControllerRenderProps<CreatePollFormData, TextDateTimeInputFieldType>
   ) => {
     return (fieldValue as TextDateTimeDataHolder[]).map((item, index) => {
       return (
         <ListItemDeletable
           key={`${index}-${item.formatData(translate)}`}
-          item={item}
+          item={item.formatData(translate)}
           index={index}
           deleteItem={() => deleteItem(item, fieldValue, field.onChange)}
         />
@@ -87,6 +77,13 @@ const TextDateTimeListFormInput = ({
   }
 
   const renderErrorMessage = (errorsString: string) => {
+    if (errorsString === translate('too_little_options')) {
+      return (
+        <Flex {...blinkingStyle}>
+          <BlinkingText text={translate('too_little_options')} />
+        </Flex>
+      )
+    }
     return (
       <Text data-cy={errorsString} {...errorStyle}>
         {errorsString}
@@ -101,8 +98,7 @@ const TextDateTimeListFormInput = ({
         control={control}
         render={({ field }) => {
           const fieldValue = field.value as TextDateTimeDataHolder[]
-          const maxAllowedCountReached = fieldValue.length >= textConstantsPackage.maxItems
-
+          const maxAllowedCountReached = fieldValue.length >= textPackage.maxItems
           return (
             <Box {...parameterContainerStyle}>
               <div>
@@ -110,14 +106,14 @@ const TextDateTimeListFormInput = ({
                   <Flex {...listItemsContainer}>
                     {fieldValue.length === 0 && renderRequiredText()}
                     {renderListItems(fieldValue, field)}
-                    {errors?.message && renderErrorMessage(errors.message.toString())}
+                    {errorMessage && renderErrorMessage(errorMessage)}
                   </Flex>
                   <InputModal
                     isOpen={isOpen}
                     onClose={onClose}
                     onlyTextInput={false}
                     saveData={(newItem: unknown) => addItem(newItem, field)}
-                    textConstantsPackage={textConstantsPackage}
+                    textPackage={textPackage}
                   />
                   <IconButton
                     aria-label={`${DATA_CY_LIST_ADD}-${fieldType}`}

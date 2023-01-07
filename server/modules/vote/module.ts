@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 
 import { VoteProvider } from './provider'
-import { VoteAnswerResolvers } from './vote-answer-resolvers'
+import { VoteOptionResolvers } from './vote-option-resolvers'
 
 const moduleName = 'VoteModule'
 const pathToFile = path.join(__dirname, 'schema.graphql')
@@ -15,7 +15,7 @@ export const VoteModule = createModule({
   dirname: __dirname,
   typeDefs,
   resolvers: {
-    Answer: VoteAnswerResolvers
+    Option: VoteOptionResolvers
   },
   providers: [VoteProvider]
 })

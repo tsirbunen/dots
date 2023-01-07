@@ -11,6 +11,9 @@ export type Translations = {
   use_instruction_5: string
   use_instruction_6: string
   use_instruction_7: string
+  dashboard_info_1: string
+  dashboard_info_2: string
+  view_dashboard: string
   mode_create_poll: string
   mode_vote_in_poll: string
   mode_view_poll: string
@@ -20,9 +23,11 @@ export type Translations = {
   navigation_route_create_poll: string
   navigation_route_vote_in_poll: string
   navigation_route_view_poll: string
+  navigation_route_dashboard: string
   route_text_create_poll: string
   route_text_vote_in_poll: string
   route_text_view_poll: string
+  route_text_dashboard: string
   too_short: string
   too_long: string
   required: string
@@ -43,4 +48,23 @@ export type Translations = {
   general_reset: string
   general_submit: string
   at_time_of_day: string
+  set_your_name: string
+  set_your_name_modal_title: string
+  placeholder_type_name_here: string
+  toast_default_error: string
+  toast_default_warning: string
+  toast_default_success: string
+  toast_create_poll_error: string
+  toast_create_poll_success: string
+  option_count_cannot_exceed_total_count: string
+  toast_open_poll_error: string
+  open_poll_for_voting: string
+  edit_poll: string
+  want_to_edit_poll_further: string
+  can_still_edit_poll: string
+  if_poll_is_ready: string
+  open_poll_for_voting_info: string
+  edit_poll_save_changes: string
+  toast_edit_poll_error: string
+  toast_fetch_polls_by_id_or_code_error: string
 }

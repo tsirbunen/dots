@@ -13,9 +13,10 @@ import {
   createPollMutation,
   deletePollMutation,
   editPollMutation,
-  findAllPollsForOneOwnerQuery,
+  // findAllPollsForPerson,
   findPollQuery,
-  giveAVoteToAnswerMutation,
+  findPollsByCode,
+  giveAVoteToOptionMutation,
   openPollForVotingMutation
 } from './test-queries'
 
@@ -33,37 +34,37 @@ export async function editPollInDatabase(variables: EditPollInputType, token?: s
   return response.editPoll
 }
 
-export async function giveAVoteToAnswerOptionInDatabase(variables: VoteInputType): Promise<VoteType> {
+export async function giveAVoteToOption(variables: VoteInputType): Promise<VoteType> {
   const graphQLClient = getGraphQLClient()
-  const query = giveAVoteToAnswerMutation
-  const response: { giveAVoteToAnswer: VoteType } = await graphQLClient.request(query, {
+  const query = giveAVoteToOptionMutation
+  const response: { giveAVoteToOption: VoteType } = await graphQLClient.request(query, {
     input: variables
   })
-  return response.giveAVoteToAnswer
+  return response.giveAVoteToOption
 }
 
 export async function giveMaxNumberOfVotesByPersonInPoll(
   createdPoll: PollFullDataType,
   voterId: string,
-  answerTracker: { index: number }
+  optionTracker: { index: number }
 ) {
   let votesGivenTotal = 0
   const maxTotalVotesInPoll = createdPoll.totalVotesCountMax
-  const maxVotesPerAnswerOption = createdPoll.optionVotesCountMax
+  const maxVotesPerOption = createdPoll.optionVotesCountMax
   while (votesGivenTotal < maxTotalVotesInPoll) {
-    const answerOption = createdPoll.answers[answerTracker.index]
-    let votesGivenPerAnswerOption = 0
-    while (votesGivenTotal < maxTotalVotesInPoll && votesGivenPerAnswerOption < maxVotesPerAnswerOption) {
+    const option = createdPoll.options[optionTracker.index]
+    let votesGivenPerOption = 0
+    while (votesGivenTotal < maxTotalVotesInPoll && votesGivenPerOption < maxVotesPerOption) {
       const giveAVoteInput = {
-        answerId: answerOption.id,
+        optionId: option.id,
         voterId: voterId
       }
 
-      await giveAVoteToAnswerOptionInDatabase(giveAVoteInput)
-      votesGivenPerAnswerOption += 1
+      await giveAVoteToOption(giveAVoteInput)
+      votesGivenPerOption += 1
       votesGivenTotal += 1
     }
-    answerTracker.index += 1
+    optionTracker.index += 1
   }
 }
 
@@ -74,30 +75,37 @@ export async function findPollInDatabase(variables: FindPollInputType): Promise<
   return response.findPoll
 }
 
-export async function findAllOwnerPollsInDatabase(token: string): Promise<PollFullDataType[]> {
+// export async function findAllOwnerPollsInDatabase(token: string, personId: string): Promise<PollFullDataType[]> {
+//   const graphQLClient = getGraphQLClient(token)
+//   const query = findAllPollsForPerson
+//   const response: { findAllPollsForPerson: PollFullDataType[] } = await graphQLClient.request(query, { personId })
+//   return response.findAllPollsForPerson
+// }
+
+export async function findAllOwnerPollsInDatabase(token: string, codes: string[]): Promise<PollFullDataType[]> {
   const graphQLClient = getGraphQLClient(token)
-  const query = findAllPollsForOneOwnerQuery
-  const response: { findAllPollsForOneOwner: PollFullDataType[] } = await graphQLClient.request(query)
-  return response.findAllPollsForOneOwner
+  const query = findPollsByCode
+  const response: { findPollsByCode: PollFullDataType[] } = await graphQLClient.request(query, { codes })
+  return response.findPollsByCode
 }
 
-export async function openPollForVoting(pollId: string, token: string): Promise<boolean> {
+export async function openPollForVoting(pollId: string, token: string): Promise<PollFullDataType> {
   const graphQLClient = getGraphQLClient(token)
   const query = openPollForVotingMutation
-  const response: { openPoll: boolean } = await graphQLClient.request(query, { pollId })
+  const response: { openPoll: PollFullDataType } = await graphQLClient.request(query, { pollId })
   return response.openPoll
 }
 
-export async function closePollFromVoting(pollId: string, token: string): Promise<boolean> {
+export async function closePollFromVoting(pollId: string, token: string): Promise<PollFullDataType> {
   const graphQLClient = getGraphQLClient(token)
   const query = closePollFromVotingMutation
-  const response: { closePoll: boolean } = await graphQLClient.request(query, { pollId })
+  const response: { closePoll: PollFullDataType } = await graphQLClient.request(query, { pollId })
   return response.closePoll
 }
 
-export async function deletePollFromDatabase(pollId: string, token: string): Promise<boolean> {
+export async function deletePollFromDatabase(pollId: string, token: string): Promise<PollFullDataType> {
   const graphQLClient = getGraphQLClient(token)
   const query = deletePollMutation
-  const response: { deletePoll: boolean } = await graphQLClient.request(query, { pollId })
+  const response: { deletePoll: PollFullDataType } = await graphQLClient.request(query, { pollId })
   return response.deletePoll
 }

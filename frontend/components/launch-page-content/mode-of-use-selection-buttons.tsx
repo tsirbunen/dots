@@ -11,7 +11,8 @@ export const DATA_CY_USE_MODE = 'use-mode'
 export enum AppRoute {
   CREATE_POLL = '/create-poll',
   VOTE_IN_POLL = '/vote-in-poll',
-  VIEW_POLL = '/view-poll'
+  VIEW_POLL = '/view-poll',
+  MY_POLLS = '/my-polls'
 }
 
 const ModeOfUseSelectionButtons = () => {
@@ -19,8 +20,7 @@ const ModeOfUseSelectionButtons = () => {
   const router = useRouter()
 
   const modePhrases = () => {
-    const phrases = Object.keys(FI_TRANSLATIONS).filter((key) => key.includes('mode_'))
-    return phrases as Phrase[]
+    return Object.keys(FI_TRANSLATIONS).filter((key) => key.includes('mode_')) as Phrase[]
   }
 
   const navigateToRoute = (route: string) => {

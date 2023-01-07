@@ -19,7 +19,8 @@ enum MenuRouteTarget {
   LAUNCH_PAGE = '',
   CREATE_POLL = 'create-poll',
   VOTE_IN_POLL = 'vote-in-poll',
-  VIEW_POLL = 'view-poll'
+  VIEW_POLL = 'view-poll',
+  DASHBOARD = 'dashboard'
 }
 
 const HamburgerMenu = () => {
@@ -48,6 +49,10 @@ const HamburgerMenu = () => {
     {
       label: translate('navigation_route_view_poll'),
       route: MenuRouteTarget.VIEW_POLL
+    },
+    {
+      label: translate('navigation_route_dashboard'),
+      route: MenuRouteTarget.DASHBOARD
     }
   ]
 

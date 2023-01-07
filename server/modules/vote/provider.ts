@@ -4,7 +4,7 @@ import { VoteType } from '../../types/types'
 
 @Injectable()
 export class VoteProvider {
-  async findVotesByAnswerId(answerId: string): Promise<VoteType[]> {
-    return await Vote.findVotesByAnswerId(answerId)
+  async findVotesByOptionId(optionId: string): Promise<VoteType[]> {
+    return await Vote.findVotesByOptionId(optionId)
   }
 }

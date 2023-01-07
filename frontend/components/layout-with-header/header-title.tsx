@@ -2,7 +2,7 @@ import React from 'react'
 import { Center, Text } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import BlinkingDotsLine from '../widgets/blinking-dots/blinking-dots-line'
-import { appTitleStyle, headerTitleContainer, routeTextStyle } from './styles'
+import { headerTitleContainer, routeTextStyle } from './styles'
 import { useTranslation } from '../../hooks/use-translation'
 import { Phrase } from '../../localization/translations'
 
@@ -17,13 +17,13 @@ const HeaderTitle = () => {
     if (path.includes('create')) phrase = 'route_text_create_poll'
     if (path.includes('vote')) phrase = 'route_text_vote_in_poll'
     if (path.includes('view')) phrase = 'route_text_view_poll'
+    if (path.includes('dashboard')) phrase = 'route_text_dashboard'
     if (phrase === undefined) throw new Error(`No such route as ${path}!`)
     return translate(phrase).toUpperCase()
   }
 
   return (
     <Center {...headerTitleContainer}>
-      {/* <Text {...appTitleStyle}>{translate('app_title')}</Text> */}
       <BlinkingDotsLine isSmall={true} />
       <Text {...routeTextStyle}>{getRouteText(pathName)}</Text>
     </Center>

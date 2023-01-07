@@ -1,6 +1,6 @@
 import chai, { assert, expect } from 'chai'
 import chaiUuid from 'chai-uuid'
-import { AnswerType, DataClassType, VoteType, PollFullDataType } from '../../types/types'
+import { OptionType, DataClassType, VoteType, PollFullDataType } from '../../types/types'
 import chaiJWT from 'chai-jwt'
 
 chai.use(chaiUuid)
@@ -10,10 +10,10 @@ export function assertObjectIsAPoll(pollCandidate: unknown) {
   const poll = pollCandidate as PollFullDataType
   expect(poll.id).to.be.a.uuid('v4')
   assert.isString(poll.code)
-  assert.isArray(poll.answers)
+  assert.isArray(poll.options)
   assert.isString(poll.question)
-  poll.answers.forEach((answer) => assertObjectIsAnAnswerToPoll(answer, poll.id))
-  assertAnswersHaveDifferentIdValues(poll.answers)
+  poll.options.forEach((option) => assertObjectIsAnOptionToPoll(option, poll.id))
+  assertOptionsAreUnique(poll.options)
   assert.isBoolean(poll.isAnonymous)
   assert.isNumber(poll.totalVotesCountMax)
   assert.isNumber(poll.optionVotesCountMax)
@@ -21,7 +21,7 @@ export function assertObjectIsAPoll(pollCandidate: unknown) {
   assertCreatedAtUpdatedAtAndDeletedAtValuesAreValid(poll)
 }
 
-export function assertPollFieldsArePracticallyEqualWhenPresent(pollOrCreatePollInput: unknown, poll: unknown): void {
+export function assertPollsArePracticallyEqual(pollOrCreatePollInput: unknown, poll: unknown): void {
   const pollA = pollOrCreatePollInput as PollFullDataType
   const pollB = poll as PollFullDataType
   let pollKey: keyof PollFullDataType
@@ -32,7 +32,7 @@ export function assertPollFieldsArePracticallyEqualWhenPresent(pollOrCreatePollI
   }
 }
 
-export function assertReturnedCreatedPollContainsAToken(poll: PollFullDataType) {
+export function assertPollContainsAToken(poll: PollFullDataType) {
   assert.isString(poll.token)
   expect(poll.token).to.be.a.jwt
 }
@@ -45,43 +45,46 @@ export function assertTokenIsPresent(input: unknown) {
 export function assertObjectIsAVote(vote: unknown) {
   const voteCandidate = vote as VoteType
   expect(voteCandidate.id).to.be.a.uuid('v4')
-  expect(voteCandidate.answerId).to.be.a.uuid('v4')
+  expect(voteCandidate.optionId).to.be.a.uuid('v4')
   if (voteCandidate.name) assert.isString(voteCandidate.name)
   assertCreatedAtUpdatedAtAndDeletedAtValuesAreValid(voteCandidate)
 }
 
-export function assertVoteIsForCorrectAnswerOption(vote: VoteType, answerId: string) {
-  assert.equal(vote.answerId, answerId)
+export function assertVoteIsForCorrectOption(vote: VoteType, optionId: string) {
+  assert.equal(vote.optionId, optionId)
 }
 
-export function assertEachAnswerHasValidVotes(poll: unknown) {
+export function assertEachOptionHasValidVotes(poll: unknown) {
   const pollWithFullData = poll as PollFullDataType
-  assert.isArray(pollWithFullData.answers)
-  pollWithFullData.answers.forEach((answer) => {
-    assert.isArray(answer.votes)
-    answer.votes?.forEach((vote) => assertObjectIsAVote(vote))
+  assert.isArray(pollWithFullData.options)
+  pollWithFullData.options.forEach((option) => {
+    assert.isArray(option.votes)
+    option.votes?.forEach((vote) => assertObjectIsAVote(vote))
   })
 }
 
-function assertObjectIsAnAnswerToPoll(answer: unknown, pollId?: string) {
-  const answerCandidate = answer as AnswerType
-  expect(answerCandidate.id).to.be.a.uuid('v4')
-  expect(answerCandidate.pollId).to.be.a.uuid('v4')
-  expect(answerCandidate.content).to.be.a.string
-  assert.oneOf(answerCandidate.dataClass, Object.keys(DataClassType))
-  ;(answerCandidate.votes ?? []).forEach((vote) => assertObjectIsAVote(vote))
-  if (pollId) assert(answerCandidate.pollId === pollId)
-  assertCreatedAtUpdatedAtAndDeletedAtValuesAreValid(answerCandidate)
-  if (answerCandidate.votes) {
-    assert.isArray(answerCandidate.votes)
-    answerCandidate.votes.forEach((vote) => assertObjectIsAVote(vote))
+function assertObjectIsAnOptionToPoll(option: unknown, pollId?: string) {
+  const optionCandidate = option as OptionType
+  expect(optionCandidate.id).to.be.a.uuid('v4')
+  expect(optionCandidate.pollId).to.be.a.uuid('v4')
+  expect(optionCandidate.content).to.be.a.string
+  assert.oneOf(optionCandidate.dataClass, Object.keys(DataClassType))
+  ;(optionCandidate.votes ?? []).forEach((vote) => assertObjectIsAVote(vote))
+  if (pollId) assert(optionCandidate.pollId === pollId)
+  assertCreatedAtUpdatedAtAndDeletedAtValuesAreValid(optionCandidate)
+  if (optionCandidate.votes) {
+    assert.isArray(optionCandidate.votes)
+    optionCandidate.votes.forEach((vote) => assertObjectIsAVote(vote))
   }
 }
 
-function assertAnswersHaveDifferentIdValues(answers: AnswerType[]) {
-  const answerIds = new Set()
-  answers.forEach((answer) => answerIds.add(answer.id))
-  assert(answerIds.size === answers.length)
+function assertOptionsAreUnique(options: OptionType[]) {
+  const optionIds = new Set()
+  options.forEach((option) => optionIds.add(option.id))
+  assert(optionIds.size === options.length)
+  const optionContents = new Set()
+  options.forEach((option) => optionContents.add(option.content))
+  assert(optionContents.size === options.length)
 }
 
 function assertCreatedAtUpdatedAtAndDeletedAtValuesAreValid(candidate: {
@@ -116,10 +119,10 @@ function assertFieldValuesAreEqual(valueA: any, valueB: any) {
     Object.keys(valueA).forEach((key) => {
       assertFieldValuesAreEqual(valueA[key], valueB[key])
     })
-  } else if ((valueA as AnswerType).content && !(valueB as AnswerType).content) {
-    assertFieldValuesAreEqual((valueA as AnswerType).content, valueB)
-  } else if (!(valueA as AnswerType).content && (valueB as AnswerType).content) {
-    assertFieldValuesAreEqual(valueA, (valueB as AnswerType).content)
+  } else if ((valueA as OptionType).content && !(valueB as OptionType).content) {
+    assertFieldValuesAreEqual((valueA as OptionType).content, valueB)
+  } else if (!(valueA as OptionType).content && (valueB as OptionType).content) {
+    assertFieldValuesAreEqual(valueA, (valueB as OptionType).content)
   } else {
     throw new Error(
       `"Assert field values are equal"-method not implemented for value pairs like ${valueA} and ${valueB}`

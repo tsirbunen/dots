@@ -5,10 +5,10 @@ import { PollModule } from '../modules/poll/module'
 import { PingModule } from '../modules/ping/module'
 import { CustomScalarsModule } from '../modules/custom-scalars/module'
 import { makeExecutableSchema } from '@graphql-tools/schema'
-import { AnswerModule } from '../modules/answer/module'
+import { OptionModule } from '../modules/option/module'
 import { VoteModule } from '../modules/vote/module'
 import { pollInputValidation } from '../modules/directives/poll-validation'
-import { OwnerModule } from '../modules/owner/module'
+import { PersonModule } from '../modules/person/module'
 import { isPollOwner } from '../modules/directives/is-poll-owner'
 
 export const createGraphQLApp = (): Application => {
@@ -17,10 +17,10 @@ export const createGraphQLApp = (): Application => {
       QueryModule,
       MutationModule,
       PingModule,
-      AnswerModule,
+      OptionModule,
       PollModule,
       VoteModule,
-      OwnerModule,
+      PersonModule,
       CustomScalarsModule
     ],
     schemaBuilder: ({ typeDefs, resolvers }) => {

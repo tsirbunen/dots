@@ -1,5 +1,11 @@
-import { Phrase } from '../localization/translations'
-import { QUESTION_DATA_TYPE_ERROR, VOTING_OPTION_DATA_TYPE_ERROR } from './error-messages'
+import { WidgetTextPackages } from '../types/types'
+import { NAME_DATA_TYPE_ERROR, QUESTION_DATA_TYPE_ERROR, VOTING_OPTION_DATA_TYPE_ERROR } from './error-messages'
+
+export const LOCAL_STORAGE_NAMES_AND_IDS_KEY = 'dots_user_names_and_uuids'
+export const LOCAL_STORAGE_POLL_CODES = 'dots_poll_codes'
+export const LOCAL_STORAGE_USER_NAME = 'dots_user_name'
+export const LOCAL_STORAGE_TOKEN = 'dots_token'
+export const LOCAL_STORAGE_USER_ID = 'dots_user_id'
 
 export const DOT_SIZE = 18
 export const DOT_SIZE_SMALL = 12
@@ -19,25 +25,25 @@ export const DOT_COLORS = [
   '#ff595e'
 ]
 
+export const TEXT_LENGTH_ORGANIZER_MIN = 3
 export const TEXT_LENGTH_QUESTION_MIN = 3
 export const TEXT_LENGTH_OPTION_MIN = 1
 export const TEXT_LENGTH_MAX = 34
 export const VOTING_OPTIONS_MIN = 2
 export const VOTING_OPTIONS_MAX = 6
+export const OPTIONS_COUNT_MIN = 1
+export const OPTIONS_COUNT_MAX = 3
 
-export type TextDateTimeItemsInputConstantsPackage = {
-  requiredInfoTextKey: Phrase
-  modalTitleKey: Phrase
-  placeholderKey: Phrase
-  wrong_data_type_error: string
-  maxItems: number
-  minTextLength: number
-  maxTextLength: number
-}
-
-type TextPackagesType = 'votingOptions' | 'question'
-
-export const TEXT_KEY_PACKAGES: Record<TextPackagesType, TextDateTimeItemsInputConstantsPackage> = {
+export const TEXT_PACKAGES: WidgetTextPackages = {
+  ownerName: {
+    requiredInfoTextKey: 'set_your_name',
+    modalTitleKey: 'set_your_name_modal_title',
+    placeholderKey: 'placeholder_type_name_here',
+    wrong_data_type_error: NAME_DATA_TYPE_ERROR,
+    maxItems: VOTING_OPTIONS_MAX,
+    minTextLength: TEXT_LENGTH_ORGANIZER_MIN,
+    maxTextLength: TEXT_LENGTH_MAX
+  },
   votingOptions: {
     requiredInfoTextKey: 'set_min_voting_options',
     modalTitleKey: 'add_voting_option_modal_title',
@@ -55,41 +61,21 @@ export const TEXT_KEY_PACKAGES: Record<TextPackagesType, TextDateTimeItemsInputC
     maxItems: 1,
     minTextLength: TEXT_LENGTH_QUESTION_MIN,
     maxTextLength: TEXT_LENGTH_MAX
-  }
-}
-
-export type NumberInputConstantsPackage = {
-  titleKey: Phrase
-  minimum_value: number
-  maximum_value: number
-}
-
-type NumberInputConstantsPackageName = 'maxTotal' | 'maxPerOption'
-
-export const NUMBER_KEY_PACKAGES: Record<NumberInputConstantsPackageName, NumberInputConstantsPackage> = {
-  maxTotal: {
-    titleKey: 'max_votes_per_person_title',
-    minimum_value: 1,
-    maximum_value: 3
   },
-  maxPerOption: {
+  totalVotesCountMax: {
+    titleKey: 'max_votes_per_person_title',
+    minimum_value: OPTIONS_COUNT_MIN,
+    maximum_value: OPTIONS_COUNT_MAX
+  },
+  optionVotesCountMax: {
     titleKey: 'mox_votes_per_option_title',
-    minimum_value: 1,
-    maximum_value: 3
-  }
-}
-
-export type BooleanInputConstantsPackage = {
-  titleKey: Phrase
-}
-
-type BooleanInputConstantsPackageName = 'isAnonymous' | 'showStatus'
-
-export const BOOLEAN_KEY_PACKAGES: Record<BooleanInputConstantsPackageName, BooleanInputConstantsPackage> = {
+    minimum_value: OPTIONS_COUNT_MIN,
+    maximum_value: OPTIONS_COUNT_MAX
+  },
   isAnonymous: {
     titleKey: 'voting_is_anonymous'
   },
-  showStatus: {
+  showStatusWhenVoting: {
     titleKey: 'show_status_when_voting'
   }
 }

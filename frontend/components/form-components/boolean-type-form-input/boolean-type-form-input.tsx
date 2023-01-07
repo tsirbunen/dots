@@ -1,23 +1,26 @@
 import { Flex, Text, Box, Checkbox } from '@chakra-ui/react'
-import { Control, Controller, FieldValues } from 'react-hook-form'
+import { Control, Controller } from 'react-hook-form'
 import { useTranslation } from '../../../hooks/use-translation'
-import { BooleanInputConstantsPackage } from '../../../utils/constant-values'
+import { BooleanInputConstantsPackage } from '../../../types/types'
+
+import { CreatePollFormData } from '../create-poll-form/create-or-edit-poll-form-core'
 import { booleanInputContainerStyle, titleContainerStyle, titleStyle } from './styles'
 
 export const DATA_CY_FORM_BOOLEAN_INPUT = 'form_boolean_input'
 
-export type BooleanInputFieldType = 'isAnonymous' | 'showStatus'
+export type BooleanInputFieldType = 'isAnonymous' | 'showStatusWhenVoting'
 
 type BooleanTypeFormInputProps = {
   fieldType: BooleanInputFieldType
-  constantsPackage: BooleanInputConstantsPackage
-  control: Control<FieldValues, unknown> | undefined
+  textPackage: BooleanInputConstantsPackage
+
+  control: Control<CreatePollFormData, unknown> | undefined
 }
 
-const BooleanTypeFormInput = ({ fieldType, constantsPackage, control }: BooleanTypeFormInputProps) => {
+const BooleanTypeFormInput = ({ fieldType, textPackage, control }: BooleanTypeFormInputProps) => {
   const { translate } = useTranslation()
 
-  const title = translate(constantsPackage.titleKey)
+  const title = translate(textPackage.titleKey)
 
   return (
     <Controller

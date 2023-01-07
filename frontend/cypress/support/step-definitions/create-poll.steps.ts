@@ -1,7 +1,7 @@
 import { When, Then } from '@badeball/cypress-cucumber-preprocessor'
 import { App } from '../../components/app'
 import { CreatePollPage } from '../../components/create-poll-page'
-import { DATA_CY_CREATE_POLL_FORM } from '../../../components/forms/create-poll-form/create-poll-form'
+import { DATA_CY_CREATE_POLL_FORM } from '../../../components/form-components/create-poll-form/create-or-edit-poll-form-core'
 
 const createPollPage = new CreatePollPage()
 const app = new App()

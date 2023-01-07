@@ -5,9 +5,9 @@ import { CreatePollInputType, EditPollInputType } from '../../types/types'
 import {
   verifyTotalAndOptionMaximaBothPresentIfOnePresent,
   verifyNumbersAndCountsInRequiredRangesIfPresent,
-  verifyDataClassSpecifiedIfAnswersGiven,
-  verifyAnswerOptionsAreUniqueIfPresent,
-  verifyAllAnswerContentsAreOfSpecifiedDataClassIfPresent,
+  verifyDataClassSpecifiedIfOptionsGiven,
+  verifyOptionsAreUniqueIfPresent,
+  verifyAllOptionContentsAreOfSpecifiedDataClassIfPresent,
   verifyInputContainsAtLeastSomeFieldForEditing
 } from '../../utils/validation-functions'
 
@@ -23,9 +23,9 @@ export function pollInputValidation(originalSchema: GraphQLSchema, directiveName
             const pollInput = args.input as CreatePollInputType | EditPollInputType
             verifyTotalAndOptionMaximaBothPresentIfOnePresent(pollInput)
             verifyNumbersAndCountsInRequiredRangesIfPresent(pollInput)
-            verifyDataClassSpecifiedIfAnswersGiven(pollInput)
-            verifyAnswerOptionsAreUniqueIfPresent(pollInput)
-            verifyAllAnswerContentsAreOfSpecifiedDataClassIfPresent(pollInput)
+            verifyDataClassSpecifiedIfOptionsGiven(pollInput)
+            verifyOptionsAreUniqueIfPresent(pollInput)
+            verifyAllOptionContentsAreOfSpecifiedDataClassIfPresent(pollInput)
             verifyInputContainsAtLeastSomeFieldForEditing(pollInput)
           }
 

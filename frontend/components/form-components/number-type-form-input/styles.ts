@@ -40,3 +40,9 @@ export const getSliderStyle = (value: number, maximum: number) => {
     marginRight: value === maximum ? '10px' : '0px'
   }
 }
+export const errorStyle = {
+  fontSize: '1em',
+  fontWeight: 'bold',
+  color: ThemeColor.ERROR,
+  marginLeft: '18px'
+}

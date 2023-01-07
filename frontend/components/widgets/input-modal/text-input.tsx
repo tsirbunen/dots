@@ -7,7 +7,7 @@ import {
   TextDateTimeDataHolder,
   TextDateTimeDataType,
   TimeOfDay
-} from '../../forms/data-models/text-date-time-data-holder'
+} from '../../form-components/create-poll-form/text-date-time-data-holder'
 import {
   textInputStyles,
   errorMessageStyle,

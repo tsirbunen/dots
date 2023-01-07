@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import { expect } from 'chai'
+import { assert, expect } from 'chai'
 import 'mocha'
 import axios from 'axios'
 import dns from 'dns'
@@ -21,14 +21,8 @@ describe('SERVER HEALTH', () => {
   })
 
   it('A GraphQL query "ping" returns "pong"', async () => {
-    const headers = {
-      'content-type': 'application/json'
-    }
-    const pingQuery = `
-      {
-        ping
-      }
-    `
+    const headers = { 'content-type': 'application/json' }
+    const pingQuery = ` { ping } `
     const response = await axios.request({
       method: 'POST',
       url: `${SERVER_URL}/graphql`,
@@ -39,5 +33,20 @@ describe('SERVER HEALTH', () => {
     })
 
     expect(response.data.data.ping).to.equal('pong')
+  })
+
+  it('Server is connected to database as poll count in database can be queried', async () => {
+    const headers = { 'content-type': 'application/json' }
+    const pollCountQuery = ` { getPollCountInDatabase } `
+    const response = await axios.request({
+      method: 'POST',
+      url: `${SERVER_URL}/graphql`,
+      headers: headers,
+      data: {
+        query: pollCountQuery
+      }
+    })
+
+    assert.isNumber(response.data.data.getPollCountInDatabase, 'Number of polls in database')
   })
 })

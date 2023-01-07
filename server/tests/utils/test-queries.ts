@@ -10,11 +10,22 @@ export const createPollMutation = gql`
         name
       }
       question
-      answers {
+      options {
         id
         pollId
         content
         dataClass
+        votes {
+          id
+          optionId
+          name
+          deletedAt
+          createdAt
+          updatedAt
+        }
+        deletedAt
+        createdAt
+        updatedAt
       }
       isAnonymous
       totalVotesCountMax
@@ -39,7 +50,7 @@ export const editPollMutation = gql`
         name
       }
       question
-      answers {
+      options {
         id
         pollId
         content
@@ -60,27 +71,37 @@ export const editPollMutation = gql`
 
 export const openPollForVotingMutation = gql`
   mutation openPoll($pollId: ID!) {
-    openPoll(pollId: $pollId)
+    openPoll(pollId: $pollId) {
+      id
+      state
+    }
   }
 `
 
 export const closePollFromVotingMutation = gql`
   mutation closePoll($pollId: ID!) {
-    closePoll(pollId: $pollId)
+    closePoll(pollId: $pollId) {
+      id
+      state
+    }
   }
 `
 
 export const deletePollMutation = gql`
   mutation deletePoll($pollId: ID!) {
-    deletePoll(pollId: $pollId)
+    deletePoll(pollId: $pollId) {
+      id
+      deletedAt
+      token
+    }
   }
 `
 
-export const giveAVoteToAnswerMutation = gql`
-  mutation giveAVoteToAnswer($input: GiveAVoteToAnswerInput!) {
-    giveAVoteToAnswer(input: $input) {
+export const giveAVoteToOptionMutation = gql`
+  mutation giveAVoteToOption($input: GiveAVoteToOptionInput!) {
+    giveAVoteToOption(input: $input) {
       id
-      answerId
+      optionId
       voterId
       name
     }
@@ -93,14 +114,14 @@ export const findPollQuery = gql`
       id
       code
       question
-      answers {
+      options {
         id
         pollId
         content
         dataClass
         votes {
           id
-          answerId
+          optionId
           name
           deletedAt
           createdAt
@@ -122,9 +143,49 @@ export const findPollQuery = gql`
   }
 `
 
-export const findAllPollsForOneOwnerQuery = gql`
-  query findAllPollsForOneOwner {
-    findAllPollsForOneOwner {
+// export const findAllPollsForPerson = gql`
+//   query findAllPollsForPerson($personId: ID!) {
+//     findAllPollsForPerson(personId: $personId) {
+//       id
+//       owner {
+//         id
+//         name
+//       }
+//       code
+//       question
+//       options {
+//         id
+//         pollId
+//         content
+//         dataClass
+//         votes {
+//           id
+//           optionId
+//           name
+//           deletedAt
+//           createdAt
+//           updatedAt
+//         }
+//         deletedAt
+//         createdAt
+//         updatedAt
+//       }
+//       isAnonymous
+//       totalVotesCountMax
+//       optionVotesCountMax
+//       showStatusWhenVoting
+//       state
+//       token
+//       deletedAt
+//       createdAt
+//       updatedAt
+//     }
+//   }
+// `
+
+export const findPollsByCode = gql`
+  query findPollsByCode($codes: [String!]!) {
+    findPollsByCode(codes: $codes) {
       id
       owner {
         id
@@ -132,14 +193,14 @@ export const findAllPollsForOneOwnerQuery = gql`
       }
       code
       question
-      answers {
+      options {
         id
         pollId
         content
         dataClass
         votes {
           id
-          answerId
+          optionId
           name
           deletedAt
           createdAt
@@ -154,6 +215,7 @@ export const findAllPollsForOneOwnerQuery = gql`
       optionVotesCountMax
       showStatusWhenVoting
       state
+      token
       deletedAt
       createdAt
       updatedAt

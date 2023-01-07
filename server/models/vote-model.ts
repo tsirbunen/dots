@@ -1,10 +1,9 @@
 import { Model } from 'objection'
 import { VoteType } from '../types/types'
-
 import { ID, DATE, nullable } from '../utils/common-json-schemas'
-import { Answer } from './answer-model'
-
+import { Option } from './option-model'
 import { BaseModel } from './base_model'
+import { Person } from './person-model'
 
 export class Vote extends BaseModel {
   static get tableName(): string {
@@ -12,19 +11,19 @@ export class Vote extends BaseModel {
   }
 
   id!: string
-  answerId!: string
+  optionId!: string
   voterId!: string
-  name: string | undefined
+  name: string | undefined | null
 
   static get jsonSchema(): Record<string, string | object> {
     return {
       type: 'object',
-      required: ['id', 'answerId', 'voterId'],
+      required: ['id', 'optionId', 'voterId'],
       properties: {
         id: ID,
-        answerId: ID,
+        optionId: ID,
         voterId: ID,
-        name: { type: 'string' },
+        name: nullable({ type: 'string' }),
         createdAt: DATE,
         updatedAt: DATE,
         deletedAt: nullable(DATE)
@@ -33,17 +32,25 @@ export class Vote extends BaseModel {
   }
 
   static relationMappings = {
-    answer: {
+    option: {
       relation: Model.BelongsToOneRelation,
-      modelClass: Answer,
+      modelClass: Option,
       join: {
-        from: 'Votes.answerId',
-        to: 'Answers.id'
+        from: 'Votes.optionId',
+        to: 'Options.id'
+      }
+    },
+    person: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: Person,
+      join: {
+        from: 'Votes.voterId',
+        to: 'Person.id'
       }
     }
   }
 
-  public static async findVotesByAnswerId(answerId: string): Promise<VoteType[]> {
-    return await Vote.query().where('answerId', answerId).where('deletedAt', null).returning('*')
+  public static async findVotesByOptionId(optionId: string): Promise<VoteType[]> {
+    return await Vote.query().where('optionId', optionId).where('deletedAt', null).returning('*')
   }
 }

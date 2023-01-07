@@ -1,5 +1,5 @@
 import { Box, Flex, Text, Slider, SliderFilledTrack, SliderThumb, SliderTrack } from '@chakra-ui/react'
-import { Control, Controller, ControllerRenderProps, FieldValues } from 'react-hook-form'
+import { Control, Controller, ControllerRenderProps } from 'react-hook-form'
 
 import {
   numberInputContainerStyle,
@@ -9,30 +9,56 @@ import {
   getSliderStyle,
   sliderFilledTrackStyle,
   sliderTrackStyle,
-  sliderBoxStyle
+  sliderBoxStyle,
+  errorStyle
 } from './styles'
 import { TbNumber1, TbNumber2, TbNumber3 } from 'react-icons/tb'
-import { NumberInputConstantsPackage } from '../../../utils/constant-values'
+
 import { useTranslation } from '../../../hooks/use-translation'
+import { CreatePollFormData } from '../create-poll-form/create-or-edit-poll-form-core'
+import { NumberInputConstantsPackage } from '../../../types/types'
 
 export const DATA_CY_FORM_NUMBER_INPUT = 'form_number_input'
 
-export type NumberInputFieldType = 'maxTotal' | 'maxPerOption'
+export type NumberInputFieldType = 'totalVotesCountMax' | 'optionVotesCountMax'
 
 type NumberTypeFormInputProps = {
   fieldType: NumberInputFieldType
-  control: Control<FieldValues, unknown> | undefined
-  constantsPackage: NumberInputConstantsPackage
+  control: Control<CreatePollFormData, unknown> | undefined
+  errorMessage: string | undefined
+  textPackage: NumberInputConstantsPackage
+  upperLimit?: number
+  lowerLimit?: number
 }
 
-const NumberTypeFormInput = ({ fieldType, control, constantsPackage }: NumberTypeFormInputProps) => {
+const NumberTypeFormInput = ({
+  fieldType,
+  control,
+  errorMessage,
+  textPackage,
+  upperLimit,
+  lowerLimit
+}: NumberTypeFormInputProps) => {
   const { translate } = useTranslation()
 
   const multiplier = 10
-  const title = translate(constantsPackage.titleKey)
+  const title = translate(textPackage.titleKey)
 
-  const handleNumberChanged = (field: ControllerRenderProps<FieldValues, NumberInputFieldType>, newValue: number) => {
-    field.onChange((newValue + multiplier) / multiplier)
+  const handleNumberChanged = (
+    field: ControllerRenderProps<CreatePollFormData, NumberInputFieldType>,
+    newValue: number
+  ) => {
+    const candidateValue = (newValue + multiplier) / multiplier
+    if (lowerLimit && candidateValue < lowerLimit) return
+    if (upperLimit && candidateValue > upperLimit) return
+    field.onChange(candidateValue)
+  }
+  const renderErrorMessage = (errorsString: string) => {
+    return (
+      <Text data-cy={errorsString} {...errorStyle}>
+        {errorsString}
+      </Text>
+    )
   }
 
   return (
@@ -42,9 +68,9 @@ const NumberTypeFormInput = ({ fieldType, control, constantsPackage }: NumberTyp
       render={({ field }) => {
         const fieldValue = field.value as number
         const fieldValueAsIcon = [TbNumber1, TbNumber2, TbNumber3][fieldValue - 1]
-        const maxValue = (constantsPackage.maximum_value - 1) * multiplier
-        const sliderValue = (fieldValue - constantsPackage.minimum_value) * 10
-
+        const maxValue = (textPackage.maximum_value - 1) * multiplier
+        const minValue = textPackage.minimum_value
+        const sliderValue = (fieldValue - minValue) * 10
         return (
           <Box {...numberInputContainerStyle}>
             <Flex {...titleContainerStyle}>
@@ -72,6 +98,7 @@ const NumberTypeFormInput = ({ fieldType, control, constantsPackage }: NumberTyp
                 </Slider>
               </Box>
             </Flex>
+            {errorMessage && renderErrorMessage(errorMessage)}
           </Box>
         )
       }}

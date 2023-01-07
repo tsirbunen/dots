@@ -9,9 +9,9 @@ import {
 import {
   getOptionAndTotalVotesMaximaMustBothBePresentIfOnePresentErrorMessage,
   getPollInputFieldValueNotInRangeErrorMessage,
-  getDataClassMustBeProvidedIfAnswersPresentErrorMessage,
-  getPollAnswerOptionsMustBeUniqueErrorMessage,
-  getAnswerIsNotOfSpecifiedDataClassErrorMessage,
+  getDataClassMustBeProvidedIfOptionsPresentErrorMessage,
+  getOptionsMustBeUniqueErrorMessage,
+  getOptionIsNotOfSpecifiedDataClassErrorMessage,
   getDataClassNotImplementedErrorMessage,
   getSomeInputValueMustBeGivenForEditingPollErrorMessage
 } from './error-messages'
@@ -53,31 +53,31 @@ export function verifyFieldValueIsInRequiredRangeIfPresent(
   }
 }
 
-export function verifyDataClassSpecifiedIfAnswersGiven(input: CreatePollInputType | EditPollInputType): void {
-  if (input.answers && !input.dataClass) {
-    throw new Error(getDataClassMustBeProvidedIfAnswersPresentErrorMessage())
+export function verifyDataClassSpecifiedIfOptionsGiven(input: CreatePollInputType | EditPollInputType): void {
+  if (input.options && !input.dataClass) {
+    throw new Error(getDataClassMustBeProvidedIfOptionsPresentErrorMessage())
   }
 }
 
-export function verifyAnswerOptionsAreUniqueIfPresent(input: CreatePollInputType | EditPollInputType): void {
-  if (input.answers === undefined) return
-  const answersSet = new Set()
-  input.answers.forEach((answer) => answersSet.add(answer))
-  if (input.answers.length > answersSet.size) {
-    throw new Error(getPollAnswerOptionsMustBeUniqueErrorMessage(input.answers))
+export function verifyOptionsAreUniqueIfPresent(input: CreatePollInputType | EditPollInputType): void {
+  if (input.options === undefined) return
+  const optionsSet = new Set()
+  input.options.forEach((option) => optionsSet.add(option))
+  if (input.options.length > optionsSet.size) {
+    throw new Error(getOptionsMustBeUniqueErrorMessage(input.options))
   }
 }
 
-export function verifyAllAnswerContentsAreOfSpecifiedDataClassIfPresent(
+export function verifyAllOptionContentsAreOfSpecifiedDataClassIfPresent(
   input: CreatePollInputType | EditPollInputType
 ): void {
-  const { answers, dataClass } = input
-  if (!answers) return
+  const { options, dataClass } = input
+  if (!options) return
   if (!dataClass) return
-  answers.forEach((answer) => {
-    const content = typeof answer === 'object' ? answer.content : answer
-    const errorMessage = getAnswerIsNotOfSpecifiedDataClassErrorMessage(answer, dataClass)
-    if (!answer || content.length === 0) {
+  options.forEach((option) => {
+    const content = typeof option === 'object' ? option.content : option
+    const errorMessage = getOptionIsNotOfSpecifiedDataClassErrorMessage(option, dataClass)
+    if (!option || content.length === 0) {
       throw new Error(errorMessage)
     }
     switch (dataClass) {
@@ -97,7 +97,7 @@ export function verifyAllAnswerContentsAreOfSpecifiedDataClassIfPresent(
 }
 
 export function verifyInputContainsAtLeastSomeFieldForEditing(input: CreatePollInputType | EditPollInputType): void {
-  const someFieldsInEditPollInput = ['question', 'answers', 'isAnonymous', 'totalVotesCountMax', 'showStatusWhenVoting']
+  const someFieldsInEditPollInput = ['question', 'options', 'isAnonymous', 'totalVotesCountMax', 'showStatusWhenVoting']
   const someFieldIsPresent = Object.keys(input).some((key) => someFieldsInEditPollInput.includes(key))
   if (!someFieldIsPresent) {
     throw new Error(getSomeInputValueMustBeGivenForEditingPollErrorMessage())
