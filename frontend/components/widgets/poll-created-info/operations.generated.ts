@@ -7,7 +7,7 @@ export type OpenPollMutationVariables = Types.Exact<{
 }>;
 
 
-export type OpenPollMutation = { __typename?: 'Mutation', openPoll: { __typename?: 'Poll', id: string, state: Types.PollState } };
+export type OpenPollMutation = { __typename?: 'Mutation', openPoll: { __typename?: 'Poll', id?: string | null, state?: Types.PollState | null } };
 
 
 export const OpenPollDocument = gql`

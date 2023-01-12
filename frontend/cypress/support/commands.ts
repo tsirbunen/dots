@@ -8,3 +8,7 @@ Cypress.Commands.add('getByDataCyBeginsWith', (dataCyBeginsWith: string, count?:
   if (count) return cy.get(`[data-cy^=${dataCyBeginsWith}]`).should('have.length', count)
   return cy.get(`[data-cy^=${dataCyBeginsWith}]`)
 })
+
+Cypress.Commands.add('getByDataContains', (dataContained: string) => {
+  return cy.get(`[data-cy*=${dataContained}]`)
+})

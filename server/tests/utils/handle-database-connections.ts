@@ -14,12 +14,12 @@ export const TEST_CONFIG = {
   pool: { min: 2, max: 5 }
 }
 
-export function getDatabaseConnection(): Knex {
+export function getConnection(): Knex {
   return knex(TEST_CONFIG)
 }
 
-export async function clearDatabase(databaseConnection: Knex) {
-  await databaseConnection.raw(`
+export async function clearDatabase(connection: Knex) {
+  await connection.raw(`
         DELETE FROM "Persons";
         DELETE FROM "Votes";
         DELETE FROM "Options";
@@ -27,33 +27,33 @@ export async function clearDatabase(databaseConnection: Knex) {
     `)
 }
 
-export async function closeDatabaseConnection(databaseConnection: Knex): Promise<void> {
-  return databaseConnection.destroy()
+export async function closeConnection(connection: Knex): Promise<void> {
+  return connection.destroy()
 }
 
-export async function getAllVotesInDatabase(databaseConnection: Knex) {
-  const votesInDatabase = await databaseConnection.raw(`
+export async function getAllVotes(connection: Knex) {
+  const votesInDatabase = await connection.raw(`
     SELECT * FROM "Votes";
   `)
   return votesInDatabase.rows
 }
 
-export async function getAllOptionsInDatabase(databaseConnection: Knex) {
-  const optionsInDatabase = await databaseConnection.raw(`
+export async function getAllOptions(connection: Knex) {
+  const optionsInDatabase = await connection.raw(`
     SELECT * FROM "Options";
   `)
   return optionsInDatabase.rows
 }
 
-export async function getAllPollsInDatabase(databaseConnection: Knex) {
-  const pollsInDatabase = await databaseConnection.raw(`
+export async function getAllPolls(connection: Knex) {
+  const pollsInDatabase = await connection.raw(`
     SELECT * FROM "Polls";
   `)
   return pollsInDatabase.rows
 }
 
-export async function getAllPersonsInDatabase(databaseConnection: Knex) {
-  const personsInDatabase = await databaseConnection.raw(`
+export async function getAllPersons(connection: Knex) {
+  const personsInDatabase = await connection.raw(`
     SELECT * FROM "Persons";
   `)
   return personsInDatabase.rows

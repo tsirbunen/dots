@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Plugin } from '@envelop/core'
-import { Token } from '../types/types'
 
-import { decodeJWT } from '../utils/token-handling'
+import { decodeJWT, Token } from '../utils/token-handling'
 
 export const authenticationPlugin = (): Plugin => ({
   onContextBuilding({ context, extendContext }: any) {

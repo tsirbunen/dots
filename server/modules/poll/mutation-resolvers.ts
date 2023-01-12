@@ -1,58 +1,49 @@
 import { Context } from '../../Context'
-import { CreatePollInputType, EditPollInputType, PollType } from '../../types/types'
-import { getPersonIdIfAuthenticated } from '../../utils/get-id-of-owner-performing-query'
-import { createJWT } from '../../utils/token-handling'
-
+import { EditPollInputType } from '../../models/poll/types'
+import { CreatePollInput, Poll as PollSchema } from '../../types/graphql-schema-types.generated'
+import { Errors } from '../../utils/errors'
+import { getAuthenticatedPerson } from '../../utils/get-authenticated-person'
 import { PollProvider } from './provider'
 
-interface PollMutationResolversType {
-  createPoll: (
-    _parent: unknown,
-    args: { input: CreatePollInputType },
-    _context: Context
-  ) => Promise<PollType & { token: string }>
-  editPoll: (_parent: unknown, args: { input: EditPollInputType }, _context: Context) => Promise<PollType>
-  openPoll: (_parent: unknown, args: { pollId: string }, _context: Context) => Promise<PollType>
-  closePoll: (_parent: unknown, args: { pollId: string }, _context: Context) => Promise<PollType>
-  deletePoll: (_parent: unknown, args: { pollId: string }, _context: Context) => Promise<PollType>
+interface IPollMutationResolvers {
+  createPoll: (_parent: unknown, args: { input: CreatePollInput }, _context: Context) => Promise<PollSchema>
+  editPoll: (_parent: unknown, args: { input: EditPollInputType }, _context: Context) => Promise<PollSchema>
+  openPoll: (_parent: unknown, args: { pollId: string }, _context: Context) => Promise<PollSchema>
+  closePoll: (_parent: unknown, args: { pollId: string }, _context: Context) => Promise<PollSchema>
+  deletePoll: (_parent: unknown, args: { pollId: string }, _context: Context) => Promise<PollSchema>
 }
 
-export const PollMutationResolvers: PollMutationResolversType = {
+export const PollMutationResolvers: IPollMutationResolvers = {
   createPoll: async (_parent, { input }, context) => {
     const provider = context.injector.get(PollProvider)
-    const createdPoll = await provider.createPoll(input)
-    const token = await getUpdatedToken(provider, createdPoll.ownerId)
-    return { ...createdPoll, token }
+    return await provider.createPoll(input)
   },
 
   editPoll: async (_parent, { input }, context) => {
     const provider = context.injector.get(PollProvider)
-    const personId = getPersonIdIfAuthenticated(context)
+    const personId = getAuthenticatedPerson(context)
+    if (!personId) throw new Error(Errors.notAuthorized)
     return await provider.editPoll(input, personId)
   },
 
   openPoll: async (_parent, { pollId }, context) => {
     const provider = context.injector.get(PollProvider)
-    const personId = getPersonIdIfAuthenticated(context)
+    const personId = getAuthenticatedPerson(context)
+    if (!personId) throw new Error(Errors.notAuthorized)
     return await provider.openPoll(pollId, personId)
   },
 
   closePoll: async (_parent, { pollId }, context) => {
     const provider = context.injector.get(PollProvider)
-    const personId = getPersonIdIfAuthenticated(context)
+    const personId = getAuthenticatedPerson(context)
+    if (!personId) throw new Error(Errors.notAuthorized)
     return await provider.closePoll(pollId, personId)
   },
 
   deletePoll: async (_parent, { pollId }, context) => {
     const provider = context.injector.get(PollProvider)
-    const personId = getPersonIdIfAuthenticated(context)
-    const deletedPoll = await provider.deletePoll(pollId, personId)
-    const token = await getUpdatedToken(provider, deletedPoll.ownerId)
-    return { ...deletedPoll, token }
+    const personId = getAuthenticatedPerson(context)
+    if (!personId) throw new Error(Errors.notAuthorized)
+    return await provider.deletePoll(pollId, personId)
   }
-}
-
-const getUpdatedToken = async (provider: PollProvider, ownerId: string): Promise<string> => {
-  const allPollsOwnedByOwner = await provider.findAllPollsOwnedByOwner(ownerId)
-  return createJWT({ pollIds: allPollsOwnedByOwner.map((poll) => poll.id), ownerId })
 }

@@ -1,16 +1,11 @@
-import { DataClassType } from '../../types/types'
-import {
-  getDataClassMustBeProvidedIfOptionsPresentErrorMessage,
-  getOptionAndTotalVotesMaximaMustBothBePresentIfOnePresentErrorMessage,
-  getSomeInputValueMustBeGivenForEditingPollErrorMessage
-} from '../../utils/error-messages'
+import { DataClass } from '../../types/graphql-schema-types.generated'
 
-export const POLL_INPUT_VALID = [
+export const POLL_VALID = [
   {
     ownerName: 'Eric Cartman',
     question: 'What kind of food should we order?',
     options: ['Chinese', 'Sushi', 'Mexican', 'Nepalese'],
-    dataClass: DataClassType.TEXT,
+    dataClass: DataClass.Text,
     isAnonymous: false,
     totalVotesCountMax: 1,
     optionVotesCountMax: 1,
@@ -20,7 +15,7 @@ export const POLL_INPUT_VALID = [
     ownerName: 'Darth Vader',
     question: 'How many days should we stay on holiday?',
     options: ['7', '10', '14'],
-    dataClass: DataClassType.NUMBER,
+    dataClass: DataClass.Number,
     isAnonymous: true,
     totalVotesCountMax: 2,
     optionVotesCountMax: 1,
@@ -36,7 +31,7 @@ export const POLL_INPUT_VALID = [
       new Date('2022-11-28').valueOf().toString(),
       new Date('2022-12-05').valueOf().toString()
     ],
-    dataClass: DataClassType.DATE,
+    dataClass: DataClass.Date,
     isAnonymous: true,
     totalVotesCountMax: 3,
     optionVotesCountMax: 2,
@@ -44,13 +39,13 @@ export const POLL_INPUT_VALID = [
   }
 ]
 
-export const EDIT_POLL_INPUT_VALID = [
+export const EDIT_POLL_VALID = [
   {
     pollId: 'to be set',
     question: 'Edited question',
     options: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
     isAnonymous: false,
-    dataClass: DataClassType.TEXT,
+    dataClass: DataClass.Text,
     totalVotesCountMax: 2,
     optionVotesCountMax: 2,
     showStatusWhenVoting: true
@@ -59,7 +54,7 @@ export const EDIT_POLL_INPUT_VALID = [
     pollId: 'to be set',
     options: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
     isAnonymous: false,
-    dataClass: DataClassType.TEXT,
+    dataClass: DataClass.Text,
     totalVotesCountMax: 2,
     optionVotesCountMax: 2,
     showStatusWhenVoting: true
@@ -68,7 +63,7 @@ export const EDIT_POLL_INPUT_VALID = [
     pollId: 'to be set',
     options: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
     isAnonymous: false,
-    dataClass: DataClassType.TEXT,
+    dataClass: DataClass.Text,
     totalVotesCountMax: 2,
     optionVotesCountMax: 2
   },
@@ -76,12 +71,12 @@ export const EDIT_POLL_INPUT_VALID = [
     pollId: 'to be set',
     options: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
     isAnonymous: false,
-    dataClass: DataClassType.TEXT
+    dataClass: DataClass.Text
   },
   {
     pollId: 'to be set',
     options: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
-    dataClass: DataClassType.TEXT
+    dataClass: DataClass.Text
   },
   {
     pollId: 'to be set',
@@ -95,7 +90,7 @@ export const EDIT_POLL_INPUT_VALID = [
   }
 ]
 
-export const EDIT_POLL_INPUT_INVALID = [
+export const EDIT_POLL_INVALID = [
   {
     data: {
       pollId: 'to be set',
@@ -106,7 +101,7 @@ export const EDIT_POLL_INPUT_INVALID = [
       optionVotesCountMax: 2,
       showStatusWhenVoting: true
     },
-    errorMessage: getDataClassMustBeProvidedIfOptionsPresentErrorMessage()
+    includedInErrorMessage: ['dataClass', 'required']
   },
   {
     data: {
@@ -114,11 +109,11 @@ export const EDIT_POLL_INPUT_INVALID = [
       question: 'Edited question',
       options: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
       isAnonymous: false,
-      dataClass: DataClassType.TEXT,
+      dataClass: DataClass.Text,
       optionVotesCountMax: 2,
       showStatusWhenVoting: true
     },
-    errorMessage: getOptionAndTotalVotesMaximaMustBothBePresentIfOnePresentErrorMessage()
+    includedInErrorMessage: ['required', 'totalVotesCountMax']
   },
   {
     data: {
@@ -126,21 +121,21 @@ export const EDIT_POLL_INPUT_INVALID = [
       question: 'Edited question',
       options: [{ content: 'Op. A' }, { content: 'Op. B' }, { content: 'Op. C' }, { content: 'Op. D' }],
       isAnonymous: false,
-      dataClass: DataClassType.TEXT,
+      dataClass: DataClass.Text,
       totalVotesCountMax: 2,
       showStatusWhenVoting: true
     },
-    errorMessage: getOptionAndTotalVotesMaximaMustBothBePresentIfOnePresentErrorMessage()
+    includedInErrorMessage: ['required', 'optionVotesCountMax']
   },
   {
     data: {
       pollId: 'to be set'
     },
-    errorMessage: getSomeInputValueMustBeGivenForEditingPollErrorMessage()
+    includedInErrorMessage: ['required']
   }
 ]
 
-export const POLL_INPUT_INVALID = [
+export const POLL_INVALID = [
   {
     data: {
       ownerName: 'Darth Vader',
@@ -157,7 +152,7 @@ export const POLL_INPUT_INVALID = [
     data: {
       ownerName: 'Darth Vader',
       options: ['7', '10', '14'],
-      dataClass: DataClassType.NUMBER,
+      dataClass: DataClass.Number,
       isAnonymous: true,
       totalVotesCountMax: 2,
       optionVotesCountMax: 1,
@@ -169,7 +164,7 @@ export const POLL_INPUT_INVALID = [
     data: {
       ownerName: 'Darth Vader',
       question: 'How many days should we stay on holiday?',
-      dataClass: DataClassType.NUMBER,
+      dataClass: DataClass.Number,
       isAnonymous: true,
       totalVotesCountMax: 2,
       optionVotesCountMax: 1,
@@ -182,7 +177,7 @@ export const POLL_INPUT_INVALID = [
       ownerName: 'Darth Vader',
       question: 'How many days should we stay on holiday?',
       options: ['7', '10', '14'],
-      dataClass: DataClassType.NUMBER,
+      dataClass: DataClass.Number,
       totalVotesCountMax: 2,
       optionVotesCountMax: 1,
       showStatusWhenVoting: true
@@ -194,7 +189,7 @@ export const POLL_INPUT_INVALID = [
       ownerName: 'Darth Vader',
       question: 'How many days should we stay on holiday?',
       options: ['7', '10', '14'],
-      dataClass: DataClassType.NUMBER,
+      dataClass: DataClass.Number,
       isAnonymous: true,
       optionVotesCountMax: 1,
       showStatusWhenVoting: true
@@ -206,7 +201,7 @@ export const POLL_INPUT_INVALID = [
       ownerName: 'Darth Vader',
       question: 'How many days should we stay on holiday?',
       options: ['7', '10', '14'],
-      dataClass: DataClassType.NUMBER,
+      dataClass: DataClass.Number,
       isAnonymous: true,
       totalVotesCountMax: 2,
       showStatusWhenVoting: true
@@ -218,7 +213,7 @@ export const POLL_INPUT_INVALID = [
       ownerName: 'Darth Vader',
       question: 'How many days should we stay on holiday?',
       options: ['7', '10', '14'],
-      dataClass: DataClassType.NUMBER,
+      dataClass: DataClass.Number,
       isAnonymous: true,
       totalVotesCountMax: 2,
       optionVotesCountMax: 1

@@ -4,10 +4,11 @@ import { DATA_CY_LAUNCH_PAGE } from '../../components/launch-page-content/launch
 import { DATA_CY_CREATE_POLL_PAGE } from '../../pages/create-poll'
 import { DATA_CY_VIEW_POLL_PAGE } from '../../pages/view-poll'
 import { DATA_CY_VOTE_IN_POLL_PAGE } from '../../pages/vote-in-poll'
+import { DATA_CY_DASHBOARD_PAGE } from '../../components/dashboard-content/dashboard-content'
 
 const CLIENT = 'localhost'
 const CLIENT_BASE_URL = `http://${CLIENT}:3000`
-const MENU_NAVIGATION_TARGETS_COUNT = 4
+const MENU_NAVIGATION_TARGETS_COUNT = 5
 
 export class App extends Base {
   navigateToDotsApp() {
@@ -20,6 +21,7 @@ export class App extends Base {
     else if (targetPage.includes('vote')) pageName = DATA_CY_VOTE_IN_POLL_PAGE
     else if (targetPage.includes('view')) pageName = DATA_CY_VIEW_POLL_PAGE
     else if (targetPage.includes('launch')) pageName = DATA_CY_LAUNCH_PAGE
+    else if (targetPage.includes('dashboard')) pageName = DATA_CY_DASHBOARD_PAGE
     else throw new Error(`Cannot navigate to page ${targetPage}!`)
     this.verifyDataCyIsVisible(pageName)
   }

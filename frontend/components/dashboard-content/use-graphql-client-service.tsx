@@ -7,21 +7,21 @@ import { ToastType } from '../widgets/toast/toast'
 import { FindPollsByCodeDocument, FindPollsByCodeQuery, FindPollsByCodeQueryVariables } from './operations.generated'
 
 type UseGraphQLClientService = {
-  findPollsByCode: (codes: string[], token: string) => Promise<Poll[] | undefined>
+  findPollsByCode: (codes: string[], token: string | undefined) => Promise<Poll[]>
 }
 
 export const useGraphQLClientService = (): UseGraphQLClientService => {
   const { showToast } = useToast()
   const { translate } = useTranslation()
 
-  const findPollsByCode = async (codes: string[], token: string): Promise<Poll[] | undefined> => {
+  const findPollsByCode = async (codes: string[], token: string | undefined): Promise<Poll[]> => {
     try {
       const response = await graphqlClient.query<FindPollsByCodeQuery, FindPollsByCodeQueryVariables>({
         query: FindPollsByCodeDocument,
         variables: { codes },
         context: {
           headers: {
-            authorization: token
+            authorization: token ?? null
           }
         }
       })
@@ -31,7 +31,6 @@ export const useGraphQLClientService = (): UseGraphQLClientService => {
       }
 
       const pollsData = response.data.findPollsByCode
-      console.log({ pollsData })
       const polls = validatePollsData(pollsData)
       return polls
     } catch (error) {
@@ -41,6 +40,7 @@ export const useGraphQLClientService = (): UseGraphQLClientService => {
         type: ToastType.ERROR,
         toastId: `${ToastType.ERROR}-${new Date().toUTCString()}`
       })
+      return []
     }
   }
 

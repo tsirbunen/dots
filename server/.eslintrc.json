@@ -5,7 +5,8 @@
     "prefer-const": 1,
     "@typescript-eslint/no-unused-vars": [1, { "argsIgnorePattern": "^_" }],
     "@typescript-eslint/no-explicit-any": 1,
-    "@typescript-eslint/strict-boolean-expressions": 0
+    "@typescript-eslint/strict-boolean-expressions": 0,
+    "@typescript-eslint/no-extraneous-class": 0
   },
 
   "parser": "@typescript-eslint/parser",

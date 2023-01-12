@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
+import { Poll } from '../types/types'
 import {
   LOCAL_STORAGE_POLL_CODES,
   LOCAL_STORAGE_USER_NAME,
@@ -9,12 +10,26 @@ import {
 type UseBrowserStorageService = {
   getUserNameIfExists: () => string | undefined
   getUserId: () => string
-  updateToken: (token: string) => void
+  updateToken: (token: string | undefined | null) => void
   getToken: () => string | undefined
   storeUserName: (userName: string) => void
   hasStoredPollCodes: () => boolean
   addToPollsList: (pollId: string) => void
+  clearPollCodes: () => void
   getPollCodes: () => string[]
+  updateStorageWithRecentPollsData: (allPolls: Poll[] | undefined) => void
+}
+
+const extractMostRecentToken = (allPolls: Poll[]) => {
+  let token: string | undefined = undefined
+  allPolls.some((poll) => {
+    if (poll.token) {
+      token = poll.token
+      return true
+    }
+    return false
+  })
+  return token
 }
 
 export const useBrowserStorageService = (): UseBrowserStorageService => {
@@ -36,8 +51,14 @@ export const useBrowserStorageService = (): UseBrowserStorageService => {
     return userName ? userName : undefined
   }
 
-  const updateToken = (token: string) => {
-    localStorage.setItem(LOCAL_STORAGE_TOKEN, token)
+  const updateToken = (token: string | undefined | null) => {
+    if (token) {
+      localStorage.setItem(LOCAL_STORAGE_TOKEN, token)
+      return
+    }
+    if (localStorage.hasOwnProperty(LOCAL_STORAGE_TOKEN)) {
+      localStorage.removeItem(LOCAL_STORAGE_TOKEN)
+    }
   }
 
   const getToken = (): string | undefined => {
@@ -60,6 +81,10 @@ export const useBrowserStorageService = (): UseBrowserStorageService => {
     }
   }
 
+  const replacePollsList = (codes: string[]) => {
+    localStorage.setItem(LOCAL_STORAGE_POLL_CODES, JSON.stringify(codes))
+  }
+
   const storeUserName = (userName: string) => {
     localStorage.setItem(LOCAL_STORAGE_USER_NAME, userName)
   }
@@ -67,6 +92,29 @@ export const useBrowserStorageService = (): UseBrowserStorageService => {
   const hasStoredPollCodes = (): boolean => {
     const codes = getPollCodes()
     return codes.length > 0
+  }
+
+  const clearPollCodes = () => {
+    if (localStorage.hasOwnProperty(LOCAL_STORAGE_POLL_CODES)) {
+      localStorage.removeItem(LOCAL_STORAGE_POLL_CODES)
+    }
+  }
+
+  const updateStorageWithRecentPollsData = (allPollsFromServer: Poll[] | undefined) => {
+    let mostRecentToken: string | undefined | null = undefined
+    if (allPollsFromServer) {
+      mostRecentToken = extractMostRecentToken(allPollsFromServer)
+    }
+    const currentToken = getToken()
+    if (mostRecentToken !== currentToken) {
+      updateToken(mostRecentToken ?? undefined)
+    }
+    if (!allPollsFromServer || allPollsFromServer.length === 0) {
+      clearPollCodes()
+    } else {
+      const pollCodes = allPollsFromServer.map((poll) => poll.code)
+      replacePollsList(pollCodes)
+    }
   }
 
   const getPollCodes = (): string[] => {
@@ -82,11 +130,13 @@ export const useBrowserStorageService = (): UseBrowserStorageService => {
   return {
     getUserId,
     updateToken,
+    clearPollCodes,
     getUserNameIfExists,
     storeUserName,
     addToPollsList,
     hasStoredPollCodes,
     getPollCodes,
-    getToken
+    getToken,
+    updateStorageWithRecentPollsData
   }
 }

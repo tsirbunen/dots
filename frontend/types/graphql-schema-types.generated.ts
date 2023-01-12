@@ -95,13 +95,13 @@ export type MutationOpenPollArgs = {
 
 export type Option = {
   __typename?: 'Option';
-  content: Scalars['String'];
-  createdAt: Scalars['Timestamp'];
+  content?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['Timestamp']>;
   dataClass?: Maybe<DataClass>;
   deletedAt?: Maybe<Scalars['Timestamp']>;
-  id: Scalars['ID'];
-  pollId: Scalars['ID'];
-  updatedAt: Scalars['Timestamp'];
+  id?: Maybe<Scalars['ID']>;
+  pollId?: Maybe<Scalars['ID']>;
+  updatedAt?: Maybe<Scalars['Timestamp']>;
   votes?: Maybe<Array<Maybe<Vote>>>;
 };
 
@@ -117,27 +117,27 @@ export type OptionEditData = {
 
 export type Person = {
   __typename?: 'Person';
-  id: Scalars['ID'];
+  id?: Maybe<Scalars['ID']>;
   name?: Maybe<Scalars['String']>;
 };
 
 export type Poll = {
   __typename?: 'Poll';
-  code: Scalars['String'];
-  createdAt: Scalars['Timestamp'];
+  code?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['Timestamp']>;
   deletedAt?: Maybe<Scalars['Timestamp']>;
-  id: Scalars['ID'];
-  isAnonymous: Scalars['Boolean'];
-  optionVotesCountMax: Scalars['Int'];
+  id?: Maybe<Scalars['ID']>;
+  isAnonymous?: Maybe<Scalars['Boolean']>;
+  optionVotesCountMax?: Maybe<Scalars['Int']>;
   options?: Maybe<Array<Maybe<Option>>>;
   owner?: Maybe<Person>;
-  ownerId: Scalars['ID'];
-  question: Scalars['String'];
-  showStatusWhenVoting: Scalars['Boolean'];
-  state: PollState;
+  ownerId?: Maybe<Scalars['ID']>;
+  question?: Maybe<Scalars['String']>;
+  showStatusWhenVoting?: Maybe<Scalars['Boolean']>;
+  state?: Maybe<PollState>;
   token?: Maybe<Scalars['String']>;
-  totalVotesCountMax: Scalars['Int'];
-  updatedAt: Scalars['Timestamp'];
+  totalVotesCountMax?: Maybe<Scalars['Int']>;
+  updatedAt?: Maybe<Scalars['Timestamp']>;
 };
 
 
@@ -176,11 +176,11 @@ export type QueryFindPollsByCodeArgs = {
 
 export type Vote = {
   __typename?: 'Vote';
-  createdAt: Scalars['Timestamp'];
+  createdAt?: Maybe<Scalars['Timestamp']>;
   deletedAt?: Maybe<Scalars['Timestamp']>;
-  id: Scalars['ID'];
+  id?: Maybe<Scalars['ID']>;
   name?: Maybe<Scalars['String']>;
-  optionId: Scalars['ID'];
-  updatedAt: Scalars['Timestamp'];
-  voterId: Scalars['ID'];
+  optionId?: Maybe<Scalars['ID']>;
+  updatedAt?: Maybe<Scalars['Timestamp']>;
+  voterId?: Maybe<Scalars['ID']>;
 };

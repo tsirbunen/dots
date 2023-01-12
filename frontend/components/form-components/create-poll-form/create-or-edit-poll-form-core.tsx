@@ -15,6 +15,7 @@ import { Option, Poll } from '../../../types/types'
 
 export const DATA_CY_RESET = 'reset'
 export const DATA_CY_SUBMIT = 'submit'
+export const DATA_CY_CREATE_POLL_FORM_CORE = 'create_poll_form_core'
 
 export type CreatePollFormData = {
   ownerName: string
@@ -65,7 +66,7 @@ const CreateOrEditPollFormCore = ({ mode, poll, onSubmit, userName }: CreateOrEd
   const watchOptionVotesMaxCount = watch('totalVotesCountMax')
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} data-cy={DATA_CY_CREATE_POLL_FORM_CORE}>
       <TextTypeFormInput
         control={control}
         textPackage={TEXT_PACKAGES['ownerName']}

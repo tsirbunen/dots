@@ -2,67 +2,58 @@ import 'reflect-metadata'
 import 'mocha'
 import dns from 'dns'
 
-import { deletePollFromDatabase } from '../utils/operations'
-import {
-  assertPollOwnerOptionAndVoteCountsInDatabaseMatchExpectedCounts,
-  createPollsByDifferentOwnersEachWithVotesForOptionsInDatabase
-} from '../utils/helpers'
+import { deletePoll } from '../utils/operations'
+import { assertOwnerOptionAndVoteCountsMatchExpected, createPollsByOwnersWithVotes } from '../utils/helpers'
 
-import {
-  getDatabaseConnection,
-  clearDatabase,
-  closeDatabaseConnection,
-  getAllPollsInDatabase
-} from '../utils/handle-database-connections'
-
-import { PollFullDataType } from '../../types/types'
+import { getConnection, clearDatabase, closeConnection } from '../utils/handle-database-connections'
 import { handleAssertNotAuthenticatedError } from '../../utils/handle-not-authenticated-error'
+import { PollFull } from '../../models/poll/types'
 
 dns.setDefaultResultOrder('ipv4first')
 
-const DATABASE = getDatabaseConnection()
+const DATABASE = getConnection()
 let poll: {
-  pollToDelete: PollFullDataType
+  pollToDelete: PollFull
   personsCount: number
   pollsByOwnerCount: number
   pollsCount: number
   codes: Record<string, string[]>
-  totalNumberOfOptions: number
-  totalNumberOfVotes: number
-  optionsInPollToDeleteCount: number
-  votesInPollToDeleteCount: number
-  lastPoll: PollFullDataType
+  totalOptions: number
+  totalVotes: number
+  optionsToDeleteCount: number
+  votesToDeleteCount: number
+  lastPoll: PollFull
 }
 
 describe('DELETE POLL', () => {
   beforeEach(async () => {
     await clearDatabase(DATABASE)
-    poll = await createPollsByDifferentOwnersEachWithVotesForOptionsInDatabase()
+    poll = await createPollsByOwnersWithVotes()
   })
 
   it('A poll (and data related to that poll and only to that poll) can be deleted from database by the poll owner', async () => {
     const pollCodes = poll.codes[poll.pollToDelete.owner.id]
-    await assertPollOwnerOptionAndVoteCountsInDatabaseMatchExpectedCounts(
+    await assertOwnerOptionAndVoteCountsMatchExpected(
       DATABASE,
       poll.pollToDelete,
       poll.pollsByOwnerCount,
       poll.pollsCount,
       poll.personsCount,
-      poll.totalNumberOfOptions,
-      poll.totalNumberOfVotes,
+      poll.totalOptions,
+      poll.totalVotes,
       pollCodes
     )
 
-    await deletePollFromDatabase(poll.pollToDelete.id, poll.pollToDelete.token!)
+    await deletePoll(poll.pollToDelete.id, poll.pollToDelete.token!)
 
-    await assertPollOwnerOptionAndVoteCountsInDatabaseMatchExpectedCounts(
+    await assertOwnerOptionAndVoteCountsMatchExpected(
       DATABASE,
       poll.pollToDelete,
       poll.pollsByOwnerCount - 1,
       poll.pollsCount - 1,
       poll.personsCount,
-      poll.totalNumberOfOptions - poll.optionsInPollToDeleteCount,
-      poll.totalNumberOfVotes - poll.votesInPollToDeleteCount,
+      poll.totalOptions - poll.optionsToDeleteCount,
+      poll.totalVotes - poll.votesToDeleteCount,
       pollCodes
     )
   })
@@ -70,23 +61,23 @@ describe('DELETE POLL', () => {
   it('Deleting a poll (and data related to that poll) fails if deletion is attempted with a token not containing true poll owner data', async () => {
     try {
       const pollWithAnotherOwner = poll.lastPoll
-      await deletePollFromDatabase(poll.pollToDelete.id, pollWithAnotherOwner.token!)
+      await deletePoll(poll.pollToDelete.id, pollWithAnotherOwner.token!)
     } catch (error) {
       handleAssertNotAuthenticatedError(error)
     }
     const pollCodes = poll.codes[poll.pollToDelete.owner.id]
-    await assertPollOwnerOptionAndVoteCountsInDatabaseMatchExpectedCounts(
+    await assertOwnerOptionAndVoteCountsMatchExpected(
       DATABASE,
       poll.pollToDelete,
       poll.pollsByOwnerCount,
       poll.pollsCount,
       poll.personsCount,
-      poll.totalNumberOfOptions,
-      poll.totalNumberOfVotes,
+      poll.totalOptions,
+      poll.totalVotes,
       pollCodes
     )
   })
   after(async () => {
-    await closeDatabaseConnection(DATABASE)
+    await closeConnection(DATABASE)
   })
 })

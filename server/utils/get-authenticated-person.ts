@@ -1,6 +1,6 @@
 import { Context } from '../Context'
-import { TokenDetails } from '../types/types'
+import { TokenDetails } from './token-handling'
 
-export const getPersonIdIfAuthenticated = (context: Context): string | undefined => {
+export const getAuthenticatedPerson = (context: Context): string | undefined => {
   return (context as unknown as { authenticationData?: TokenDetails }).authenticationData?.ownerId
 }

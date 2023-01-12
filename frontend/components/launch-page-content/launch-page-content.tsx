@@ -4,7 +4,7 @@ import AppTitle from './app-title'
 import LaunchPageLanguageToggle from './launch-page-language-toggle'
 import DashboardInfo from './dashboard-info'
 
-export const DATA_CY_LAUNCH_PAGE = 'launch-page'
+export const DATA_CY_LAUNCH_PAGE = 'launch_page'
 
 const LaunchPageContent = () => {
   return (

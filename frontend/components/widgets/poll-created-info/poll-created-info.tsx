@@ -13,11 +13,11 @@ import { PollState } from '../../../types/graphql-schema-types.generated'
 import { useGraphQLClientService } from './use-graphql-client-service'
 import { useTranslation } from '../../../hooks/use-translation'
 import { useContext, useState } from 'react'
-import { AppStateAction, AppStateActionEnum } from '../../../state/reducer'
-import { AppStateContext, AppState } from '../../../state/state-context'
-// import { usePollsData } from '../../../hooks/use-polls-data'
+import { AppStateActionEnum } from '../../../state/reducer'
+import { AppStateContext, AppStateContextType } from '../../../state/state-context'
 
-export const DATA_CY_POLL_CREATED_INFO = 'poll_created_info'
+export const DATA_CY_INFO_EDIT_POLL = 'edit_poll'
+export const DATA_CY_INFO_OPEN_POLL = 'open_poll'
 
 type PollCreatedInfoProps = {
   createdPoll: Poll
@@ -26,11 +26,7 @@ type PollCreatedInfoProps = {
 const PollCreatedInfo = ({ createdPoll }: PollCreatedInfoProps) => {
   const { openPoll } = useGraphQLClientService()
   const { translate } = useTranslation()
-  // const { updatePoll } = usePollsData()
-  const { state, dispatch } = useContext(AppStateContext) as {
-    state: AppState
-    dispatch: React.Dispatch<AppStateAction>
-  }
+  const { dispatch } = useContext(AppStateContext) as AppStateContextType
   const [poll, setPoll] = useState<Poll>(createdPoll)
   const router = useRouter()
   console.log({ poll })
@@ -38,7 +34,6 @@ const PollCreatedInfo = ({ createdPoll }: PollCreatedInfoProps) => {
   const openPollForVoting = async () => {
     const isOpen = await openPoll(poll.id, poll.token)
     if (isOpen) {
-      // updatePoll({ ...poll, state: PollState.Vote })
       dispatch({ type: AppStateActionEnum.UPDATE_POLL, data: { ...poll, state: PollState.Vote } })
       setPoll((previous) => {
         return { ...previous, state: PollState.Vote }
@@ -66,7 +61,7 @@ const PollCreatedInfo = ({ createdPoll }: PollCreatedInfoProps) => {
                 <SmallButton
                   text={translate('edit_poll').toUpperCase()}
                   type="button"
-                  dataCyPostfix={`${DATA_CY_POLL_CREATED_INFO}-edit`}
+                  dataCyPostfix={DATA_CY_INFO_EDIT_POLL}
                   onClick={continueEditingPoll}
                 />
               </Box>
@@ -78,7 +73,7 @@ const PollCreatedInfo = ({ createdPoll }: PollCreatedInfoProps) => {
                 <SmallButton
                   text={translate('open_poll_for_voting').toUpperCase()}
                   type="button"
-                  dataCyPostfix={`${DATA_CY_POLL_CREATED_INFO}-open`}
+                  dataCyPostfix={DATA_CY_INFO_OPEN_POLL}
                   onClick={openPollForVoting}
                 />
               </Box>

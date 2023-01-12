@@ -1,12 +1,12 @@
 import { Context } from '../../Context'
-import { VoteInputType, VoteType } from '../../types/types'
+import { VoteDB, VoteDBMinimal } from '../../models/vote/types'
 import { OptionProvider } from './provider'
 
-interface OptionMutationResolversType {
-  giveAVoteToOption: (_parent: unknown, args: { input: VoteInputType }, _context: Context) => Promise<VoteType>
+interface IOptionMutationResolvers {
+  giveAVoteToOption: (_parent: unknown, args: { input: VoteDBMinimal }, _context: Context) => Promise<VoteDB>
 }
 
-export const OptionMutationResolvers: OptionMutationResolversType = {
+export const OptionMutationResolvers: IOptionMutationResolvers = {
   giveAVoteToOption: async (_parent, { input }, context) => {
     const provider = context.injector.get(OptionProvider)
     return await provider.giveAVoteToOption(input)

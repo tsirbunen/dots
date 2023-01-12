@@ -27,10 +27,17 @@ Feature: Navigation
             | create-poll   |              | launch-page       |
             | create-poll   | vote-in-poll | vote-in-poll-page |
             | create-poll   | view-poll    | view-poll-page    |
+            | create-poll   | dashboard    | dashboard-page    |
             | vote-in-poll  |              | launch-page       |
             | vote-in-poll  | create-poll  | create-poll-page  |
             | vote-in-poll  | view-poll    | view-poll-page    |
+            | vote-in-poll  | dashboard    | dashboard-page    |
             | view-poll     |              | launch-page       |
             | view-poll     | create-poll  | create-poll-page  |
             | view-poll     | vote-in-poll | vote-in-poll-page |
+            | view-poll     | dashboard    | dashboard-page    |
+            | dashboard     |              | launch-page       |
+            | dashboard     | vote-in-poll | vote-in-poll-page |
+            | dashboard     | view-poll    | view-poll-page    |
+            | dashboard     | create-poll  | create-poll-page  |
 

@@ -13,7 +13,7 @@ export type AppStateAction =
   | { type: AppStateActionEnum.SET_LANGUAGE; data: Language }
   | { type: AppStateActionEnum.ADD_POLL; data: Poll }
   | { type: AppStateActionEnum.UPDATE_POLL; data: Poll }
-  | { type: AppStateActionEnum.SET_ALL_POLLS; data: Record<string, Poll> }
+  | { type: AppStateActionEnum.SET_ALL_POLLS; data: Poll[] }
 
 const getPollsWithNewPollAdded = (polls: Record<string, Poll>, newPoll: Poll): Record<string, Poll> => {
   const updatedPolls = { ...polls }
@@ -39,7 +39,9 @@ export const reducer = (state: AppState, action: AppStateAction) => {
     case AppStateActionEnum.UPDATE_POLL:
       return { ...state, polls: getPollsWithOnePollUpdated(state.polls, action.data) }
     case AppStateActionEnum.SET_ALL_POLLS:
-      return { ...state, polls: { ...action.data } }
+      const polls: Record<string, Poll> = {}
+      action.data.forEach((poll) => (polls[poll.code] = poll))
+      return { ...state, polls }
     default:
       throw new Error(`${JSON.stringify(action)} should not appear as an action in app state reducer!`)
   }

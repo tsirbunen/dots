@@ -14,4 +14,8 @@ export class Base {
   verifyDataCyBeginsWithInstancesAreVisible(beginsWith: string, count?: number) {
     cy.getByDataCyBeginsWith(beginsWith, count).should('be.visible')
   }
+
+  verifyDataCyContains(containedData: string) {
+    cy.getByDataContains(containedData)
+  }
 }

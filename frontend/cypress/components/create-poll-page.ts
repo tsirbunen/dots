@@ -32,6 +32,13 @@ export class CreatePollPage extends Base {
     })
   }
 
+  typeUserNameToInputField(userName: string) {
+    cy.getByDataCy(DATA_CY_INPUT_MODAL).within(() => {
+      const inputField = cy.getByDataCy(DATA_CY_MODAL_INPUT_TEXT)
+      inputField.type(userName)
+    })
+  }
+
   clickModalAddButton() {
     cy.getByDataCy(DATA_CY_INPUT_MODAL).within(() => {
       const addButton = cy.getByDataCy(`${DATA_CY_SMALL_BUTTON}-${DATA_CY_MODAL_ADD}`)
@@ -115,12 +122,14 @@ export class CreatePollPage extends Base {
     }
   }
 
-  clickProperAddTextModalOpen(targetField: 'poll question' | 'voting option') {
+  clickProperAddTextModalOpen(targetField: 'poll question' | 'voting option' | 'user name') {
     let startAddingButton
     if (targetField === 'poll question') {
       startAddingButton = cy.getByDataCy(`${DATA_CY_FORM_TEXT_INPUT_BUTTON}-question`)
     } else if (targetField === 'voting option') {
       startAddingButton = cy.getByDataCy(DATA_CY_LIST_ADD)
+    } else if (targetField === 'user name') {
+      startAddingButton = cy.getByDataCy(`${DATA_CY_FORM_TEXT_INPUT_BUTTON}-ownerName`)
     } else {
       throw new Error(`Target field ${targetField} not implemented!`)
     }
@@ -161,5 +170,24 @@ export class CreatePollPage extends Base {
       inputField.type('iii')
       inputField.clear()
     })
+  }
+
+  fillInAllRequiredFields() {
+    this.clickProperAddTextModalOpen('user name')
+    this.typePollQuestionToInputField('Some name')
+    this.clickModalAddButton()
+    this.clickProperAddTextModalOpen('poll question')
+    this.typePollQuestionToInputField('Some question')
+    this.clickModalAddButton()
+    for (let i = 0; i < 2; i++) {
+      this.clickProperAddTextModalOpen('voting option')
+      this.typeVotingOptionToInputField(`option name ${i}`)
+      this.clickModalAddButton()
+    }
+  }
+
+  submitPollData() {
+    const submitButton = cy.getByDataCy(`${DATA_CY_SMALL_BUTTON}-${DATA_CY_SUBMIT}`)
+    submitButton.click()
   }
 }
