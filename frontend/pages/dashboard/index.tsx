@@ -1,13 +1,11 @@
 import type { NextPage } from 'next'
 import LayoutWithHeader from '../../components/layout-with-header/layout-with-header'
-import DashboardContent from '../../components/dashboard-content/dashboard-content'
+import DashboardContent from '../../components/dashboard/dashboard'
 
 const DashboardPage: NextPage = () => {
   return (
     <LayoutWithHeader>
-      <div>
-        <DashboardContent />
-      </div>
+      <DashboardContent />
     </LayoutWithHeader>
   )
 }

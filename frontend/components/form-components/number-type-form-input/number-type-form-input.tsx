@@ -1,21 +1,9 @@
 import { Box, Flex, Text, Slider, SliderFilledTrack, SliderThumb, SliderTrack } from '@chakra-ui/react'
 import { Control, Controller, ControllerRenderProps } from 'react-hook-form'
-
-import {
-  numberInputContainerStyle,
-  titleStyle,
-  titleContainerStyle,
-  sliderThumbStyle,
-  getSliderStyle,
-  sliderFilledTrackStyle,
-  sliderTrackStyle,
-  sliderBoxStyle,
-  errorStyle
-} from './styles'
+import { Styles } from './styles'
 import { TbNumber1, TbNumber2, TbNumber3 } from 'react-icons/tb'
-
 import { useTranslation } from '../../../hooks/use-translation'
-import { CreatePollFormData } from '../create-poll-form/create-or-edit-poll-form-core'
+import { PollFormData } from '../create-poll-form/poll-form'
 import { NumberInputConstantsPackage } from '../../../types/types'
 
 export const DATA_CY_FORM_NUMBER_INPUT = 'form_number_input'
@@ -24,7 +12,7 @@ export type NumberInputFieldType = 'totalVotesCountMax' | 'optionVotesCountMax'
 
 type NumberTypeFormInputProps = {
   fieldType: NumberInputFieldType
-  control: Control<CreatePollFormData, unknown> | undefined
+  control: Control<PollFormData, unknown> | undefined
   errorMessage: string | undefined
   textPackage: NumberInputConstantsPackage
   upperLimit?: number
@@ -44,10 +32,7 @@ const NumberTypeFormInput = ({
   const multiplier = 10
   const title = translate(textPackage.titleKey)
 
-  const handleNumberChanged = (
-    field: ControllerRenderProps<CreatePollFormData, NumberInputFieldType>,
-    newValue: number
-  ) => {
+  const handleNumberChanged = (field: ControllerRenderProps<PollFormData, NumberInputFieldType>, newValue: number) => {
     const candidateValue = (newValue + multiplier) / multiplier
     if (lowerLimit && candidateValue < lowerLimit) return
     if (upperLimit && candidateValue > upperLimit) return
@@ -55,7 +40,7 @@ const NumberTypeFormInput = ({
   }
   const renderErrorMessage = (errorsString: string) => {
     return (
-      <Text data-cy={errorsString} {...errorStyle}>
+      <Text data-cy={errorsString} {...Styles.error}>
         {errorsString}
       </Text>
     )
@@ -72,9 +57,9 @@ const NumberTypeFormInput = ({
         const minValue = textPackage.minimum_value
         const sliderValue = (fieldValue - minValue) * 10
         return (
-          <Box {...numberInputContainerStyle}>
-            <Flex {...titleContainerStyle}>
-              <Text data-cy={title} {...titleStyle}>
+          <Box {...Styles.numberInputContainer}>
+            <Flex {...Styles.titleContainer}>
+              <Text data-cy={title} {...Styles.title}>
                 {title}
               </Text>
 
@@ -84,16 +69,16 @@ const NumberTypeFormInput = ({
                   defaultValue={0}
                   step={multiplier}
                   max={maxValue}
-                  {...getSliderStyle(sliderValue, maxValue)}
+                  {...Styles.getSlider(sliderValue, maxValue)}
                   value={sliderValue}
                   onChange={(newValue) => handleNumberChanged(field, newValue)}
                   data-cy={`${DATA_CY_FORM_NUMBER_INPUT}-${fieldType}`}
                 >
-                  <SliderTrack {...sliderTrackStyle}>
-                    <SliderFilledTrack {...sliderFilledTrackStyle} />
+                  <SliderTrack {...Styles.sliderTrack}>
+                    <SliderFilledTrack {...Styles.sliderFilledTrack} />
                   </SliderTrack>
-                  <SliderThumb {...sliderThumbStyle}>
-                    <Box {...sliderBoxStyle} as={fieldValueAsIcon} />
+                  <SliderThumb {...Styles.sliderThumb}>
+                    <Box {...Styles.sliderBox} as={fieldValueAsIcon} />
                   </SliderThumb>
                 </Slider>
               </Box>

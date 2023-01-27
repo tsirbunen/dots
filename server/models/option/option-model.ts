@@ -65,6 +65,7 @@ export class Option extends BaseModel {
     await Promise.all([
       await this.database<OptionDB>('Options').transacting(trx).delete().whereIn('id', toDeleteIds),
       toPatch.map(async (toPatch) => {
+        console.log(toPatch)
         this.validate(updateOptionSchema, toPatch)
         return await this.database<OptionDB>('Options')
           .transacting(trx)

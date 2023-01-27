@@ -19,7 +19,8 @@ export const validatePollData = (pollData: unknown): Poll => {
     isAnonymous: validateBoolean(data.isAnonymous),
     state: validatePollState(data.state),
     token: validateToken(data.token),
-    options: validateOptions(data.options)
+    options: validateOptions(data.options),
+    createdAt: validateDate(data.createdAt)
   } as Poll
 }
 
@@ -45,19 +46,21 @@ const validateOptions = (data: unknown) => {
     }
   })
 }
-const validateVotes = (data: unknown) => {
+const validateVotes = (data: unknown): Vote[] => {
   if (!Array.isArray(data)) {
     throw new Error('Votes must be an array!')
   }
-  return data?.map((v) => {
-    const vote = v as Vote
-    return {
-      id: validateString(vote.id),
-      optionId: validateString(vote.optionId),
-      voterId: validateString(vote.voterId),
-      name: validateString(vote.name)
-    }
-  })
+  return data?.map((v) => validateVote(v))
+}
+
+export const validateVote = (v: unknown) => {
+  const vote = v as Vote
+  return {
+    id: validateString(vote.id),
+    optionId: validateString(vote.optionId),
+    voterId: validateString(vote.voterId),
+    name: validateString(vote.name)
+  }
 }
 
 export const validateToken = (target: unknown): string => {
@@ -91,4 +94,10 @@ const validateDataClass = (target: unknown): DataClass => {
   if (target !== DataClass.Text && target !== DataClass.Date && target !== DataClass.Number)
     throw new Error(`Target ${target} is not a DataClass!`)
   return target
+}
+
+const validateDate = (target: unknown): Date => {
+  const testDate = new Date(target as number)
+  if (typeof target === 'number' && testDate instanceof Date) return testDate
+  throw new Error(`Target ${target} does not represent a date!`)
 }

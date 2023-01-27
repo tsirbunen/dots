@@ -1,20 +1,11 @@
 import React, { useContext } from 'react'
 import { Box, Button, Center, IconButton, Popover, PopoverContent, PopoverTrigger, Portal } from '@chakra-ui/react'
 import { MdLanguage } from 'react-icons/md'
-
 import { Language, useTranslation } from '../../../hooks/use-translation'
 import { AppStateContext, AppState } from '../../../state/state-context'
-import { AppStateAction, AppStateActionEnum } from '../../../state/reducer'
-
+import { StateAction, StateActionType } from '../../../state/reducer'
 import { Phrase } from '../../../localization/translations'
-import {
-  buttonInvertedStyles,
-  buttonStyles,
-  customButtonBoxStyle,
-  iconButtonStyle,
-  iconStyle,
-  popoverContentStyle
-} from '../../../common/common-styles'
+import { commonStyles } from '../../../common/common-styles'
 import { headerToggleLanguageContainerStyle } from './styles'
 
 export const DATA_CY_LANGUAGE_TOGGLE = 'language-toggle-icon-button'
@@ -24,12 +15,12 @@ const ToggleLanguage = ({ isLaunchPage }: { isLaunchPage: boolean }) => {
   const { translate } = useTranslation()
   const { state, dispatch } = useContext(AppStateContext) as {
     state: AppState
-    dispatch: React.Dispatch<AppStateAction>
+    dispatch: React.Dispatch<StateAction>
   }
 
   const changeAppLanguage = (selectedNewLanguage: Language) => {
     if (state.language !== selectedNewLanguage) {
-      dispatch({ type: AppStateActionEnum.SET_LANGUAGE, data: selectedNewLanguage })
+      dispatch({ type: StateActionType.SET_LANGUAGE, data: selectedNewLanguage })
     }
   }
 
@@ -41,21 +32,21 @@ const ToggleLanguage = ({ isLaunchPage }: { isLaunchPage: boolean }) => {
       <Popover trigger="hover">
         <PopoverTrigger>
           <IconButton
-            {...iconButtonStyle}
+            {...commonStyles.iconButton}
             isRound
             aria-label={DATA_CY_LANGUAGE_TOGGLE}
-            icon={<MdLanguage {...iconStyle} />}
+            icon={<MdLanguage {...commonStyles.icon} />}
             data-cy={DATA_CY_LANGUAGE_TOGGLE}
           />
         </PopoverTrigger>
 
         <Portal>
-          <PopoverContent {...popoverContentStyle}>
+          <PopoverContent {...commonStyles.popoverContent}>
             <Center flexDirection={isLaunchPage ? 'row' : 'column'} {...containerStyle}>
               {languages.map((language) => {
-                const styles = language === state.language ? buttonStyles : buttonInvertedStyles
+                const styles = language === state.language ? commonStyles.button : commonStyles.buttonInverted
                 return (
-                  <Box key={language} {...customButtonBoxStyle}>
+                  <Box key={language} {...commonStyles.customButtonBox}>
                     <Button
                       {...styles}
                       data-cy={`${DATA_CY_LANGUAGE}-${language}`}

@@ -13,7 +13,15 @@ import { TextDateTimeDataHolder, TextDateTimeDataType } from './text-date-time-d
 
 export const createValidationSchema = (translate: (phrase: Phrase) => string) => {
   return Yup.object().shape({
-    ownerName: Yup.string().required().min(TEXT_LENGTH_ORGANIZER_MIN).max(TEXT_LENGTH_MAX),
+    ownerName: Yup.string()
+      .test('if_present_then_min_size', translate('too_short'), (value, _context) => {
+        if (value) return value.trim().length >= TEXT_LENGTH_ORGANIZER_MIN
+        return true
+      })
+      .test('if_present_then_max_size', translate('too_long'), (value, _context) => {
+        if (value) return value.trim().length <= TEXT_LENGTH_MAX
+        return true
+      }),
     question: Yup.string().required().min(TEXT_LENGTH_QUESTION_MIN).max(TEXT_LENGTH_MAX),
     votingOptions: Yup.array()
       .test('options_are_unique', translate('options_must_be_unique'), (value, _context) => {

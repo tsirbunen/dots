@@ -7,22 +7,33 @@ import {
   LOCAL_STORAGE_USER_ID
 } from '../utils/constant-values'
 
+export type LocalStorageData = {
+  token?: string
+  userName?: string
+  userId: string
+  pollCodes: string[]
+}
+
 type UseBrowserStorageService = {
-  getUserNameIfExists: () => string | undefined
+  getUserName: () => string | undefined
   getUserId: () => string
   updateToken: (token: string | undefined | null) => void
   getToken: () => string | undefined
   storeUserName: (userName: string) => void
-  hasStoredPollCodes: () => boolean
-  addToPollsList: (pollId: string) => void
+  addToPollsList: (code: string) => void
   clearPollCodes: () => void
   getPollCodes: () => string[]
   updateStorageWithRecentPollsData: (allPolls: Poll[] | undefined) => void
+  retrieveLocalStorageData: () => LocalStorageData
+  updateAfterPollCreated: (poll: Poll) => void
+  handlePollWasUpdated: (poll: Poll) => void
+  hasStoredPollCodes: () => boolean
+  updateStorageWithPolls: (allPolls: Poll[] | undefined) => void
 }
 
-const extractMostRecentToken = (allPolls: Poll[]) => {
+const extractToken = (polls: Poll[]) => {
   let token: string | undefined = undefined
-  allPolls.some((poll) => {
+  polls.some((poll) => {
     if (poll.token) {
       token = poll.token
       return true
@@ -43,7 +54,7 @@ export const useBrowserStorageService = (): UseBrowserStorageService => {
     return id
   }
 
-  const getUserNameIfExists = (): string | undefined => {
+  const getUserName = (): string | undefined => {
     let userName: string | null = null
     if (localStorage.hasOwnProperty(LOCAL_STORAGE_USER_NAME)) {
       userName = localStorage.getItem(LOCAL_STORAGE_USER_NAME)
@@ -89,9 +100,14 @@ export const useBrowserStorageService = (): UseBrowserStorageService => {
     localStorage.setItem(LOCAL_STORAGE_USER_NAME, userName)
   }
 
-  const hasStoredPollCodes = (): boolean => {
-    const codes = getPollCodes()
-    return codes.length > 0
+  const updateUserName = (userName: string) => {
+    let currentlyStoredName: string | null = null
+    if (localStorage.hasOwnProperty(LOCAL_STORAGE_USER_NAME)) {
+      currentlyStoredName = localStorage.getItem(LOCAL_STORAGE_USER_NAME)
+    }
+    if (currentlyStoredName !== userName) {
+      localStorage.setItem(LOCAL_STORAGE_USER_NAME, userName)
+    }
   }
 
   const clearPollCodes = () => {
@@ -103,7 +119,7 @@ export const useBrowserStorageService = (): UseBrowserStorageService => {
   const updateStorageWithRecentPollsData = (allPollsFromServer: Poll[] | undefined) => {
     let mostRecentToken: string | undefined | null = undefined
     if (allPollsFromServer) {
-      mostRecentToken = extractMostRecentToken(allPollsFromServer)
+      mostRecentToken = extractToken(allPollsFromServer)
     }
     const currentToken = getToken()
     if (mostRecentToken !== currentToken) {
@@ -127,16 +143,56 @@ export const useBrowserStorageService = (): UseBrowserStorageService => {
     return []
   }
 
+  const retrieveLocalStorageData = (): LocalStorageData => {
+    const token = getToken()
+    const userName = getUserName()
+    const userId = getUserId()
+    const pollCodes = getPollCodes()
+    return { token, userName, userId, pollCodes }
+  }
+
+  const updateAfterPollCreated = (poll: Poll) => {
+    if (poll.token) updateToken(poll.token)
+    if (poll.owner.name) updateUserName(poll.owner.name)
+    addToPollsList(poll.code)
+  }
+
+  const handlePollWasUpdated = (poll: Poll) => {
+    if (poll.token) updateToken(poll.token)
+    if (poll.owner.name) updateUserName(poll.owner.name)
+  }
+
+  const hasStoredPollCodes = () => {
+    const codes = getPollCodes()
+    return codes.length > 0
+  }
+
+  const updateStorageWithPolls = (allPolls: Poll[] | undefined) => {
+    if (allPolls && allPolls.length > 0) {
+      const mostRecentToken = extractToken(allPolls)
+      const currentToken = getToken()
+      if (mostRecentToken !== currentToken) updateToken(mostRecentToken)
+      const pollCodes = allPolls.map((poll) => poll.code)
+      replacePollsList(pollCodes)
+    } else {
+      clearPollCodes()
+    }
+  }
+
   return {
     getUserId,
     updateToken,
     clearPollCodes,
-    getUserNameIfExists,
+    getUserName,
     storeUserName,
     addToPollsList,
-    hasStoredPollCodes,
     getPollCodes,
     getToken,
-    updateStorageWithRecentPollsData
+    updateStorageWithRecentPollsData,
+    retrieveLocalStorageData,
+    updateAfterPollCreated,
+    handlePollWasUpdated,
+    hasStoredPollCodes,
+    updateStorageWithPolls
   }
 }

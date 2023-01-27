@@ -17,7 +17,7 @@ export const DATA_CY_RESET = 'reset'
 export const DATA_CY_SUBMIT = 'submit'
 export const DATA_CY_CREATE_POLL_FORM_CORE = 'create_poll_form_core'
 
-export type CreatePollFormData = {
+export type PollFormData = {
   ownerName: string
   question: string
   votingOptions: TextDateTimeDataHolder[]
@@ -33,7 +33,7 @@ const convertOptionsToVotingOptions = (options: Option[]) => {
   })
 }
 
-const getInitialValues = (poll?: Poll, userName?: string): CreatePollFormData => {
+const getInitialValues = (poll?: Poll, userName?: string | null): PollFormData => {
   return {
     ownerName: userName ?? poll?.owner.name ?? '',
     question: poll?.question ?? '',
@@ -45,34 +45,38 @@ const getInitialValues = (poll?: Poll, userName?: string): CreatePollFormData =>
   }
 }
 
-type CreateOrEditPollFormCoreProps = {
+type PollFormProps = {
   mode: 'create' | 'edit'
-  onSubmit: SubmitHandler<CreatePollFormData>
+  onSubmit: SubmitHandler<PollFormData>
   poll: Poll | undefined
   userName: string | undefined
 }
 
-const CreateOrEditPollFormCore = ({ mode, poll, onSubmit, userName }: CreateOrEditPollFormCoreProps) => {
+const PollForm = ({ mode, poll, onSubmit, userName }: PollFormProps) => {
   const { translate } = useTranslation()
 
-  const { handleSubmit, control, reset, formState, watch } = useForm<CreatePollFormData>({
+  const { handleSubmit, control, reset, formState, watch } = useForm<PollFormData>({
     mode: 'all',
     defaultValues: getInitialValues(poll, userName),
     resolver: yupResolver(createValidationSchema(translate)),
     shouldFocusError: true
   })
 
-  const watchTotalVotesMaxCount = watch('totalVotesCountMax')
-  const watchOptionVotesMaxCount = watch('totalVotesCountMax')
+  const totalVotesMaxCount = watch('totalVotesCountMax')
+  const optionVotesMaxCount = watch('optionVotesCountMax')
+  const isAnonymous = watch('isAnonymous')
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} data-cy={DATA_CY_CREATE_POLL_FORM_CORE}>
-      <TextTypeFormInput
-        control={control}
-        textPackage={TEXT_PACKAGES['ownerName']}
-        fieldType="ownerName"
-        disabled={mode === 'edit' || userName !== undefined}
-      />
+      {!isAnonymous && (
+        <TextTypeFormInput
+          control={control}
+          textPackage={TEXT_PACKAGES['ownerName']}
+          fieldType="ownerName"
+          disabled={mode === 'edit' || userName !== undefined}
+          value={userName}
+        />
+      )}
       <TextTypeFormInput control={control} textPackage={TEXT_PACKAGES['question']} fieldType="question" />
       <TextDateTimeItemsListFormInput
         control={control}
@@ -91,14 +95,14 @@ const CreateOrEditPollFormCore = ({ mode, poll, onSubmit, userName }: CreateOrEd
         control={control}
         errorMessage={formState.errors.totalVotesCountMax?.message}
         textPackage={TEXT_PACKAGES['totalVotesCountMax']}
-        lowerLimit={watchOptionVotesMaxCount}
+        lowerLimit={optionVotesMaxCount}
       />
       <NumberTypeFormInput
         fieldType="optionVotesCountMax"
         control={control}
         errorMessage={formState.errors.optionVotesCountMax?.message}
         textPackage={TEXT_PACKAGES['optionVotesCountMax']}
-        upperLimit={watchTotalVotesMaxCount}
+        upperLimit={totalVotesMaxCount}
       />
 
       <Center {...buttonsContainer}>
@@ -123,4 +127,4 @@ const CreateOrEditPollFormCore = ({ mode, poll, onSubmit, userName }: CreateOrEd
   )
 }
 
-export default CreateOrEditPollFormCore
+export default PollForm

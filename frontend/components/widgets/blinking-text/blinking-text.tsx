@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getBlinkingTextStyle } from './styles'
+import { Styles } from './styles'
 import { Text } from '@chakra-ui/react'
 
 export const DATA_CY_BLINKING_TEXT = 'blinking_text'
@@ -20,7 +20,7 @@ const BlinkingText = ({ text }: BlinkingTextProps) => {
     return () => clearInterval(interval)
   }, [])
 
-  const blinkingTextStyle = getBlinkingTextStyle(textShade)
+  const blinkingTextStyle = Styles.blinkingText(textShade)
   return (
     <Text {...blinkingTextStyle} data-cy={`${DATA_CY_BLINKING_TEXT}-${text}`}>
       {text}

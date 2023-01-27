@@ -6,33 +6,35 @@ import { useTranslation } from '../../hooks/use-translation'
 import { FI_TRANSLATIONS } from '../../localization/fi'
 import { Phrase } from '../../localization/translations'
 import SmallButton from '../widgets/small-button/small-button'
-import { instructionPhraseStyle } from './styles'
+import { Styles } from './styles'
 
 export const DATA_CY_DASHBOARD_INFO = 'dashboard_info'
 
 const DashboardInfo = () => {
   const { translate } = useTranslation()
   const router = useRouter()
+  const { hasStoredPollCodes } = useBrowserStorageService()
+  const [isOldUser, setIsOldUser] = useState(false)
+
+  useEffect(() => {
+    if (window) {
+      const hasCodesInLocalStorage = hasStoredPollCodes()
+      setIsOldUser(hasCodesInLocalStorage)
+    }
+  }, [hasStoredPollCodes])
+
   const instructionPhrases = () => {
     const phrases = Object.keys(FI_TRANSLATIONS).filter((key) => key.includes('dashboard_info'))
     return phrases as Phrase[]
   }
-  const { hasStoredPollCodes } = useBrowserStorageService()
-  const [hasPreviousPolls, setHasPreviousPolls] = useState(false)
 
-  useEffect(() => {
-    if (window) {
-      setHasPreviousPolls(hasStoredPollCodes())
-    }
-  }, [hasStoredPollCodes])
-
-  if (!hasPreviousPolls) return null
+  if (!isOldUser) return <div></div>
 
   return (
     <Box>
       {instructionPhrases().map((phrase, index) => {
         return (
-          <Text key={phrase} {...instructionPhraseStyle} data-cy={`${DATA_CY_DASHBOARD_INFO}-${index}`}>
+          <Text key={phrase} {...Styles.instruction} data-cy={`${DATA_CY_DASHBOARD_INFO}-${index}`}>
             {translate(phrase)}
           </Text>
         )

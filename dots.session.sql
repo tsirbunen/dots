@@ -1,5 +1,5 @@
 SELECT *
-FROM "Votes" -- SELECT COUNT(*)
+FROM "Polls" -- SELECT COUNT(*)
         -- FROM (
         --         SELECT DISTINCT "Votes"."voterId"
         --         FROM "Polls"

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { DOT_COLORS } from '../../../utils/constant-values'
-import { getBlinkingDotStyle } from './styles'
+import { Styles } from './styles'
 
 export const DATA_CY_BLINKING_DOT = 'blinking_dot'
 
@@ -21,7 +21,7 @@ const BlinkingDot = ({ dotIndex, isSmall }: BlinkingDotProps) => {
     return () => clearInterval(interval)
   }, [dotIndex])
 
-  const blinkingDotStyle = getBlinkingDotStyle(isSmall, dotColor)
+  const blinkingDotStyle = Styles.blinkingDotStyle(isSmall, dotColor)
   return <div style={{ ...blinkingDotStyle }} data-cy={`${DATA_CY_BLINKING_DOT}-${dotIndex}`} />
 }
 

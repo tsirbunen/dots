@@ -6,24 +6,53 @@ export const LOCAL_STORAGE_POLL_CODES = 'dots_poll_codes'
 export const LOCAL_STORAGE_USER_NAME = 'dots_user_name'
 export const LOCAL_STORAGE_TOKEN = 'dots_token'
 export const LOCAL_STORAGE_USER_ID = 'dots_user_id'
+export const POLL_CODE_LENGTH = 9
 
 export const DOT_SIZE = 18
 export const DOT_SIZE_SMALL = 12
 export const DOT_COLORS = [
+  '#0a9396',
+  '#9bc400',
+  '#F7882F',
+  '#7C4793',
+  '#a4243b',
+  '#ED6214',
+  '#3bceac',
+  '#beef00',
+  '#08C3DC',
+  '#DE3163',
+  '#e1b382',
+  '#e75874',
+  '#0ead69',
+  '#8076a3',
+  '#2E8C05',
   '#c37d92',
   '#846267',
-  '#ee4266',
-  '#ffd23f',
-  '#3bceac',
-  '#0ead69',
-  '#a4243b',
-  '#0a9396',
-  '#d8c99b',
-  '#d8973c',
-  '#bd632f',
-  '#273e47',
-  '#ff595e'
+  '#f9c5bd',
+  '#6B7A8F',
+  '#c2edda'
 ]
+// '#FF7F50',
+// '#40E0D0',
+// '#37AB04',
+// '#9FE2BF',
+// '#51e2f5',
+// '#e5eaf5',
+// '#DFFF00',
+// '#FFBF00',
+// '#d8c99b',
+// '#DCC7AA',
+// '#f43a09',
+// '#ff595e',
+// '#ee4266',
+// '#d8973c',
+// '#bd632f',
+// '#273e47',
+// '#e2d810',
+// '#ffd23f',
+// '#d0bdf4',
+// '#a0d2eb',
+// '#6b7b8c',
 
 export const TEXT_LENGTH_ORGANIZER_MIN = 3
 export const TEXT_LENGTH_QUESTION_MIN = 3

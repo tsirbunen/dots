@@ -3,59 +3,56 @@ import { SubmitHandler } from 'react-hook-form'
 import { formContainer } from './styles'
 import { useBrowserStorageService } from '../../../hooks/use-browser-storage-service'
 import { CreatePollInput, DataClass } from '../../../types/graphql-schema-types.generated'
-import { useGraphQLClientService } from './use-graphql-client-service'
-import { useContext, useEffect, useState } from 'react'
-import PollCreatedInfo from '../../widgets/poll-created-info/poll-created-info'
-import { Poll } from '../../../types/types'
-import CreateOrEditPollFormCore, { CreatePollFormData } from './create-or-edit-poll-form-core'
-import { AppStateActionEnum } from '../../../state/reducer'
+import { useContext, useEffect } from 'react'
+import PollForm, { PollFormData } from './poll-form'
+import { StateActionType } from '../../../state/reducer'
 import { AppStateContext, AppStateContextType } from '../../../state/state-context'
+import { useRouter } from 'next/router'
+import { useGraphQLClientService } from '../../../hooks/use-graphql-client-service'
 
 export const DATA_CY_CREATE_POLL_FORM_WRAPPER = 'create_poll_form_wrapper'
 
 const CreatePollFormWrapper = () => {
-  const [pollCreated, setPollCreated] = useState<Poll | undefined>(undefined)
-  const [userName, setUserName] = useState<string | undefined | null>(null)
-  const { getUserNameIfExists, getUserId, updateToken, addToPollsList, storeUserName } = useBrowserStorageService()
+  const { getUserName, getUserId, updateAfterPollCreated } = useBrowserStorageService()
   const { createPoll } = useGraphQLClientService()
-  const { dispatch } = useContext(AppStateContext) as AppStateContextType
+  const { state, dispatch } = useContext(AppStateContext) as AppStateContextType
+  const router = useRouter()
 
   useEffect(() => {
-    if (window) {
-      setUserName(getUserNameIfExists())
+    console.log('running effect on page create poll')
+    if (window && !state.userName) {
+      const userName = getUserName()
+      if (userName) {
+        dispatch({ type: StateActionType.SET_USER_NAME, data: userName })
+      }
     }
-  }, [getUserNameIfExists])
+  }, [dispatch, getUserName, state.userName])
 
-  const onSubmit: SubmitHandler<CreatePollFormData> = async (formData: CreatePollFormData) => {
+  const onSubmit: SubmitHandler<PollFormData> = async (formData: PollFormData) => {
     const options = formData.votingOptions.map((a) => a.text) as string[]
-    const strippedData: Partial<CreatePollFormData> = { ...formData }
+    const strippedData: Partial<PollFormData> = { ...formData }
+    if (!formData.isAnonymous && state.userName) {
+      strippedData.ownerName = state.userName
+    }
     delete strippedData.votingOptions
     const createPollInputData: CreatePollInput = {
       ...(strippedData as CreatePollInput),
-      ownerId: getUserId(),
+      ownerId: state.userId ?? getUserId(),
       options,
       dataClass: DataClass.Text
     }
 
     const parsedPoll = await createPoll(createPollInputData)
-    console.log({ parsedPoll })
     if (parsedPoll) {
-      dispatch({ type: AppStateActionEnum.ADD_POLL, data: parsedPoll })
-      updateToken(parsedPoll.token)
-      addToPollsList(parsedPoll.code)
-      storeUserName(parsedPoll.owner.name)
-      setPollCreated(parsedPoll)
+      dispatch({ type: StateActionType.ADD_POLL, data: parsedPoll })
+      updateAfterPollCreated(parsedPoll)
+      router.push(`/dashboard/${parsedPoll?.code}`)
     }
   }
 
-  if (pollCreated) {
-    return <PollCreatedInfo createdPoll={pollCreated} />
-  }
-  if (userName === null) return null
-
   return (
     <Box {...formContainer} data-cy={DATA_CY_CREATE_POLL_FORM_WRAPPER}>
-      <CreateOrEditPollFormCore mode="create" userName={userName} poll={undefined} onSubmit={onSubmit} />
+      <PollForm mode="create" userName={state.userName} poll={undefined} onSubmit={onSubmit} />
     </Box>
   )
 }

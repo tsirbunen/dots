@@ -2,12 +2,12 @@ import { Text, Box } from '@chakra-ui/react'
 import { useTranslation } from '../../hooks/use-translation'
 import { FI_TRANSLATIONS } from '../../localization/fi'
 import { Phrase } from '../../localization/translations'
-import { howDoesItWorkStyle, instructionPhraseStyle } from './styles'
+import { Styles } from './styles'
 
-export const DATA_CY_HOW_DOES_IT_WORK = 'how-does-it-work'
-export const DATA_CY_USE_INSTRUCTION = 'use-instruction'
+export const DATA_CY_HOW_DOES_IT_WORK = 'how_does_it_work'
+export const DATA_CY_USE_INSTRUCTION = 'use_instruction'
 
-const InstructionsForUse = () => {
+const Instructions = () => {
   const { translate } = useTranslation()
 
   const instructionPhrases = () => {
@@ -17,12 +17,12 @@ const InstructionsForUse = () => {
 
   return (
     <Box>
-      <Text {...howDoesItWorkStyle} data-cy={DATA_CY_HOW_DOES_IT_WORK}>
+      <Text {...Styles.howDoesItWork} data-cy={DATA_CY_HOW_DOES_IT_WORK}>
         {translate('how_does_it_work')}
       </Text>
       {instructionPhrases().map((phrase, index) => {
         return (
-          <Text key={phrase} {...instructionPhraseStyle} data-cy={`${DATA_CY_USE_INSTRUCTION}-${index}`}>
+          <Text key={phrase} {...Styles.instruction} data-cy={`${DATA_CY_USE_INSTRUCTION}-${index}`}>
             {translate(phrase)}
           </Text>
         )
@@ -31,4 +31,4 @@ const InstructionsForUse = () => {
   )
 }
 
-export default InstructionsForUse
+export default Instructions

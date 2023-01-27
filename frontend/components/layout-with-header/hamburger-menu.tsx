@@ -2,24 +2,16 @@ import { Popover, PopoverTrigger, IconButton, Portal, PopoverContent, Center, Fl
 import { useRouter } from 'next/router'
 import { useTranslation } from '../../hooks/use-translation'
 import { HamburgerIcon } from '@chakra-ui/icons'
-import {
-  iconStyle,
-  popoverContentStyle,
-  buttonStyles,
-  buttonInvertedStyles,
-  customButtonBoxStyle,
-  iconButtonStyle
-} from '../../common/common-styles'
-import { hamburgerMenuContainer } from './styles'
+import { commonStyles } from '../../common/common-styles'
+import { Styles } from './styles'
 
 export const DATA_CY_ROUTE_BUTTON = 'route-button'
 export const DATA_CY_MENU_BUTTON = 'menu-button'
 
-enum MenuRouteTarget {
+export enum MenuRouteTarget {
   LAUNCH_PAGE = '',
   CREATE_POLL = 'create-poll',
-  VOTE_IN_POLL = 'vote-in-poll',
-  VIEW_POLL = 'view-poll',
+  VOTE = 'vote',
   DASHBOARD = 'dashboard'
 }
 
@@ -43,12 +35,8 @@ const HamburgerMenu = () => {
       route: MenuRouteTarget.CREATE_POLL
     },
     {
-      label: translate('navigation_route_vote_in_poll'),
-      route: MenuRouteTarget.VOTE_IN_POLL
-    },
-    {
-      label: translate('navigation_route_view_poll'),
-      route: MenuRouteTarget.VIEW_POLL
+      label: translate('navigation_route_vote'),
+      route: MenuRouteTarget.VOTE
     },
     {
       label: translate('navigation_route_dashboard'),
@@ -64,19 +52,19 @@ const HamburgerMenu = () => {
     >
       <PopoverTrigger>
         <IconButton
-          {...iconButtonStyle}
+          {...commonStyles.iconButton}
           aria-label="Select route"
           data-cy={DATA_CY_MENU_BUTTON}
-          icon={<HamburgerIcon {...iconStyle} />}
+          icon={<HamburgerIcon {...commonStyles.icon} />}
         />
       </PopoverTrigger>
       <Portal>
-        <PopoverContent {...popoverContentStyle}>
-          <Center {...hamburgerMenuContainer}>
+        <PopoverContent {...commonStyles.popoverContent}>
+          <Center {...Styles.hamburgerMenuContainer}>
             {navigationTargets.map((target) => {
-              const styles = `/${target.route}` === currentPathname ? buttonStyles : buttonInvertedStyles
+              const styles = `/${target.route}` === currentPathname ? commonStyles.button : commonStyles.buttonInverted
               return (
-                <Flex key={target.label} {...customButtonBoxStyle}>
+                <Flex key={target.label} {...commonStyles.customButtonBox}>
                   <Button
                     onClick={() => navigateToRoute(target.route)}
                     {...styles}

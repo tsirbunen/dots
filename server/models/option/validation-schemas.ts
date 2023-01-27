@@ -22,6 +22,17 @@ export const insertOptionSchema = {
 }
 
 export const updateOptionSchema = {
-  ...insertOptionSchema,
-  required: ['id', 'content']
+  type: 'object',
+  required: ['optionId', 'content'],
+  properties: {
+    optionId: ID,
+    content: { type: 'string' },
+    dataClass: {
+      type: 'string',
+      enum: Object.keys(DataClass).map((key) => key.toUpperCase())
+    }
+  },
+  errorMessage: {
+    properties: getValidationErrorMessages(ModelClass.OPTION)
+  }
 }

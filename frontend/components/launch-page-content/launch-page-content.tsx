@@ -1,5 +1,5 @@
-import InstructionsForUse from './instructions-for-use'
-import ModeOfUseSelectionButtons from './mode-of-use-selection-buttons'
+import Instructions from './instructions'
+import ModeSelection from './mode-selection'
 import AppTitle from './app-title'
 import LaunchPageLanguageToggle from './launch-page-language-toggle'
 import DashboardInfo from './dashboard-info'
@@ -11,8 +11,8 @@ const LaunchPageContent = () => {
     <div data-cy={DATA_CY_LAUNCH_PAGE}>
       <AppTitle />
       <LaunchPageLanguageToggle />
-      <InstructionsForUse />
-      <ModeOfUseSelectionButtons />
+      <Instructions />
+      <ModeSelection />
       <DashboardInfo />
     </div>
   )

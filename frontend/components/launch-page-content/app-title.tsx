@@ -2,22 +2,22 @@ import { Text, Box, Center } from '@chakra-ui/react'
 import { useTranslation } from '../../hooks/use-translation'
 import { ThemeColor } from '../../theme/theme'
 import BlinkingDotsLine from '../widgets/blinking-dots/blinking-dots-line'
-import { appShortDescriptionStyle, appTitleContainerStyle, appTitleStyle } from './styles'
+import { Styles } from './styles'
 
-export const DATA_CY_APP_TITLE = 'app-title'
-export const DATA_CY_APP_SHORT_DESCRIPTION = 'app-short-description'
+export const DATA_CY_APP_TITLE = 'app_title'
+export const DATA_CY_APP_SHORT_DESCRIPTION = 'app_short_description'
 
 const AppTitle = () => {
   const { translate } = useTranslation()
 
   return (
     <Center>
-      <Box {...appTitleContainerStyle}>
-        <Text {...appTitleStyle} data-cy={DATA_CY_APP_TITLE}>
+      <Box {...Styles.titleContainer}>
+        <Text {...Styles.appTitle} data-cy={DATA_CY_APP_TITLE}>
           {translate('app_title')}
         </Text>
 
-        <Text {...appShortDescriptionStyle} color={ThemeColor.SHADE_1} data-cy={DATA_CY_APP_SHORT_DESCRIPTION}>
+        <Text {...Styles.appShort} color={ThemeColor.SHADE_1} data-cy={DATA_CY_APP_SHORT_DESCRIPTION}>
           {translate('app_short_description')}
         </Text>
         <BlinkingDotsLine isSmall={false} />

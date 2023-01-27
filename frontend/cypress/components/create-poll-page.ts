@@ -6,10 +6,7 @@ import { DATA_CY_MODAL_ADD, DATA_CY_MODAL_INPUT_TEXT } from '../../components/wi
 import { DATA_CY_LIST_ADD } from '../../components/form-components/text-date-time-list-form-input/text-date-time-list-form-input'
 import { DATA_CY_MODAL_DATA_TYPE_SELECTOR } from '../../components/widgets/input-modal/data-type-selector'
 import { DATA_CY_SMALL_BUTTON } from '../../components/widgets/small-button/small-button'
-import {
-  DATA_CY_RESET,
-  DATA_CY_SUBMIT
-} from '../../components/form-components/create-poll-form/create-or-edit-poll-form-core'
+import { DATA_CY_RESET, DATA_CY_SUBMIT } from '../../components/form-components/create-poll-form/poll-form'
 import { TEXT_LENGTH_MAX, TEXT_LENGTH_QUESTION_MIN, VOTING_OPTIONS_MAX } from '../../utils/constant-values'
 
 export class CreatePollPage extends Base {

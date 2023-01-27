@@ -5,17 +5,16 @@ import { FI_TRANSLATIONS } from '../../localization/fi'
 import { Phrase } from '../../localization/translations'
 import SmallButton from '../widgets/small-button/small-button'
 
-import { modeSelectionButtonsContainerStyle } from './styles'
+import { Styles } from './styles'
 
 export const DATA_CY_USE_MODE = 'use-mode'
 export enum AppRoute {
   CREATE_POLL = '/create-poll',
   VOTE_IN_POLL = '/vote-in-poll',
-  VIEW_POLL = '/view-poll',
   MY_POLLS = '/my-polls'
 }
 
-const ModeOfUseSelectionButtons = () => {
+const ModeSelection = () => {
   const { translate } = useTranslation()
   const router = useRouter()
 
@@ -25,12 +24,11 @@ const ModeOfUseSelectionButtons = () => {
 
   const navigateToRoute = (route: string) => {
     if (route.includes('create')) router.push('/create-poll')
-    if (route.includes('vote')) router.push('/vote-in-poll')
-    if (route.includes('view')) router.push('/view-poll')
+    if (route.includes('vote')) router.push('/vote')
   }
 
   return (
-    <Box {...modeSelectionButtonsContainerStyle}>
+    <Box {...Styles.buttonsContainer}>
       {modePhrases().map((phrase, index) => {
         return (
           <Center key={phrase} data-cy={`${DATA_CY_USE_MODE}-${index}`}>
@@ -48,4 +46,4 @@ const ModeOfUseSelectionButtons = () => {
   )
 }
 
-export default ModeOfUseSelectionButtons
+export default ModeSelection

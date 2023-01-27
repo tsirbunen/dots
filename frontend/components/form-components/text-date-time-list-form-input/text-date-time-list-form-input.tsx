@@ -3,23 +3,15 @@ import { Box, Flex, IconButton, Text, useDisclosure } from '@chakra-ui/react'
 import { Control, Controller, ControllerRenderProps } from 'react-hook-form'
 import { useTranslation } from '../../../hooks/use-translation'
 import ListItemDeletable from './list-item-deletable'
-import {
-  blinkingStyle,
-  errorStyle,
-  iconButtonStyle,
-  iconStyle,
-  listItemsAndEditButtonContainer,
-  listItemsContainer,
-  parameterContainerStyle
-} from './styles'
+import { Styles } from './styles'
 import { TextDateTimeDataHolder } from '../create-poll-form/text-date-time-data-holder'
 import InputModal from '../../widgets/input-modal/input-modal'
-import { CreatePollFormData } from '../create-poll-form/create-or-edit-poll-form-core'
+import { PollFormData } from '../create-poll-form/poll-form'
 import { TextDateTimeItemsInputConstantsPackage } from '../../../types/types'
 import BlinkingText from '../../widgets/blinking-text/blinking-text'
 
 type TextDateTimeListFormInputProps = {
-  control: Control<CreatePollFormData, TextDateTimeInputFieldType> | undefined
+  control: Control<PollFormData, TextDateTimeInputFieldType> | undefined
   errorMessage: string | undefined
   textPackage: TextDateTimeItemsInputConstantsPackage
   fieldType: TextDateTimeInputFieldType
@@ -47,7 +39,7 @@ const TextDateTimeListFormInput = ({
     onChange(updatedItems)
   }
 
-  const addItem = (newItem: unknown, field: ControllerRenderProps<CreatePollFormData, TextDateTimeInputFieldType>) => {
+  const addItem = (newItem: unknown, field: ControllerRenderProps<PollFormData, TextDateTimeInputFieldType>) => {
     if (!(newItem instanceof TextDateTimeDataHolder)) {
       throw new Error(textPackage.wrong_data_type_error)
     }
@@ -62,7 +54,7 @@ const TextDateTimeListFormInput = ({
 
   const renderListItems = (
     fieldValue: TextDateTimeDataHolder[],
-    field: ControllerRenderProps<CreatePollFormData, TextDateTimeInputFieldType>
+    field: ControllerRenderProps<PollFormData, TextDateTimeInputFieldType>
   ) => {
     return (fieldValue as TextDateTimeDataHolder[]).map((item, index) => {
       return (
@@ -79,13 +71,13 @@ const TextDateTimeListFormInput = ({
   const renderErrorMessage = (errorsString: string) => {
     if (errorsString === translate('too_little_options')) {
       return (
-        <Flex {...blinkingStyle}>
+        <Flex {...Styles.blinking}>
           <BlinkingText text={translate('too_little_options')} />
         </Flex>
       )
     }
     return (
-      <Text data-cy={errorsString} {...errorStyle}>
+      <Text data-cy={errorsString} {...Styles.error}>
         {errorsString}
       </Text>
     )
@@ -100,10 +92,10 @@ const TextDateTimeListFormInput = ({
           const fieldValue = field.value as TextDateTimeDataHolder[]
           const maxAllowedCountReached = fieldValue.length >= textPackage.maxItems
           return (
-            <Box {...parameterContainerStyle}>
+            <Box {...Styles.parameterContainer}>
               <div>
-                <Flex {...listItemsAndEditButtonContainer}>
-                  <Flex {...listItemsContainer}>
+                <Flex {...Styles.listItemsAndEditButtonContainer}>
+                  <Flex {...Styles.listItemsContainer}>
                     {fieldValue.length === 0 && renderRequiredText()}
                     {renderListItems(fieldValue, field)}
                     {errorMessage && renderErrorMessage(errorMessage)}
@@ -117,8 +109,8 @@ const TextDateTimeListFormInput = ({
                   />
                   <IconButton
                     aria-label={`${DATA_CY_LIST_ADD}-${fieldType}`}
-                    {...iconButtonStyle}
-                    icon={<PlusSquareIcon {...iconStyle} />}
+                    {...Styles.iconButton}
+                    icon={<PlusSquareIcon {...Styles.icon} />}
                     onClick={onOpen}
                     data-cy={DATA_CY_LIST_ADD}
                     isDisabled={maxAllowedCountReached}

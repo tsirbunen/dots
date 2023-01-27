@@ -1,11 +1,8 @@
 import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
 import { App } from '../../components/app'
 import { CreatePollPage } from '../../components/create-poll-page'
-import { DATA_CY_CREATE_POLL_FORM_CORE } from '../../../components/form-components/create-poll-form/create-or-edit-poll-form-core'
-import {
-  DATA_CY_INFO_EDIT_POLL,
-  DATA_CY_INFO_OPEN_POLL
-} from '../../../components/widgets/poll-created-info/poll-created-info'
+import { DATA_CY_CREATE_POLL_FORM_CORE } from '../../../components/form-components/create-poll-form/poll-form'
+import { DATA_CY_INFO_EDIT_POLL, DATA_CY_INFO_OPEN_POLL } from '../../../components/dashboard/poll-in-editing'
 
 const createPollPage = new CreatePollPage()
 const app = new App()

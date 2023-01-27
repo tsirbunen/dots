@@ -1,12 +1,9 @@
 import { Given, Then } from '@badeball/cypress-cucumber-preprocessor'
 
 import { DATA_CY_APP_SHORT_DESCRIPTION, DATA_CY_APP_TITLE } from '../../../components/launch-page-content/app-title'
-import {
-  DATA_CY_HOW_DOES_IT_WORK,
-  DATA_CY_USE_INSTRUCTION
-} from '../../../components/launch-page-content/instructions-for-use'
+import { DATA_CY_HOW_DOES_IT_WORK, DATA_CY_USE_INSTRUCTION } from '../../../components/launch-page-content/instructions'
 import { DATA_CY_LAUNCH_PAGE } from '../../../components/launch-page-content/launch-page-content'
-import { DATA_CY_USE_MODE } from '../../../components/launch-page-content/mode-of-use-selection-buttons'
+import { DATA_CY_USE_MODE } from '../../../components/launch-page-content/mode-selection'
 import { DATA_CY_LANGUAGE_TOGGLE } from '../../../components/widgets/toggle-language/toggle-language'
 import { FI_TRANSLATIONS } from '../../../localization/fi'
 import { App } from '../../components/app'

@@ -4,8 +4,8 @@ import { DataClass, PollState } from './graphql-schema-types.generated'
 export type Vote = {
   id: string
   optionId: string
-  voterId: string
-  name: string
+  voterId: string | null
+  name: string | null
 }
 
 export type Option = {
@@ -32,6 +32,7 @@ export type Poll = {
   showStatusWhenVoting: boolean
   state: PollState
   token: string
+  createdAt: Date
 }
 
 export type TextDateTimeItemsInputConstantsPackage = {

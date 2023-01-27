@@ -67,6 +67,7 @@ describe('POLL FULL DATA', () => {
     }
 
     const pollAWithVotes = (await findPollsByCode(tokenA!, [poll.code]))[0]
+
     pollAWithVotes.options.forEach((option) => {
       if (option.id === selectedOptionId) {
         assert(option.votes.length === 2)

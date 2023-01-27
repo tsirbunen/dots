@@ -42,11 +42,6 @@ export type EditPollInput = {
   totalVotesCountMax?: InputMaybe<Scalars['Int']>;
 };
 
-export type FindPollInput = {
-  code?: InputMaybe<Scalars['String']>;
-  id?: InputMaybe<Scalars['ID']>;
-};
-
 export type GiveAVoteToOptionInput = {
   name?: InputMaybe<Scalars['String']>;
   optionId: Scalars['ID'];
@@ -107,7 +102,7 @@ export type Option = {
 
 
 export type OptionVotesArgs = {
-  optionId?: InputMaybe<Scalars['ID']>;
+  id?: InputMaybe<Scalars['ID']>;
 };
 
 export type OptionEditData = {
@@ -142,7 +137,7 @@ export type Poll = {
 
 
 export type PollOptionsArgs = {
-  pollId?: InputMaybe<Scalars['ID']>;
+  id?: InputMaybe<Scalars['ID']>;
 };
 
 
@@ -166,7 +161,7 @@ export type Query = {
 
 
 export type QueryFindPollArgs = {
-  input?: InputMaybe<FindPollInput>;
+  code: Scalars['String'];
 };
 
 
