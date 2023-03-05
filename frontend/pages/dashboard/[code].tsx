@@ -1,21 +1,31 @@
+import { Flex } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useCallback, useContext, useEffect } from 'react'
-import PollWhatToDo from '../../components/dashboard/poll-what-to-do'
-import LayoutWithHeader from '../../components/layout-with-header/layout-with-header'
-import { useBrowserStorageService } from '../../hooks/use-browser-storage-service'
-import { useGraphQLClientService } from '../../hooks/use-graphql-client-service'
+import { Styles } from '../../components/dashboard/styles'
+import LayoutWithHeader from '../../components/layout/layout-with-header'
+import NotFound from '../../components/widgets/not-found/not-found'
+import { useBrowserStorage } from '../../hooks/use-browser-storage'
+import { useGraphQLClient } from '../../hooks/use-graphql-client'
+import { useTranslation } from '../../hooks/use-translation'
+import { Phrase } from '../../localization/translations'
 import { StateActionType } from '../../state/reducer'
 import { AppStateContext, AppStateContextType } from '../../state/state-context'
 import { PollState } from '../../types/graphql-schema-types.generated'
+import { SinglePoll } from '../../components/dashboard/poll-available-actions/poll-available-actions'
 
-export const DATA_CY_DASHBOARD_POLL_PAGE = 'dashboard_poll_page'
+export type ActionButtonData = { phrase: Phrase; cy: string; onClick: (input?: PollState) => void }
 
+/**
+ * This page shows actions available for a single poll.
+ * The actions that can be performed depend on the state of the poll.
+ */
 const DashboardPollPage: NextPage = () => {
   const router = useRouter()
   const { state, dispatch } = useContext(AppStateContext) as AppStateContextType
-  const { retrieveLocalStorageData } = useBrowserStorageService()
-  const { findPollsByCode } = useGraphQLClientService()
+  const { retrieveLocalStorageData } = useBrowserStorage()
+  const { findPollsByCode } = useGraphQLClient()
+  const { translate } = useTranslation()
 
   const { code } = router.query
 
@@ -43,21 +53,17 @@ const DashboardPollPage: NextPage = () => {
   const pollCode = code as string
   const poll = state?.polls[pollCode]
 
-  const getPollWidget = () => {
-    if (!poll) return <div></div>
-    switch (poll.state) {
-      case PollState.Edit:
-        return <PollWhatToDo poll={poll} />
-      case PollState.Vote:
-        return <PollWhatToDo poll={poll} />
-      case PollState.Closed:
-        return <PollWhatToDo poll={poll} />
-      default:
-        throw new Error(`There is no such poll state as ${poll.state}`)
-    }
+  if (!poll) {
+    return (
+      <NotFound textLines={[translate('could_not_find'), `${translate('poll_with_code')} ${code}`]} withLayout={true} />
+    )
   }
 
-  return <LayoutWithHeader>{getPollWidget()}</LayoutWithHeader>
+  return (
+    <LayoutWithHeader>
+      <SinglePoll poll={poll} />
+    </LayoutWithHeader>
+  )
 }
 
 export default DashboardPollPage

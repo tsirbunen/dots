@@ -43,10 +43,10 @@ export const ParticipantVotesForOption = ({
   const arrangeVotes = () => {
     let userVotesCount = 0
     let otherVotersNames: string[] = []
-    testVotes.forEach((v) => otherVotersNames.push(v.name))
+    testVotes.forEach((v) => otherVotersNames.push(v?.name ?? 'dssdssd'))
     optionVotes.forEach((vote) => {
       if (vote.voterId === userId) userVotesCount += 1
-      else otherVotersNames.push(vote.name)
+      else otherVotersNames.push(vote.name ?? 'dfdsgsfgdss')
     })
 
     if (!showStatusWhenVoting) otherVotersNames = []

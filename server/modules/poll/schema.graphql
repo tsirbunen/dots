@@ -31,6 +31,7 @@ input OptionEditData {
 
 input EditPollInput {
   pollId: ID!
+  ownerName: String
   question: String
   options: [OptionEditData]
   isAnonymous: Boolean

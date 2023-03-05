@@ -2,9 +2,126 @@ import { ChakraProps, SystemProps } from '@chakra-ui/react'
 import { ThemeColor } from '../../theme/theme'
 
 export class Styles {
-  static get wrapper() {
-    return { flexDirection: 'column' as ChakraProps['flexDirection'], margin: '10px', maxWidth: '800px' }
+  static outerContainer = {
+    flexDirection: 'column' as ChakraProps['flexDirection'],
+    flex: 1,
+    alignItems: 'center',
+    marginTop: '20px'
   }
+  static questionContainer = {
+    marginBottom: '10px',
+    flexDirection: 'column' as ChakraProps['flexDirection'],
+    flex: 1,
+    alignItems: 'center'
+  }
+  static infoLinesContainer = {
+    flexDirection: 'column' as ChakraProps['flexDirection'],
+    flex: 1,
+    alignItems: 'flex-start'
+    // marginTop: '20px'
+  }
+  static infoRow = {
+    flexDirection: 'roe' as ChakraProps['flexDirection'],
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start' as SystemProps['textAlign']
+    // marginTop: '20px'
+  }
+
+  static infoTitle = {
+    fontSize: '1.2em',
+    fontWeight: 'bold',
+    color: ThemeColor.SHADE_1,
+    align: 'center' as SystemProps['textAlign'],
+    marginBottom: '5px'
+  }
+
+  static dotSize = '8px'
+
+  static dot = {
+    backgroundColor: ThemeColor.SHADE_1,
+    width: this.dotSize,
+    height: this.dotSize,
+    borderRadius: this.dotSize,
+    marginRight: '10px'
+  }
+
+  static itemTextColor = ThemeColor.SHADE_3
+
+  static date = {
+    fontSize: '12px',
+    fontStyle: 'italic',
+    marginLeft: '10px',
+    color: this.itemTextColor
+  }
+
+  static nextIcon = {
+    padding: '4px',
+    bg: ThemeColor.SHADE_1,
+    borderRadius: '25px',
+    color: ThemeColor.SHADE_2,
+    size: 'md',
+    _focus: { outline: 'none' },
+    _hover: { bg: ThemeColor.CONTRAST, color: ThemeColor.BACKGROUND }
+  }
+
+  static nextIconContainer = {
+    marginLeft: '5px',
+    marginRight: '5px'
+  }
+
+  static createdContainer = {
+    flexDirection: 'row' as ChakraProps['flexDirection'],
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginLeft: '-3px',
+    marginBottom: '5px'
+  }
+
+  static codeName = {
+    fontSize: '12px',
+    marginTop: '3px',
+    color: ThemeColor.BACKGROUND
+  }
+
+  static optionName = {
+    fontSize: '12px',
+    marginBottom: '-5px',
+    color: this.itemTextColor
+  }
+
+  static codeValue = {
+    fontSize: '13px',
+    marginTop: '3px',
+    fontWeight: 'bold',
+    color: this.itemTextColor
+  }
+
+  static optionValue = {
+    fontSize: '12px',
+    marginBottom: '-5px',
+    fontWeight: 'bold',
+    color: this.itemTextColor
+  }
+
+  static title = {
+    fontWeight: 'bold',
+    fontSize: '1.em',
+    color: this.itemTextColor
+  }
+
+  static listItemContainer = {
+    backgroundColor: ThemeColor.SHADE_4,
+    flex: 1,
+    flexDirection: 'row' as ChakraProps['flexDirection'],
+    justifyContent: 'space-between' as SystemProps['textAlign'],
+    alignItems: 'center',
+    marginTop: '15px',
+    marginLeft: '15px',
+    marginRight: '15px',
+    borderRadius: '8px'
+  }
+
   static get container() {
     return {
       flexDirection: 'column' as ChakraProps['flexDirection'],
@@ -13,14 +130,18 @@ export class Styles {
       marginTop: '30px'
     }
   }
+  static get wrapper() {
+    return { flexDirection: 'column' as ChakraProps['flexDirection'], margin: '10px', maxWidth: '800px' }
+  }
   static get generalInfo() {
     return {
       fontSize: '1em',
       color: ThemeColor.SHADE_1,
-      align: 'center' as SystemProps['textAlign'],
-      marginBottom: '5px'
+      align: 'center' as SystemProps['textAlign']
+      // marginBottom: '5px'
     }
   }
+
   static get pollQuestion() {
     return {
       fontSize: '1.2em',
@@ -38,17 +159,6 @@ export class Styles {
     return {
       padding: '4px',
       bg: ThemeColor.SHADE_2,
-      borderRadius: '25px',
-      color: ThemeColor.SHADE_1,
-      size: 'md',
-      _focus: { outline: 'none' },
-      _hover: { bg: ThemeColor.CONTRAST, color: ThemeColor.BACKGROUND }
-    }
-  }
-  static get nextIconButtonStyle() {
-    return {
-      padding: '4px',
-      bg: 'transparent',
       borderRadius: '25px',
       color: ThemeColor.SHADE_1,
       size: 'md',
@@ -86,24 +196,6 @@ export class Styles {
       flexDirection: 'column' as ChakraProps['flexDirection'],
       justifyContent: 'flex-start' as SystemProps['textAlign'],
       flex: 1
-    }
-  }
-
-  static get titleStyle() {
-    return {
-      fontWeight: 'bold',
-      fontSize: '1.em',
-      color: ThemeColor.CONTRAST
-    }
-  }
-
-  static get listItemContainer() {
-    return {
-      flex: 1,
-      flexDirection: 'row' as ChakraProps['flexDirection'],
-      justifyContent: 'space-between' as SystemProps['textAlign'],
-      alignItems: 'center',
-      margin: '15px'
     }
   }
 
@@ -186,44 +278,6 @@ export class Styles {
 
   static get column() {
     return { flexDirection: 'column' as ChakraProps['flexDirection'] }
-  }
-
-  static get iconDateContainer() {
-    return {
-      flexDirection: 'row' as ChakraProps['flexDirection'],
-      alignItems: 'center',
-      justifyContent: 'flex-start',
-      marginLeft: '-3px',
-      marginBottom: '5px'
-    }
-  }
-
-  static get date() {
-    return { fontSize: '11px', fontStyle: 'italic', marginLeft: '10px', color: ThemeColor.SHADE_1 }
-  }
-
-  static get fieldName() {
-    return { fontSize: '11px', marginTop: '3px', color: ThemeColor.SHADE_1 }
-  }
-  static get fieldValue() {
-    return {
-      fontSize: '13px',
-      marginTop: '3px',
-      fontWeight: 'bold',
-      color: ThemeColor.CONTRAST
-    }
-  }
-
-  static get optionFieldName() {
-    return { fontSize: '11px', marginBottom: '-5px', color: ThemeColor.SHADE_1 }
-  }
-
-  static get optionFieldValue() {
-    return { fontSize: '12px', marginBottom: '-5px', color: ThemeColor.CONTRAST }
-  }
-
-  static get divider() {
-    return { width: '90%', borderColor: ThemeColor.SHADE_1 }
   }
 }
 

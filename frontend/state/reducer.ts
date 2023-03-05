@@ -2,7 +2,7 @@ import { Language } from '../hooks/use-translation'
 import { Poll } from '../types/types'
 import { AppState } from './state-context'
 import { cloneDeep } from 'lodash'
-import { VoteCreated } from '../components/voting/voting'
+import { VoteCreated } from '../components/voting/voting/voting'
 import { FetchFocusPollData } from '../pages/vote/[code]'
 
 export enum StateActionType {

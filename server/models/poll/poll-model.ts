@@ -17,7 +17,7 @@ export class Poll extends BaseModel {
   public static async createPoll(input: CreatePollFullInput): Promise<PollDB> {
     this.validate(createPollSchema, input)
     return await this.withinTransaction(async (trx: Knex.Transaction): Promise<PollDB> => {
-      await Person.insertPersonIfNotExists(input.ownerId, input.ownerName ?? null, trx)
+      await Person.insertOrUpdatePerson(input.ownerId, input.ownerName ?? null, trx)
       const poll = await this.insertPoll(input, trx)
       await Option.insertOptions(input.options, poll.id, input.dataClass, trx)
       return poll
@@ -76,13 +76,19 @@ export class Poll extends BaseModel {
     return (await this.database<PollDB>('Polls').delete().where('id', pollId).returning('*'))[0]
   }
 
-  public static async editPoll(input: EditPollInputType, personId?: string): Promise<PollDB> {
+  public static async editPoll(input: EditPollInputType, personId: string): Promise<PollDB> {
     this.validate(getEditPollSchema(input), input)
     return await this.withinTransaction(async (trx: Knex.Transaction): Promise<PollDB> => {
       if (input.options) {
         const optionsToEdit = await this.findOptions(input.pollId, trx)
         if (!personId || personId !== optionsToEdit[0].ownerId) throw new Error(Errors.notAuthorized)
         await Option.updateOptions(optionsToEdit, input.options, input.dataClass, input.pollId, trx)
+      }
+      if (input.ownerName) {
+        console.log('*********************')
+
+        await Person.updatePersonName(personId, input.ownerName, trx)
+        console.log('+++++++++++++++++++++')
       }
       return await this.patchPoll(input, trx)
     })

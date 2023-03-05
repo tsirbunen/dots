@@ -24,7 +24,7 @@ export class Option extends BaseModel {
     this.verifyCanVote(poll, input.optionId, input.voterId, optionVoters)
 
     return await this.withinTransaction(async (trx: Knex.Transaction): Promise<VoteDB> => {
-      await Person.insertPersonIfNotExists(input.voterId, input.name ?? null, trx)
+      await Person.insertOrUpdatePerson(input.voterId, input.name ?? null, trx)
       const inputToDatabase = { id: input.id, optionId: input.optionId, voterId: input.voterId, name: input.name }
       const insertedVote = await Vote.insertVote(inputToDatabase, trx)
       return insertedVote

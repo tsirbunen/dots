@@ -1,10 +1,16 @@
+import { Flex } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useCallback, useContext, useEffect } from 'react'
-import LayoutWithHeader from '../../components/layout-with-header/layout-with-header'
-import Voting from '../../components/voting/voting'
-import { useBrowserStorageService } from '../../hooks/use-browser-storage-service'
-import { useGraphQLClientService } from '../../hooks/use-graphql-client-service'
+import { Styles } from '../../components/dashboard/styles'
+import LayoutWithHeader from '../../components/layout/layout-with-header'
+import { AskForUserName } from '../../components/voting/ask-user-name/ask-for-user-name'
+import { VotingQuestion } from '../../components/voting/voting/question'
+import Voting from '../../components/voting/voting/voting'
+import NotFound from '../../components/widgets/not-found/not-found'
+import { useBrowserStorage } from '../../hooks/use-browser-storage'
+import { useGraphQLClient } from '../../hooks/use-graphql-client'
+import { useTranslation } from '../../hooks/use-translation'
 import { StateActionType } from '../../state/reducer'
 import { AppStateContext, AppStateContextType } from '../../state/state-context'
 import { Poll } from '../../types/types'
@@ -18,12 +24,18 @@ export type FetchFocusPollData = {
   poll: Poll
 }
 
+/**
+ * This page will show the desired poll and enable voting.
+ * If the voting is not anonymous and user's name cannot be found in browser
+ * local storage, user is first asked to give a name.
+ */
 const VoteInPoll: NextPage = () => {
+  const { state, dispatch } = useContext(AppStateContext) as AppStateContextType
+  const { findPollsByCode } = useGraphQLClient()
+  const { retrieveLocalStorageData } = useBrowserStorage()
+  const { translate } = useTranslation()
   const router = useRouter()
   const { code } = router.query
-  const { state, dispatch } = useContext(AppStateContext) as AppStateContextType
-  const { findPollsByCode } = useGraphQLClientService()
-  const { retrieveLocalStorageData } = useBrowserStorageService()
 
   const fetchPolls = useCallback(async (pollCode: string) => {
     const { token, userName, userId } = retrieveLocalStorageData()
@@ -45,9 +57,29 @@ const VoteInPoll: NextPage = () => {
     }
   }, [code, fetchPolls])
 
+  const poll = state?.pollInFocus
+
+  if (!poll) {
+    return <NotFound textLines={[translate('could_not_find'), `${translate('poll_with_code')} ${code}`]} />
+  }
+
+  if (!state.userId) {
+    return <NotFound textLines={[translate('something_went_wrong'), translate('go_home')]} />
+  }
+
+  const userNameIsMissing = !poll.isAnonymous && !state.userName
+  if (userNameIsMissing) {
+    return (
+      <Flex {...Styles.wrapper}>
+        <VotingQuestion poll={poll} userId={state.userId} />
+        <AskForUserName />
+      </Flex>
+    )
+  }
+
   return (
     <LayoutWithHeader>
-      <Voting pollInFocus={state?.pollInFocus} code={code as string} />
+      <Voting pollInFocus={poll} userId={state.userId} />
     </LayoutWithHeader>
   )
 }

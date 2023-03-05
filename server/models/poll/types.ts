@@ -24,6 +24,7 @@ export interface PollDB {
 }
 export interface EditPollInputType {
   pollId: string
+  ownerName?: string
   question?: string
   options?: OptionEditData[]
   dataClass?: DataClass

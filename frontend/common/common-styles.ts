@@ -50,7 +50,14 @@ export class commonStyles {
 
   static buttonInverted() {
     return {
-      ...commonStyles.button,
+      // ...this.button,
+      size: 'sm',
+      variant: 'solid',
+      // bg: ThemeColor.CONTRAST,
+      // bg: 'red',
+      // color: ThemeColor.BACKGROUND,
+      _focus: { outline: 'none' },
+      _hover: { bg: ThemeColor.CONTRAST, color: ThemeColor.BACKGROUND },
       bg: ThemeColor.SHADE_2,
       color: ThemeColor.CONTRAST
     }

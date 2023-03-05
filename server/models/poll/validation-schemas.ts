@@ -41,6 +41,7 @@ export const createPollSchema = {
       type: 'string',
       enum: Object.keys(DataClass).map((key) => key.toUpperCase())
     },
+    ownerName: nullable({ type: 'string' }),
     isAnonymous: { type: 'boolean' },
     totalVotesCountMax: {
       type: 'integer',
@@ -89,11 +90,15 @@ export const getEditPollSchema = (input: Readonly<EditPollInputType>): Record<st
     required.push('totalVotesCountMax')
     required.push('optionVotesCountMax')
   }
+  if (!input.isAnonymous) {
+    required.push('ownerName')
+  }
   return {
     ...baseSchema,
     properties: properties as Record<string, string | object>,
     anyOf: [
       { required: ['question'] },
+      { required: ['ownerName'] },
       { required: ['options'] },
       { required: ['dataClass'] },
       { required: ['totalVotesCountMax'] },

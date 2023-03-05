@@ -10,7 +10,9 @@ interface IOwnerPollResolvers {
 export const OwnerPollResolvers: IOwnerPollResolvers = {
   owner: async (parent, _args, context) => {
     const provider = context.injector.get(PersonProvider)
+
     const owner = await provider.findPersonById(parent.ownerId)
+
     return owner
   }
 }

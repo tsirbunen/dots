@@ -36,6 +36,7 @@ export type EditPollInput = {
   isAnonymous?: InputMaybe<Scalars['Boolean']>;
   optionVotesCountMax?: InputMaybe<Scalars['Int']>;
   options?: InputMaybe<Array<InputMaybe<OptionEditData>>>;
+  ownerName?: InputMaybe<Scalars['String']>;
   pollId: Scalars['ID'];
   question?: InputMaybe<Scalars['String']>;
   showStatusWhenVoting?: InputMaybe<Scalars['Boolean']>;

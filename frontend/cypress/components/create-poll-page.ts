@@ -1,12 +1,12 @@
 import { Base } from './base'
-import { DATA_CY_FORM_TEXT_INPUT_BUTTON } from '../../components/form-components/text-type-form-input/text-type-input'
-import { DATA_CY_INPUT_MODAL } from '../../components/widgets/input-modal/input-modal'
+import { DATA_CY_FORM_TEXT_INPUT_BUTTON } from '../../components/forms/form-inputs/text-input'
+import { DATA_CY_INPUT_MODAL } from '../../components/forms/form-inputs/input-modal'
 import { EN_TRANSLATIONS } from '../../localization/en'
 import { DATA_CY_MODAL_ADD, DATA_CY_MODAL_INPUT_TEXT } from '../../components/widgets/input-modal/text-input'
-import { DATA_CY_LIST_ADD } from '../../components/form-components/text-date-time-list-form-input/text-date-time-list-form-input'
+import { DATA_CY_LIST_ADD } from '../../components/forms/form-inputs/text-list-input'
 import { DATA_CY_MODAL_DATA_TYPE_SELECTOR } from '../../components/widgets/input-modal/data-type-selector'
 import { DATA_CY_SMALL_BUTTON } from '../../components/widgets/small-button/small-button'
-import { DATA_CY_RESET, DATA_CY_SUBMIT } from '../../components/form-components/create-poll-form/poll-form'
+import { DATA_CY_RESET, DATA_CY_SUBMIT } from '../../components/forms/form-elements/poll-form'
 import { TEXT_LENGTH_MAX, TEXT_LENGTH_QUESTION_MIN, VOTING_OPTIONS_MAX } from '../../utils/constant-values'
 
 export class CreatePollPage extends Base {

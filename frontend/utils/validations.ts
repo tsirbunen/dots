@@ -14,9 +14,9 @@ export const validatePollData = (pollData: unknown): Poll => {
     question: validateString(data.question),
     totalVotesCountMax: validateNumber(data.totalVotesCountMax),
     optionVotesCountMax: validateNumber(data.optionVotesCountMax),
-    owner: validateOwner(data.owner),
     showStatusWhenVoting: validateBoolean(data.showStatusWhenVoting),
     isAnonymous: validateBoolean(data.isAnonymous),
+    owner: validateOwner(data.owner, data.isAnonymous),
     state: validatePollState(data.state),
     token: validateToken(data.token),
     options: validateOptions(data.options),
@@ -24,11 +24,11 @@ export const validatePollData = (pollData: unknown): Poll => {
   } as Poll
 }
 
-const validateOwner = (data: unknown): Owner => {
+const validateOwner = (data: unknown, isAnonymous: boolean): Owner => {
   const owner = data as Owner
   return {
     id: validateString(owner.id),
-    name: validateString(owner.name)
+    name: !isAnonymous ? validateString(owner.name) : owner.name
   }
 }
 
@@ -46,6 +46,7 @@ const validateOptions = (data: unknown) => {
     }
   })
 }
+
 const validateVotes = (data: unknown): Vote[] => {
   if (!Array.isArray(data)) {
     throw new Error('Votes must be an array!')
@@ -69,6 +70,7 @@ export const validateToken = (target: unknown): string => {
   }
   return target as string
 }
+
 const validateString = (target: unknown): string => {
   if (typeof target !== 'string') throw new Error(`Target ${target} is not a string!`)
   return target

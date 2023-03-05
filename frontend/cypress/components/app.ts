@@ -1,9 +1,9 @@
 import { Base } from './base'
-import { DATA_CY_MENU_BUTTON, DATA_CY_ROUTE_BUTTON } from '../../components/layout-with-header/hamburger-menu'
-import { DATA_CY_LAUNCH_PAGE } from '../../components/launch-page-content/launch-page-content'
+import { DATA_CY_MENU_BUTTON, DATA_CY_ROUTE_BUTTON } from '../../components/layout/hamburger-menu'
+import { DATA_CY_LAUNCH_PAGE } from '../../components/launch/launch-page-content'
 import { DATA_CY_CREATE_POLL_PAGE } from '../../pages/create-poll'
 import { DATA_CY_VOTE_PAGE } from '../../pages/vote'
-import { DATA_CY_DASHBOARD_PAGE } from '../../components/dashboard/dashboard'
+import { DATA_CY_DASHBOARD_PAGE } from '../../components/dashboard/polls-list/polls-list'
 
 const CLIENT = 'localhost'
 const CLIENT_BASE_URL = `http://${CLIENT}:3000`

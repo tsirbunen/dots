@@ -17,7 +17,7 @@ export class VoteProvider {
     })
   }
 
-  nameVoters(votes: VoteDB[]) {
+  nameVoters(votes: VoteDB[]): VoteDB[] {
     const voterIdNameMap: Record<string, string> = {}
     const voterNames = new Set<string>()
     let voterIndex = 0
