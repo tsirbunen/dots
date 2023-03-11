@@ -1,5 +1,5 @@
 import { Box, Flex } from '@chakra-ui/react'
-import { Styles } from '../styles'
+import { Styles } from './styles'
 import SmallButton from '../../widgets/small-button/small-button'
 import { useTranslation } from '../../../hooks/use-translation'
 import { ActionButtonData } from '../../../pages/dashboard/[code]'

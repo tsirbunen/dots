@@ -8,6 +8,7 @@ import { removeFields } from '../../utils/remove-fields'
 export class VoteProvider {
   async findVotesByOptionId(optionId: string, personId?: string): Promise<VoteSchema[]> {
     const votes = await Vote.findVotesByOptionId(optionId)
+    console.log(personId)
     const votesWithNames = this.nameVoters(votes)
     return votesWithNames.map((vote) => {
       if (!personId || vote.voterId !== personId) {

@@ -8,7 +8,7 @@ import { AppStateContext, AppStateContextType } from '../../../state/state-conte
 import { PollState } from '../../../types/graphql-schema-types.generated'
 import { Poll } from '../../../types/types'
 import { MenuRouteTarget } from '../../layout/navigation-targets'
-import { Styles } from '../styles'
+import { Styles } from './styles'
 import { PollActions } from './poll-actions'
 import { WhatToDoNextInfo } from './what-to-do-next-info'
 
@@ -51,7 +51,6 @@ export const SinglePoll = ({ poll }: SinglePollProps) => {
   const continueEditingPoll = () => router.push(`/${MenuRouteTarget.CREATE_POLL}/${poll.code}`)
   const comeBackLater = () => router.push(`/${MenuRouteTarget.DASHBOARD}`)
   const voteInOrViewPoll = () => {
-    dispatch({ type: StateActionType.SET_FOCUS_POLL, data: poll })
     router.push(`/${MenuRouteTarget.VOTE}/${poll.code}`)
   }
 

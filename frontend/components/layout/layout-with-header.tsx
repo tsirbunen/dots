@@ -6,7 +6,7 @@ import HeaderTitle from './header-title'
 import { Styles } from './styles'
 
 export const MOBILE_WIDTH_LOWER_LIMIT = 375
-export const DATA_CY_APP_LAYOUT = 'app-layout'
+export const DATA_CY_APP_LAYOUT = 'app_layout'
 
 const LayoutWithHeader = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
   return (

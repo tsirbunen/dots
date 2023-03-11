@@ -11,7 +11,7 @@ export type AppStateContextType = {
 export type AppState = {
   language: Language
   polls: Record<string, Poll>
-  pollInFocus: Poll | undefined
+  // pollInFocus: Poll | undefined
   pollInEditing: Poll | undefined
   token: string | undefined
   userId: string | undefined
@@ -21,7 +21,7 @@ export type AppState = {
 const initialAppState = {
   language: 'EN' as Language,
   polls: {},
-  pollInFocus: undefined,
+  // pollInFocus: undefined,
   pollInEditing: undefined,
   token: undefined,
   userId: undefined,

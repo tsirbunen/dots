@@ -1,5 +1,5 @@
 import { Flex, Text } from '@chakra-ui/react'
-import { Styles } from '../styles'
+import { Styles } from './styles'
 import { useTranslation } from '../../../hooks/use-translation'
 import { Phrase } from '../../../localization/translations'
 
@@ -34,3 +34,5 @@ export const WhatToDoNextInfo = ({ pollQuestion, infoPhrases }: WhatToDoInfoProp
     </Flex>
   )
 }
+
+// TODO: Implement showing QR code in addition to the poll code

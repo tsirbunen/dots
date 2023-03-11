@@ -5,7 +5,7 @@ import { useTranslation } from '../../../hooks/use-translation'
 import { POLL_CODE_LENGTH } from '../../../utils/constant-values'
 import { MenuRouteTarget } from '../../layout/navigation-targets'
 import SmallButton from '../../widgets/small-button/small-button'
-import { Styles } from '../styles'
+import { Styles } from './styles'
 
 export const DATA_CY_GIVE_VOTE_CODE = 'give_vote_code'
 
@@ -38,7 +38,7 @@ const EnterPollCode = () => {
       </Center>
       {codeIsValid() && (
         <Center>
-          <Box {...Styles.buttonContainer}>
+          <Box {...Styles.buttonBox}>
             <SmallButton
               text={translate('go_to_poll').toUpperCase()}
               type="button"

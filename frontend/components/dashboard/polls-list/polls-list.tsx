@@ -8,7 +8,7 @@ import { AppStateContext, AppStateContextType } from '../../../state/state-conte
 import ModeSelection from '../../launch/mode-selection'
 import NotFound from '../../widgets/not-found/not-found'
 import DashboardItem from './dashboard-item'
-import { Styles } from '../styles'
+import { Styles } from './styles'
 
 export const DATA_CY_DASHBOARD_PAGE = 'dashboard_page'
 export const DATA_CY_NO_POLLS = 'no_polls'

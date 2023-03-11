@@ -7,8 +7,8 @@ export const authenticationPlugin = (): Plugin => ({
   onContextBuilding({ context, extendContext }: any) {
     let decodedToken: Token | null = null
     if (context.request !== null && context.request !== undefined) {
-      const token = (context.request.headers?.authorization as string) ?? null
-      if (token !== null) {
+      const token = context.request.headers?.authorization as unknown
+      if (typeof token === 'string' && token.length > 4) {
         try {
           decodedToken = decodeJWT(token) as Token
         } catch (error) {
@@ -18,7 +18,8 @@ export const authenticationPlugin = (): Plugin => ({
     }
     return extendContext({
       request: context.request,
-      authenticationData: decodedToken != null ? decodedToken.data : null
+      authenticationData: decodedToken != null ? decodedToken.data : null,
+      personId: context.request.headers?.personid ?? undefined
     })
   }
 })

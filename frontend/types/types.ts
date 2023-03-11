@@ -5,7 +5,7 @@ export type Vote = {
   id: string
   optionId: string
   voterId: string | null
-  name: string | null
+  name: string
 }
 
 export type Option = {

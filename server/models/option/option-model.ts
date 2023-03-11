@@ -27,6 +27,7 @@ export class Option extends BaseModel {
       await Person.insertOrUpdatePerson(input.voterId, input.name ?? null, trx)
       const inputToDatabase = { id: input.id, optionId: input.optionId, voterId: input.voterId, name: input.name }
       const insertedVote = await Vote.insertVote(inputToDatabase, trx)
+
       return insertedVote
     })
   }

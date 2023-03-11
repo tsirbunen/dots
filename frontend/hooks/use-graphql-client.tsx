@@ -30,7 +30,7 @@ import { useToast } from './use-toast'
 type UseGraphQLClientService = {
   createPoll: (input: CreatePollInput) => Promise<Poll | undefined>
   editPoll: (input: EditPollInput, pollToken: string) => Promise<Poll | undefined>
-  findPollsByCode: (codes: string[], token: string | undefined) => Promise<Poll[]>
+  findPollsByCode: (codes: string[], token: string | undefined, personId: string) => Promise<Poll[]>
   openPoll: (pollId: string, pollToken: string) => Promise<boolean | undefined>
   closePoll: (pollId: string, pollToken: string) => Promise<boolean | undefined>
   fetchPollData: (code: string, token: string | undefined) => Promise<Poll | undefined>
@@ -92,14 +92,15 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
     }
   }
 
-  const findPollsByCode = async (codes: string[], token: string | undefined): Promise<Poll[]> => {
+  const findPollsByCode = async (codes: string[], token: string | undefined, personId: string): Promise<Poll[]> => {
     try {
       const response = await graphqlClient.query<FindPollsByCodeQuery, FindPollsByCodeQueryVariables>({
         query: FindPollsByCodeDocument,
         variables: { codes },
         context: {
           headers: {
-            authorization: token ?? null
+            authorization: token ?? null, 
+            personid: personId
           }
         }
       })
@@ -182,13 +183,15 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
           }
         }
       })
-      console.log(response)
 
       if (!response.data?.giveAVoteToOption) {
         throw new Error(response.errors?.toString())
       }
 
       const voteData = response.data.giveAVoteToOption
+      if (!voteData.name) {
+        voteData.name = 'you'
+      }
       const vote = validateVote(voteData)
       return vote
     } catch (error) {

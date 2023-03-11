@@ -4,7 +4,6 @@ import { useTranslation } from '../../hooks/use-translation'
 import { FI_TRANSLATIONS } from '../../localization/fi'
 import { Phrase } from '../../localization/translations'
 import SmallButton from '../widgets/small-button/small-button'
-
 import { Styles } from './styles'
 
 export const DATA_CY_USE_MODE = 'use-mode'
@@ -28,7 +27,7 @@ const ModeSelection = () => {
   }
 
   return (
-    <Box {...Styles.buttonsContainer}>
+    <Box {...Styles.buttons}>
       {modePhrases().map((phrase, index) => {
         return (
           <Center key={phrase} data-cy={`${DATA_CY_USE_MODE}-${index}`}>

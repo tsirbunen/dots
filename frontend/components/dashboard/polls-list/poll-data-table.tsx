@@ -1,6 +1,6 @@
 import { Text } from '@chakra-ui/react'
 import { Option } from '../../../types/types'
-import { Styles } from '../styles'
+import { Styles } from './styles'
 
 type PollDataTableProps = {
   pollCode: string

@@ -1,11 +1,11 @@
 import { Flex } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useCallback, useContext, useEffect } from 'react'
-import { Styles } from '../../components/dashboard/styles'
+import { useCallback, useContext, useEffect, useState } from 'react'
+import { Styles } from '../../components/voting/voting/styles'
 import LayoutWithHeader from '../../components/layout/layout-with-header'
 import { AskForUserName } from '../../components/voting/ask-user-name/ask-for-user-name'
-import { VotingQuestion } from '../../components/voting/voting/question'
+import { Question } from '../../components/voting/voting/question'
 import Voting from '../../components/voting/voting/voting'
 import NotFound from '../../components/widgets/not-found/not-found'
 import { useBrowserStorage } from '../../hooks/use-browser-storage'
@@ -30,6 +30,7 @@ export type FetchFocusPollData = {
  * local storage, user is first asked to give a name.
  */
 const VoteInPoll: NextPage = () => {
+  const [poll, setPoll] = useState<Poll | undefined>(undefined)
   const { state, dispatch } = useContext(AppStateContext) as AppStateContextType
   const { findPollsByCode } = useGraphQLClient()
   const { retrieveLocalStorageData } = useBrowserStorage()
@@ -38,14 +39,19 @@ const VoteInPoll: NextPage = () => {
   const { code } = router.query
 
   const fetchPolls = useCallback(async (pollCode: string) => {
-    const { token, userName, userId } = retrieveLocalStorageData()
-    const polls = await findPollsByCode([pollCode], token)
+    const { token, userId, userName } = retrieveLocalStorageData()
+    const polls = await findPollsByCode([pollCode], token, userId)
 
     if (polls && polls.length > 0) {
       const pollWithCode = polls[0]
+      setPoll(pollWithCode)
       dispatch({
-        type: StateActionType.SET_FOCUS_POLL_DATA,
-        data: { token, userId, userName, poll: pollWithCode }
+        type: StateActionType.SET_USER_ID,
+        data: userId
+      })
+      dispatch({
+        type: StateActionType.SET_USER_NAME,
+        data: userName
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,29 +63,39 @@ const VoteInPoll: NextPage = () => {
     }
   }, [code, fetchPolls])
 
-  const poll = state?.pollInFocus
+  const userId = state?.userId
 
   if (!poll) {
-    return <NotFound textLines={[translate('could_not_find'), `${translate('poll_with_code')} ${code}`]} />
+    return (
+      <NotFound textLines={[translate('could_not_find'), `${translate('poll_with_code')} ${code}`]} withLayout={true} />
+    )
   }
 
-  if (!state.userId) {
-    return <NotFound textLines={[translate('something_went_wrong'), translate('go_home')]} />
+  if (!userId) {
+    return <NotFound textLines={[translate('something_went_wrong'), translate('go_home')]} withLayout={true} />
   }
 
   const userNameIsMissing = !poll.isAnonymous && !state.userName
   if (userNameIsMissing) {
     return (
-      <Flex {...Styles.wrapper}>
-        <VotingQuestion poll={poll} userId={state.userId} />
-        <AskForUserName />
-      </Flex>
+      <LayoutWithHeader>
+        <Flex {...Styles.wrapper}>
+          <Question
+            question={poll.question}
+            userId={userId}
+            totalVotesCountMax={poll.totalVotesCountMax}
+            options={poll.options}
+          />
+          <AskForUserName />
+        </Flex>
+      </LayoutWithHeader>
     )
   }
+  console.log('VoteInPoll PAGE rendering')
 
   return (
     <LayoutWithHeader>
-      <Voting pollInFocus={poll} userId={state.userId} />
+      <Voting poll={poll} userId={userId} userName={state?.userName} />
     </LayoutWithHeader>
   )
 }

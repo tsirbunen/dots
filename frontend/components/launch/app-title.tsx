@@ -5,7 +5,7 @@ import BlinkingDotsLine from '../widgets/blinking-dots/blinking-dots-line'
 import { Styles } from './styles'
 
 export const DATA_CY_APP_TITLE = 'app_title'
-export const DATA_CY_APP_SHORT_DESCRIPTION = 'app_short_description'
+export const DATA_CY_APP_DESCRIPTION = 'app_description'
 
 const AppTitle = () => {
   const { translate } = useTranslation()
@@ -13,11 +13,11 @@ const AppTitle = () => {
   return (
     <Center>
       <Box {...Styles.titleContainer}>
-        <Text {...Styles.appTitle} data-cy={DATA_CY_APP_TITLE}>
+        <Text {...Styles.title} data-cy={DATA_CY_APP_TITLE}>
           {translate('app_title')}
         </Text>
 
-        <Text {...Styles.appShort} color={ThemeColor.SHADE_1} data-cy={DATA_CY_APP_SHORT_DESCRIPTION}>
+        <Text {...Styles.appShort} color={ThemeColor.SHADE_1} data-cy={DATA_CY_APP_DESCRIPTION}>
           {translate('app_short_description')}
         </Text>
         <BlinkingDotsLine isSmall={false} />

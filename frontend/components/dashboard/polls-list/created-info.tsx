@@ -1,6 +1,6 @@
 import { Flex, Text } from '@chakra-ui/react'
 import { EditIcon, UnlockIcon, LockIcon } from '@chakra-ui/icons'
-import { Styles } from '../styles'
+import { Styles } from './styles'
 import { PollState } from '../../../types/graphql-schema-types.generated'
 import { asDDMMYYYY } from '../../../utils/date-time-utils'
 import { ThemeColorCodes } from '../../../theme/theme'

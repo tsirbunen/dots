@@ -40,7 +40,7 @@ const DashboardInfo = () => {
         )
       })}
 
-      <Center style={{ marginTop: '20px' }}>
+      <Center {...Styles.buttons}>
         <Box>
           <SmallButton
             text={translate('view_dashboard').toUpperCase()}

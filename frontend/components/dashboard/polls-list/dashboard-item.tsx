@@ -1,7 +1,7 @@
 import { Flex, Box, Center, Text, IconButton } from '@chakra-ui/react'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import { Poll } from '../../../types/types'
-import { Styles } from '../styles'
+import { Styles } from './styles'
 import { useRouter } from 'next/router'
 import { CreatedInfo } from './created-info'
 import { PollDataTable } from './poll-data-table'

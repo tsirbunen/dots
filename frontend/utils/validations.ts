@@ -54,19 +54,20 @@ const validateVotes = (data: unknown): Vote[] => {
   return data?.map((v) => validateVote(v))
 }
 
-export const validateVote = (v: unknown) => {
+export const validateVote = (v: unknown): Vote => {
   const vote = v as Vote
   return {
     id: validateString(vote.id),
     optionId: validateString(vote.optionId),
-    voterId: validateString(vote.voterId),
+    voterId: vote.voterId === null ? null : validateString(vote.voterId),
     name: validateString(vote.name)
   }
 }
 
-export const validateToken = (target: unknown): string => {
+export const validateToken = (target: unknown): string | undefined => {
+  if (target === null) return undefined
   if (typeof target !== 'string') {
-    throw new Error('Token is required!')
+    throw new Error('Token must be string when present!')
   }
   return target as string
 }
