@@ -49,6 +49,17 @@ export type GiveAVoteToOptionInput = {
   voterId: Scalars['ID'];
 };
 
+export type Message = {
+  __typename?: 'Message';
+  id?: Maybe<Scalars['ID']>;
+  optionId: Scalars['ID'];
+  voteId: Scalars['ID'];
+};
+
+export enum MessageType {
+  VoteAdded = 'VOTE_ADDED'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   closePoll: Poll;
@@ -57,6 +68,7 @@ export type Mutation = {
   editPoll: Poll;
   giveAVoteToOption?: Maybe<Vote>;
   openPoll: Poll;
+  sendMessage: Message;
 };
 
 
@@ -87,6 +99,11 @@ export type MutationGiveAVoteToOptionArgs = {
 
 export type MutationOpenPollArgs = {
   pollId: Scalars['ID'];
+};
+
+
+export type MutationSendMessageArgs = {
+  input: SendMessageInput;
 };
 
 export type Option = {
@@ -168,6 +185,24 @@ export type QueryFindPollArgs = {
 
 export type QueryFindPollsByCodeArgs = {
   codes: Array<Scalars['String']>;
+};
+
+export type SendMessageInput = {
+  optionId: Scalars['ID'];
+  pollId: Scalars['ID'];
+  type: MessageType;
+  voteId: Scalars['ID'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  greetings: Scalars['String'];
+  messageAdded: Message;
+};
+
+
+export type SubscriptionMessageAddedArgs = {
+  pollId: Scalars['ID'];
 };
 
 export type Vote = {

@@ -1,5 +1,5 @@
 import { Flex } from '@chakra-ui/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useBrowserStorage } from '../../../hooks/use-browser-storage'
 import { Styles } from './styles'
 import { Question } from './question'
@@ -27,9 +27,14 @@ type VotingProps = {
  */
 const Voting = ({ poll, userId, userName }: VotingProps) => {
   const { getToken } = useBrowserStorage()
-  const { giveAVoteToOption } = useGraphQLClient()
+  const { giveAVoteToOption, subscribeToMessages, subscribeToGreetings } = useGraphQLClient()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [optionsWithVotes, setOptionsWithVotes] = useState(poll.options)
+
+  useEffect(() => {
+    subscribeToMessages(poll.id)
+    // subscribeToGreetings()
+  }, [])
 
   // TODO: Implement here a subscription to fetch data on
   // how other people are voting in real time

@@ -18,6 +18,12 @@ import {
   GiveVoteToOptionDocument,
   GiveVoteToOptionMutation,
   GiveVoteToOptionMutationVariables,
+  GreetingsDocument,
+  GreetingsSubscription,
+  GreetingsSubscriptionVariables,
+  MessageAddedDocument,
+  MessageAddedSubscription,
+  MessageAddedSubscriptionVariables,
   OpenPollDocument,
   OpenPollMutation,
   OpenPollMutationVariables
@@ -40,6 +46,8 @@ type UseGraphQLClientService = {
     name: string | null,
     token: string | undefined
   ) => Promise<Vote | undefined>
+  subscribeToMessages: (pollId: string) => void
+  subscribeToGreetings: () => void
 }
 
 export const useGraphQLClient = (): UseGraphQLClientService => {
@@ -99,7 +107,7 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
         variables: { codes },
         context: {
           headers: {
-            authorization: token ?? null, 
+            authorization: token ?? null,
             personid: personId
           }
         }
@@ -227,5 +235,58 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
     }
   }
 
-  return { createPoll, editPoll, findPollsByCode, openPoll, closePoll, fetchPollData, giveAVoteToOption }
+  const subscribeToMessages = (pollId: string) => {
+    const subscription = graphqlClient
+      .subscribe<MessageAddedSubscription, MessageAddedSubscriptionVariables>({
+        query: MessageAddedDocument,
+        variables: { pollId }
+      })
+      .subscribe({
+        next: ({ data }) => {
+          if (data) console.log(data)
+          if (data?.messageAdded) {
+            console.log('new message', data.messageAdded)
+            // const message = validateMessage(data.newMessage)
+            // toast(message.text, message.type)
+          }
+        },
+        error: (error) => {
+          console.log('error', error)
+        }
+      })
+    return subscription
+  }
+
+  const subscribeToGreetings = () => {
+    const subscription = graphqlClient
+      .subscribe<GreetingsSubscription, GreetingsSubscriptionVariables>({
+        query: GreetingsDocument
+      })
+      .subscribe({
+        next: ({ data }) => {
+          if (data) console.log(data)
+          if (data?.greetings) {
+            console.log('new message', data.greetings)
+            // const message = validateMessage(data.newMessage)
+            // toast(message.text, message.type)
+          }
+        },
+        error: (error) => {
+          console.log('error', error)
+        }
+      })
+    return subscription
+  }
+
+  return {
+    createPoll,
+    editPoll,
+    findPollsByCode,
+    openPoll,
+    closePoll,
+    fetchPollData,
+    giveAVoteToOption,
+    subscribeToMessages,
+    subscribeToGreetings
+  }
 }

@@ -53,6 +53,18 @@ export type GiveVoteToOptionMutationVariables = Types.Exact<{
 
 export type GiveVoteToOptionMutation = { __typename?: 'Mutation', giveAVoteToOption?: { __typename?: 'Vote', id?: string | null, optionId?: string | null, voterId?: string | null, name?: string | null } | null };
 
+export type MessageAddedSubscriptionVariables = Types.Exact<{
+  pollId: Types.Scalars['ID'];
+}>;
+
+
+export type MessageAddedSubscription = { __typename?: 'Subscription', messageAdded: { __typename?: 'Message', id?: string | null, optionId: string, voteId: string } };
+
+export type GreetingsSubscriptionVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type GreetingsSubscription = { __typename?: 'Subscription', greetings: string };
+
 export const PollDataFragmentDoc = gql`
     fragment PollData on Poll {
   id
@@ -153,3 +165,19 @@ export const GiveVoteToOptionDocument = gql`
 export type GiveVoteToOptionMutationFn = Apollo.MutationFunction<GiveVoteToOptionMutation, GiveVoteToOptionMutationVariables>;
 export type GiveVoteToOptionMutationResult = Apollo.MutationResult<GiveVoteToOptionMutation>;
 export type GiveVoteToOptionMutationOptions = Apollo.BaseMutationOptions<GiveVoteToOptionMutation, GiveVoteToOptionMutationVariables>;
+export const MessageAddedDocument = gql`
+    subscription MessageAdded($pollId: ID!) {
+  messageAdded(pollId: $pollId) {
+    id
+    optionId
+    voteId
+  }
+}
+    `;
+export type MessageAddedSubscriptionResult = Apollo.SubscriptionResult<MessageAddedSubscription>;
+export const GreetingsDocument = gql`
+    subscription Greetings {
+  greetings
+}
+    `;
+export type GreetingsSubscriptionResult = Apollo.SubscriptionResult<GreetingsSubscription>;

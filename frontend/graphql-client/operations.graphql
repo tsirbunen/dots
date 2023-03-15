@@ -72,3 +72,15 @@ mutation GiveVoteToOption($input: GiveAVoteToOptionInput!) {
     name
   }
 }
+
+subscription MessageAdded($pollId: ID!) {
+  messageAdded(pollId: $pollId) {
+    id
+    optionId
+    voteId
+  }
+}
+
+subscription Greetings {
+  greetings
+}

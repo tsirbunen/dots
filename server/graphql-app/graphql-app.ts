@@ -9,12 +9,14 @@ import { OptionModule } from '../modules/option/module'
 import { VoteModule } from '../modules/vote/module'
 import { PersonModule } from '../modules/person/module'
 import { isPollOwner } from '../modules/directives/is-poll-owner'
+import { MessageModule } from '../modules/message/module'
 
 export const createGraphQLApp = (): Application => {
   return createApplication({
     modules: [
       QueryModule,
       MutationModule,
+      MessageModule,
       PingModule,
       OptionModule,
       PollModule,

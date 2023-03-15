@@ -1,0 +1,32 @@
+enum MessageType {
+  VOTE_ADDED
+}
+
+# type MessagePayload {
+#   optionId: ID
+#   voteId: ID
+# }
+
+type Message {
+  id: ID
+  # type: MessageType
+  # payload: MessagePayload
+  optionId: ID!
+  voteId: ID!
+}
+
+input SendMessageInput {
+  type: MessageType!
+  pollId: ID!
+  optionId: ID!
+  voteId: ID!
+}
+
+extend type Mutation {
+  sendMessage(input: SendMessageInput!): Message!
+}
+
+type Subscription {
+  messageAdded(pollId: ID!): Message!
+  greetings: String!
+}
