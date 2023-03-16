@@ -38,7 +38,8 @@ export async function giveMaxNumberOfVotesForPerson(poll: PollFull, voterId: str
     while (votesTotal < maxTotal && votesPerOption < maxPerOption) {
       const giveAVoteInput = {
         optionId: poll.options[optionTracker.index].id,
-        voterId: voterId
+        voterId: voterId,
+        pollId: poll.id
       }
 
       await giveAVoteToOption(giveAVoteInput)

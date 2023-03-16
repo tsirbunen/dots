@@ -2,20 +2,19 @@ import { Injectable } from 'graphql-modules'
 import { VoteDB } from '../../models/vote/types'
 import { Vote } from '../../models/vote/vote-model'
 import { Vote as VoteSchema } from '../../types/graphql-schema-types.generated'
-import { removeFields } from '../../utils/remove-fields'
+import hash from 'hash-it'
 
 @Injectable()
 export class VoteProvider {
-  async findVotesByOptionId(optionId: string, personId?: string): Promise<VoteSchema[]> {
+  async findVotesByOptionId(optionId: string, personId: string | undefined): Promise<VoteSchema[]> {
     const votes = await Vote.findVotesByOptionId(optionId)
-    console.log(personId)
     const votesWithNames = this.nameVoters(votes)
-    return votesWithNames.map((vote) => {
-      if (!personId || vote.voterId !== personId) {
-        return removeFields(vote, ['voterId'])
-      }
-      return vote
+    const votesWithModifiedVoterIds = votesWithNames.map((vote) => {
+      if (vote.voterId === personId) return vote
+      return this.replaceVoterIdWithHash(vote)
     })
+
+    return votesWithModifiedVoterIds
   }
 
   nameVoters(votes: VoteDB[]): VoteDB[] {
@@ -40,5 +39,9 @@ export class VoteProvider {
     return votes.map((vote) => {
       return { ...vote, name: voterIdNameMap[vote.voterId] }
     })
+  }
+
+  replaceVoterIdWithHash(vote: VoteDB): VoteDB {
+    return { ...vote, voterId: hash(vote.voterId).toString() }
   }
 }

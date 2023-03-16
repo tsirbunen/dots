@@ -39,18 +39,17 @@ describe('FIND POLL', () => {
       expect(errorMessage).to.equal(Errors.pollDoesNotExist(invalidPollCode))
     }
   })
-  it('All polls of an owner can be queried (and only polls by that owner have a token)', async () => {
-    const { ownerIds, tokens, codes } = await createPollsForMultipleOwners()
+  it('All polls of an owner can be queried (and polls by an owner have a token)', async () => {
+    const { pollOwnerData } = await createPollsForMultipleOwners()
 
-    for (let ownerIndex = 0; ownerIndex < ownerIds.length; ownerIndex++) {
-      const ownerId = ownerIds[ownerIndex]
-      const ownerPollCodes = codes[ownerId]
-      const polls = await findPollsByCode(tokens[ownerIndex], ownerPollCodes)
-      const pollsByOwner = polls.filter((poll) => poll.token)
-      assert(pollsByOwner.length === POLL_VALID.length)
-      for (let pollIndex = 0; pollIndex < pollsByOwner.length; pollIndex++) {
-        assertObjectIsAPoll(pollsByOwner[pollIndex])
-        assert(pollsByOwner[pollIndex].owner.id === ownerIds[ownerIndex])
+    for (let ownerIndex = 0; ownerIndex < pollOwnerData.length; ownerIndex++) {
+      const data = pollOwnerData[ownerIndex]
+      const ownerId = data.ownerId
+      const polls = data.polls
+      for (let pollIndex = 0; pollIndex < polls.length; pollIndex++) {
+        const poll = polls[pollIndex]
+        assertObjectIsAPoll(poll)
+        assert(poll.owner.id === ownerId)
       }
     }
   })

@@ -2,10 +2,11 @@ import { assert } from 'chai'
 import { v4 as uuidv4 } from 'uuid'
 import { OPTION_COUNT_MIN, OPTION_COUNT_MAX } from '../../utils/constant-values'
 import { POLL_VALID } from '../data/polls-data'
-import { createPoll, openPollForVoting, giveAVoteToOption, findPollsByCode } from './operations'
+import { createPoll, openPollForVoting, giveAVoteToOption, findPoll } from './operations'
 import { Knex } from 'knex'
 import { getAllPolls, getAllPersons, getAllOptions, getAllVotes } from './handle-database-connections'
 import { PollFull } from '../../models/poll/types'
+import { assertObjectIsAPoll } from './assertions'
 
 export function extractErrorMessage(error: unknown): string {
   const errorResponse = error as {
@@ -40,19 +41,21 @@ export async function createPollsByOwnersWithVotes() {
   let optionsToDeleteCount = 0
   let votesToDeleteCount = 0
   let votersCount = 0
-  let codes: Record<string, string[]> = {}
+  const ownerPollsData: { ownerId: string; polls: PollFull[] }[] = []
 
   for (let ownerIndex = 0; ownerIndex < ownersCount; ownerIndex++) {
     const ownerId = uuidv4()
-    codes[ownerId] = []
+    const polls: PollFull[] = []
     for (let pollIndex = 0; pollIndex < pollsCreatedByOwner; pollIndex++) {
       const pollInputData = { ...POLL_VALID[pollIndex], ownerId }
       const createdPoll = await createPoll(pollInputData)
       createdPolls.push(createdPoll)
-      codes[ownerId].push(createdPoll.code)
+      polls.push(createdPoll)
       await openPollForVoting(createdPoll.id, createdPoll.token!)
     }
+    ownerPollsData.push({ ownerId, polls })
   }
+
   for (let pollIndex = 0; pollIndex < createdPolls.length; pollIndex++) {
     const poll = createdPolls[pollIndex]
     for (let optionIndex = 0; optionIndex < poll.options.length; optionIndex++) {
@@ -60,7 +63,8 @@ export async function createPollsByOwnersWithVotes() {
       let giveAVoteInput = {
         optionId: poll.options[optionIndex].id,
         voterId: uuidv4(),
-        name: 'Voter 1'
+        name: 'Voter 1',
+        pollId: poll.id
       }
       await giveAVoteToOption(giveAVoteInput)
       giveAVoteInput = { ...giveAVoteInput, voterId: uuidv4(), name: 'Voter 2' }
@@ -75,9 +79,9 @@ export async function createPollsByOwnersWithVotes() {
     }
   }
   return {
+    ownerPollsData,
     pollToDelete: createdPolls[pollToDeleteIndex!],
     personsCount: ownersCount + votersCount,
-    codes,
     pollsByOwnerCount: pollsCreatedByOwner,
     pollsCount: ownersCount * pollsCreatedByOwner,
     totalOptions,
@@ -90,17 +94,20 @@ export async function createPollsByOwnersWithVotes() {
 
 export async function assertOwnerOptionAndVoteCountsMatchExpected(
   DATABASE: Knex<any, any[]>,
-  pollToDelete: PollFull,
+  ownersPolls: PollFull[],
+  deletedPoll: PollFull | undefined,
   expectedPollsByOwner: number,
   expectedPollsCount: number,
   expectedPersonsCount: number,
   expectedTotalNumberOfOptionsCount: number,
-  expectedTotalNumberOfVotesCount: number,
-  pollCodes: string[]
+  expectedTotalNumberOfVotesCount: number
 ): Promise<void> {
-  const pollsByOwner = await findPollsByCode(pollToDelete.token!, pollCodes)
-  const ownedPolls = pollsByOwner.filter((poll) => poll.token)
-  assert.equal(ownedPolls.length, expectedPollsByOwner)
+  for (let i = 0; i < ownersPolls.length; i++) {
+    if (!deletedPoll && ownersPolls[i] !== deletedPoll) {
+      const retrievedPoll = await findPoll(ownersPolls[i].code)
+      assertObjectIsAPoll(retrievedPoll)
+    }
+  }
 
   const pollsInDatabase = await getAllPolls(DATABASE)
   assert.equal(pollsInDatabase.length, expectedPollsCount)
@@ -115,28 +122,24 @@ export async function assertOwnerOptionAndVoteCountsMatchExpected(
   assert.equal(votesInDatabase.length, expectedTotalNumberOfVotesCount)
 }
 
+export type PollOwnerData = {
+  ownerId: string
+  polls: PollFull[]
+}
+
 export async function createPollsForMultipleOwners(): Promise<{
-  ownerIds: string[]
-  tokens: string[]
-  codes: Record<string, string[]>
+  pollOwnerData: PollOwnerData[]
 }> {
-  const ownerIds: string[] = []
-  const tokens: string[] = []
-  const codes: Record<string, string[]> = {}
+  const data = []
   for (let ownerIndex = 0; ownerIndex < 3; ownerIndex++) {
     const ownerId = uuidv4()
-    ownerIds.push(ownerId)
+    const polls = []
     for (let inputIndex = 0; inputIndex < POLL_VALID.length; inputIndex++) {
       const pollInputData = { ...POLL_VALID[inputIndex], ownerId }
       const createdPoll = await createPoll(pollInputData)
-      if (!codes[ownerId]) {
-        codes[ownerId] = []
-      }
-      codes[ownerId].push(createdPoll.code)
-      if (inputIndex === POLL_VALID.length - 1) {
-        tokens.push(createdPoll.token!)
-      }
+      polls.push(createdPoll)
     }
+    data.push({ ownerId, polls })
   }
-  return { ownerIds, tokens, codes }
+  return { pollOwnerData: data }
 }

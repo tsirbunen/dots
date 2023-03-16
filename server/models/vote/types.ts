@@ -9,4 +9,4 @@ export interface VoteDB {
 }
 
 export type VoteDBPartial = Pick<VoteDB, 'id' | 'optionId' | 'voterId' | 'name'>
-export type VoteDBMinimal = Omit<VoteDBPartial, 'id'>
+export type VoteDBMinimal = Omit<VoteDBPartial, 'id'> & { pollId: string }

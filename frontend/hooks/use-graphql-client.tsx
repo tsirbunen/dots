@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { FetchResult, Observable } from '@apollo/client'
 import { graphqlClient } from '../graphql-client/graphql-client'
 import {
   ClosePollDocument,
@@ -31,22 +33,25 @@ import {
 import { CreatePollInput, EditPollInput } from '../types/graphql-schema-types.generated'
 import { Poll, Vote } from '../types/types'
 import { validatePollData, validatePollsData, validateVote } from '../utils/validations'
+import { CodeTokenPair } from './use-browser-storage'
 import { useToast } from './use-toast'
 
 type UseGraphQLClientService = {
   createPoll: (input: CreatePollInput) => Promise<Poll | undefined>
   editPoll: (input: EditPollInput, pollToken: string) => Promise<Poll | undefined>
-  findPollsByCode: (codes: string[], token: string | undefined, personId: string) => Promise<Poll[]>
+  findPollsByCode: (pollCodeTokenPairs: CodeTokenPair[], personId: string) => Promise<Poll[]>
   openPoll: (pollId: string, pollToken: string) => Promise<boolean | undefined>
   closePoll: (pollId: string, pollToken: string) => Promise<boolean | undefined>
-  fetchPollData: (code: string, token: string | undefined) => Promise<Poll | undefined>
+  fetchPollData: (code: string, userId: string) => Promise<Poll | undefined>
   giveAVoteToOption: (
     optionId: string,
     voterId: string,
     name: string | null,
-    token: string | undefined
+    pollId: string
   ) => Promise<Vote | undefined>
-  subscribeToMessages: (pollId: string) => void
+  subscribeToMessages: (
+    pollId: string
+  ) => Observable<FetchResult<MessageAddedSubscription, Record<string, any>, Record<string, any>>>
   subscribeToGreetings: () => void
 }
 
@@ -100,7 +105,10 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
     }
   }
 
-  const findPollsByCode = async (codes: string[], token: string | undefined, personId: string): Promise<Poll[]> => {
+  const findPollsByCode = async (pollCodeTokenPairs: CodeTokenPair[], personId: string): Promise<Poll[]> => {
+    const codes = pollCodeTokenPairs.map((pair) => pair.code)
+    const token = pollCodeTokenPairs.find((pair) => pair.token)?.token
+
     try {
       const response = await graphqlClient.query<FindPollsByCodeQuery, FindPollsByCodeQueryVariables>({
         query: FindPollsByCodeDocument,
@@ -177,9 +185,9 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
     optionId: string,
     voterId: string,
     name: string | null,
-    token: string | undefined
+    pollId: string
   ): Promise<Vote | undefined> => {
-    const input = { optionId, voterId, name: name ?? null }
+    const input = { optionId, voterId, name: name ?? null, pollId }
     console.log(input)
     try {
       const response = await graphqlClient.mutate<GiveVoteToOptionMutation, GiveVoteToOptionMutationVariables>({
@@ -187,7 +195,7 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
         variables: { input },
         context: {
           headers: {
-            authorization: token ?? null
+            personid: voterId
           }
         }
       })
@@ -209,14 +217,14 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
     }
   }
 
-  const fetchPollData = async (code: string, token: string | undefined): Promise<Poll | undefined> => {
+  const fetchPollData = async (code: string, userId: string): Promise<Poll | undefined> => {
     try {
       const response = await graphqlClient.query<FindPollQuery, FindPollQueryVariables>({
         query: FindPollDocument,
         variables: { code },
         context: {
           headers: {
-            authorization: token ?? null
+            personId: userId
           }
         }
       })
@@ -235,26 +243,29 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
     }
   }
 
-  const subscribeToMessages = (pollId: string) => {
-    const subscription = graphqlClient
-      .subscribe<MessageAddedSubscription, MessageAddedSubscriptionVariables>({
-        query: MessageAddedDocument,
-        variables: { pollId }
-      })
-      .subscribe({
-        next: ({ data }) => {
-          if (data) console.log(data)
-          if (data?.messageAdded) {
-            console.log('new message', data.messageAdded)
-            // const message = validateMessage(data.newMessage)
-            // toast(message.text, message.type)
-          }
-        },
-        error: (error) => {
-          console.log('error', error)
-        }
-      })
+  const subscribeToMessages = (
+    pollId: string
+  ): Observable<FetchResult<MessageAddedSubscription, Record<string, any>, Record<string, any>>> => {
+    const subscription = graphqlClient.subscribe<MessageAddedSubscription, MessageAddedSubscriptionVariables>({
+      query: MessageAddedDocument,
+      variables: { pollId }
+    })
     return subscription
+
+    //   .subscribe({
+    //     next: ({ data }) => {
+    //       if (data) console.log(data)
+    //       if (data?.messageAdded) {
+    //         console.log('new message', data.messageAdded)
+    //         // const message = validateMessage(data.newMessage)
+    //         // toast(message.text, message.type)
+    //       }
+    //     },
+    //     error: (error) => {
+    //       console.log('error', error)
+    //     }
+    //   })
+    // return subscription
   }
 
   const subscribeToGreetings = () => {

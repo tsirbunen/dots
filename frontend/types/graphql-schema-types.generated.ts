@@ -46,14 +46,18 @@ export type EditPollInput = {
 export type GiveAVoteToOptionInput = {
   name?: InputMaybe<Scalars['String']>;
   optionId: Scalars['ID'];
+  pollId: Scalars['ID'];
   voterId: Scalars['ID'];
 };
 
 export type Message = {
   __typename?: 'Message';
-  id?: Maybe<Scalars['ID']>;
+  id: Scalars['ID'];
   optionId: Scalars['ID'];
+  pollId: Scalars['ID'];
   voteId: Scalars['ID'];
+  voterId: Scalars['ID'];
+  voterName?: Maybe<Scalars['String']>;
 };
 
 export enum MessageType {
@@ -68,7 +72,7 @@ export type Mutation = {
   editPoll: Poll;
   giveAVoteToOption?: Maybe<Vote>;
   openPoll: Poll;
-  sendMessage: Message;
+  publishMessage: Message;
 };
 
 
@@ -102,8 +106,8 @@ export type MutationOpenPollArgs = {
 };
 
 
-export type MutationSendMessageArgs = {
-  input: SendMessageInput;
+export type MutationPublishMessageArgs = {
+  input: PublishMessageInput;
 };
 
 export type Option = {
@@ -169,6 +173,13 @@ export enum PollState {
   Vote = 'VOTE'
 }
 
+export type PublishMessageInput = {
+  optionId: Scalars['ID'];
+  pollId: Scalars['ID'];
+  type: MessageType;
+  voteId: Scalars['ID'];
+};
+
 export type Query = {
   __typename?: 'Query';
   findPoll?: Maybe<Poll>;
@@ -185,13 +196,6 @@ export type QueryFindPollArgs = {
 
 export type QueryFindPollsByCodeArgs = {
   codes: Array<Scalars['String']>;
-};
-
-export type SendMessageInput = {
-  optionId: Scalars['ID'];
-  pollId: Scalars['ID'];
-  type: MessageType;
-  voteId: Scalars['ID'];
 };
 
 export type Subscription = {

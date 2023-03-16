@@ -40,7 +40,8 @@ describe('VOTE IN POLL', () => {
         const giveAVoteInput = {
           optionId: selectedOptionId,
           voterId: uuidv4(),
-          name: `Voter number ${index}`
+          name: `Voter number ${index}`,
+          pollId: poll.id
         }
         const vote = await giveAVoteToOption(giveAVoteInput)
         assertObjectIsAVote(vote)
@@ -54,12 +55,13 @@ describe('VOTE IN POLL', () => {
     const selectedOptionId = poll.options[0].id
     const maxPerOption = poll.optionVotesCountMax
     const personsVoting = 2
-    let giveAVoteInput: { optionId: string; voterId: string }
+    let giveAVoteInput: { optionId: string; voterId: string; pollId: string }
     for (let i = 0; i < personsVoting; i++) {
       let voterId = uuidv4()
       giveAVoteInput = {
         optionId: selectedOptionId,
-        voterId: voterId
+        voterId: voterId,
+        pollId: poll.id
       }
       for (let i = 0; i < maxPerOption; i++) {
         await giveAVoteToOption(giveAVoteInput)
@@ -86,7 +88,8 @@ describe('VOTE IN POLL', () => {
     try {
       const giveAVoteInput = {
         optionId: poll.options[optionTracker.index].id,
-        voterId: voterAId
+        voterId: voterAId,
+        pollId: poll.id
       }
       await giveAVoteToOption(giveAVoteInput)
     } catch (error) {
@@ -99,7 +102,8 @@ describe('VOTE IN POLL', () => {
     const voterId = uuidv4()
     const giveAVoteInput = {
       optionId: poll.options[0].id,
-      voterId: voterId
+      voterId: voterId,
+      pollId: poll.id
     }
 
     try {
@@ -124,7 +128,8 @@ describe('VOTE IN POLL', () => {
     const nonExistingOptionId = uuidv4()
     const giveAVoteInput = {
       optionId: nonExistingOptionId,
-      voterId: uuidv4()
+      voterId: uuidv4(),
+      pollId: poll.id
     }
 
     try {

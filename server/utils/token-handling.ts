@@ -2,7 +2,7 @@ import { JWT_SECRET } from './config'
 import jwt from 'jsonwebtoken'
 
 export interface TokenDetails {
-  pollIds: string[]
+  pollId: string
   ownerId: string
 }
 

@@ -68,34 +68,37 @@ export const createPollSchema = {
 }
 
 export const getEditPollSchema = (input: Readonly<EditPollInputType>): Record<string, string | object> => {
-  const baseSchema = createPollSchema
-  const properties = { ...(baseSchema.properties as Record<string, string | object>) }
-  properties.options = {
-    type: 'array',
-    items: {
-      type: 'object',
-      required: ['content'],
-      properties: { content: { type: 'string' }, optionId: { type: 'string' } }
-    }
+  const schema = {
+    type: 'object'
   }
+
+  const properties: Record<string, string | object> = {}
   const required = ['pollId']
+
   if (input.options) {
+    properties.options = {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['content'],
+        properties: { content: { type: 'string' }, optionId: { type: 'string' } }
+      }
+    }
     properties.dataClass = {
       type: 'string',
       enum: Object.keys(DataClass).map((key) => key.toUpperCase())
     }
     required.push('dataClass')
   }
+
   if (!!input.optionVotesCountMax || !!input.totalVotesCountMax) {
     required.push('totalVotesCountMax')
     required.push('optionVotesCountMax')
   }
-  if (!input.isAnonymous) {
-    required.push('ownerName')
-  }
+
   return {
-    ...baseSchema,
-    properties: properties as Record<string, string | object>,
+    ...schema,
+    properties,
     anyOf: [
       { required: ['question'] },
       { required: ['ownerName'] },

@@ -22,15 +22,16 @@ export const DATA_CY_NO_POLLS = 'no_polls'
  */
 export const PollsList = () => {
   const { findPollsByCode } = useGraphQLClient()
-  const { getPollCodes, getToken, updateStorageWithPolls } = useBrowserStorage()
+  const { retrieveLocalStorageData } = useBrowserStorage()
   const { state, dispatch } = useContext(AppStateContext) as AppStateContextType
 
   const fetchPolls = useCallback(async () => {
-    const codes = getPollCodes()
-    if (codes.length === 0) return
-    const storedToken = getToken()
-    const allPolls = await findPollsByCode(codes, storedToken)
-    updateStorageWithPolls(allPolls)
+    const { userId, pollCodeTokenPairs } = retrieveLocalStorageData()
+    // const codes = pollCodeTokenPairs.map((pair) => pair.code)
+    // if (codes.length === 0) return
+
+    const allPolls = await findPollsByCode(pollCodeTokenPairs, userId)
+    // updateStorageWithPolls(allPolls)
     dispatch({ type: StateActionType.SET_ALL_POLLS, data: allPolls })
   }, [])
 

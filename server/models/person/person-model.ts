@@ -24,7 +24,7 @@ export class Person extends BaseModel {
     let persons = await this.database<PersonDB>('Persons').transacting(trx).where('id', id)
     if (!persons || persons.length === 0) {
       persons = await this.database<PersonDB>('Persons').transacting(trx).insert({ id, name }).returning('id')
-    } else {
+    } else if (persons[0].name !== name) {
       await this.database<PersonDB>('Persons').transacting(trx).update({ name })
     }
     if (!persons || persons.length === 0) {

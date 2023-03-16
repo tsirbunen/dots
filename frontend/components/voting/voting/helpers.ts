@@ -1,6 +1,8 @@
 import { cloneDeep } from 'lodash'
+import hash from 'hash-it'
 import { Option, Vote } from '../../../types/types'
 import { DOT_COLORS } from '../../../utils/constant-values'
+import { SubscribedVote } from './voting'
 
 export const calculateOptionVotesGiven = (optionVotes: Vote[], userId: string) => {
   return optionVotes.reduce((acc, curr) => {
@@ -41,10 +43,6 @@ export const getVoterNames = (optionsWithVotes: Option[], userId: string): strin
   return voterNames.size > 0 ? Array.from(voterNames) : []
 }
 
-// export const getVotersNamesString = (optionsWithVotes: Option[], userId: string) => {
-//   return getVoterNames(optionsWithVotes, userId).join('')
-// }
-
 export const getVoterNameDotColorPairs = (optionsWithVotes: Option[], userId: string): Record<string, string> => {
   const voterNames = getVoterNames(optionsWithVotes, userId)
   const voters: Record<string, string> = {}
@@ -53,4 +51,59 @@ export const getVoterNameDotColorPairs = (optionsWithVotes: Option[], userId: st
     voters[voterName] = color
   })
   return voters
+}
+
+export const checkIfIsMyVote = (newVote: SubscribedVote, userId: string): boolean => {
+  const hashedUserId = hash(userId).toString()
+  return newVote.voterId === hashedUserId
+}
+
+export const checkIfVoteAlreadyAdded = (optionsWithVotes: Option[], newVote: SubscribedVote): boolean => {
+  const voteAlreadyAdded = optionsWithVotes.some((option) => {
+    return option.votes.some((vote) => vote.id === newVote.id)
+  })
+
+  return voteAlreadyAdded
+}
+
+export const getVoterName = (optionsWithVotes: Option[], newVote: SubscribedVote): string => {
+  let voterName: string | undefined = undefined
+  let maxVoterIndex = -1
+  optionsWithVotes.forEach((option) => {
+    option.votes.forEach((vote) => {
+      if (vote.name.includes('voter-')) {
+        const index = Number(vote.name.split('-')[1])
+        if (index > maxVoterIndex) maxVoterIndex = index
+      }
+      if (vote.voterId === newVote.voterId) voterName = vote.name
+    })
+  })
+
+  if (!voterName) {
+    voterName = `voter-${maxVoterIndex + 1}`
+  }
+  return voterName
+}
+
+export const addSubscribedVoteToOptions = (
+  optionsWithVotes: Option[],
+  newVote: SubscribedVote,
+  newName: string
+): Option[] => {
+  const updatedData = optionsWithVotes.map((option) => {
+    if (option.id === newVote.optionId) {
+      const updatedOption = cloneDeep(option)
+      const voteToAdd = {
+        id: newVote.id,
+        optionId: newVote.optionId,
+        voterId: newVote.voterId,
+        name: newName
+      }
+      updatedOption.votes.push(voteToAdd)
+      return updatedOption
+    } else {
+      return cloneDeep(option)
+    }
+  })
+  return updatedData
 }

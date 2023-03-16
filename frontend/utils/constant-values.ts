@@ -2,6 +2,7 @@ import { TextPackages } from '../types/types'
 import { NAME_DATA_TYPE_ERROR, QUESTION_DATA_TYPE_ERROR, VOTING_OPTION_DATA_TYPE_ERROR } from './error-messages'
 
 export const LOCAL_STORAGE_NAMES_AND_IDS_KEY = 'dots_user_names_and_uuids'
+export const LOCAL_STORAGE_CODE_TOKEN_PAIRS = 'dots_code_token_pairs'
 export const LOCAL_STORAGE_POLL_CODES = 'dots_poll_codes'
 export const LOCAL_STORAGE_USER_NAME = 'dots_user_name'
 export const LOCAL_STORAGE_TOKEN = 'dots_token'

@@ -11,14 +11,18 @@ export const OptionMutationResolvers: IOptionMutationResolvers = {
   giveAVoteToOption: async (_parent, { input }, context) => {
     const provider = context.injector.get(OptionProvider)
     const insertedNewVote = await provider.giveAVoteToOption(input)
+
     if (insertedNewVote) {
-      await context.injector.get(MessageProvider).sendMessage({
+      await context.injector.get(MessageProvider).publishMessage({
         type: 'VOTE_ADDED',
-        pollId: 'tälle joku arvo',
+        voteId: insertedNewVote.id,
+        voterId: input.voterId,
+        pollId: input.pollId,
         optionId: input.optionId,
-        voteId: 'tämäkin puuttuu!!!'
+        voterName: input.name ?? undefined
       })
     }
+
     return insertedNewVote
   }
 }

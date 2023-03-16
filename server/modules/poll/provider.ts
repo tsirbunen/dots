@@ -12,8 +12,8 @@ import { createJWT } from '../../utils/token-handling'
 @Injectable()
 export class PollProvider {
   async createPoll(input: CreatePollInput): Promise<PollSchema> {
-    const databaseInput = this.attachMissingFields(input)
-    const poll = await Poll.createPoll(databaseInput)
+    const databasePollInput = this.fillInMissingFields(input)
+    const poll = await Poll.createPoll(databasePollInput)
     return await this.attachToken(poll.ownerId, poll)
   }
 
@@ -59,7 +59,7 @@ export class PollProvider {
     return await this.attachToken(personId, poll)
   }
 
-  attachMissingFields(input: CreatePollInput): CreatePollFullInput {
+  fillInMissingFields(input: CreatePollInput): CreatePollFullInput {
     return {
       ...input,
       ownerName: input.ownerName ?? null,
@@ -70,17 +70,15 @@ export class PollProvider {
   }
 
   async attachToken(personId: string, poll: PollDB): Promise<PollSchema> {
-    const pollsOwned = await Poll.findAllPollsOwnedByPerson(personId)
-    const token = createJWT({ pollIds: pollsOwned.map((poll) => poll.id), ownerId: personId })
+    const token = createJWT({ pollId: poll.id, ownerId: personId })
     return { ...poll, token }
   }
 
   async attachTokenToOwnedPolls(personId: string, polls: PollDB[]): Promise<PollSchema[]> {
-    const pollsOwned = await Poll.findAllPollsOwnedByPerson(personId)
-    const token = createJWT({ pollIds: pollsOwned.map((poll) => poll.id), ownerId: personId })
     return polls.map((poll) => {
-      if (poll.ownerId === personId) return { ...poll, token }
-      return poll
+      if (poll.ownerId !== personId) return poll
+      const token = createJWT({ pollId: poll.id, ownerId: personId })
+      return { ...poll, token }
     })
   }
 }

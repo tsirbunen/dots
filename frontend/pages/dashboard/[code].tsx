@@ -30,11 +30,11 @@ const DashboardPollPage: NextPage = () => {
   const { code } = router.query
 
   const fetchPolls = useCallback(async () => {
-    const { token, userName, userId, pollCodes } = retrieveLocalStorageData()
-    if (token) dispatch({ type: StateActionType.SET_TOKEN, data: token })
+    const { userName, userId, pollCodeTokenPairs } = retrieveLocalStorageData()
+    // if (token) dispatch({ type: StateActionType.SET_TOKEN, data: token })
     if (userName) dispatch({ type: StateActionType.SET_USER_NAME, data: userName })
     if (userId) dispatch({ type: StateActionType.SET_USER_ID, data: userId })
-    const polls = await findPollsByCode(pollCodes, token)
+    const polls = await findPollsByCode(pollCodeTokenPairs, userId)
     if (polls) {
       dispatch({
         type: StateActionType.SET_ALL_POLLS,

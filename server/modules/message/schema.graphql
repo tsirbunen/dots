@@ -2,20 +2,16 @@ enum MessageType {
   VOTE_ADDED
 }
 
-# type MessagePayload {
-#   optionId: ID
-#   voteId: ID
-# }
-
 type Message {
-  id: ID
-  # type: MessageType
-  # payload: MessagePayload
+  id: ID!
   optionId: ID!
   voteId: ID!
+  pollId: ID!
+  voterId: ID!
+  voterName: String
 }
 
-input SendMessageInput {
+input PublishMessageInput {
   type: MessageType!
   pollId: ID!
   optionId: ID!
@@ -23,7 +19,7 @@ input SendMessageInput {
 }
 
 extend type Mutation {
-  sendMessage(input: SendMessageInput!): Message!
+  publishMessage(input: PublishMessageInput!): Message!
 }
 
 type Subscription {

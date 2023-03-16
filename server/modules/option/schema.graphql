@@ -1,6 +1,7 @@
 input GiveAVoteToOptionInput {
   optionId: ID!
   voterId: ID!
+  pollId: ID!
   name: String
 }
 

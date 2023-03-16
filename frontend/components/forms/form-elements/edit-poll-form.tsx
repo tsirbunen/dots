@@ -25,7 +25,7 @@ type EditPollFormWrapperProps = {
  */
 
 const EditPollForm = ({ poll }: EditPollFormWrapperProps) => {
-  const { getUserName, updateAfterPollEdited } = useBrowserStorage()
+  const { getUserName, updateStorageAfterPollEdited } = useBrowserStorage()
   const { editPoll } = useGraphQLClient()
   const { state, dispatch } = useContext(AppStateContext) as AppStateContextType
 
@@ -70,7 +70,8 @@ const EditPollForm = ({ poll }: EditPollFormWrapperProps) => {
     const input: EditPollInput = buildPollData(formData)
     const editedPoll = await editPoll(input, poll.token)
     if (editedPoll) {
-      updateAfterPollEdited(editedPoll)
+      // updateAfterPollEdited(editedPoll)
+      updateStorageAfterPollEdited(editedPoll)
       dispatch({ type: StateActionType.UPDATE_POLL, data: editedPoll })
     }
   }

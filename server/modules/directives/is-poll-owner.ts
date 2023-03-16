@@ -16,8 +16,8 @@ export function isPollOwner(originalSchema: GraphQLSchema, directiveName: string
             const pollId = args.input?.pollId ?? args.pollId
 
             if (authenticationData) {
-              const ownerPollIds = (authenticationData as TokenDetails).pollIds
-              if (ownerPollIds.includes(pollId)) {
+              const ownerPollId = (authenticationData as TokenDetails).pollId
+              if (ownerPollId === pollId) {
                 return resolve(source, args, context, info)
               }
             }

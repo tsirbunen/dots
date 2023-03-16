@@ -58,7 +58,7 @@ export type MessageAddedSubscriptionVariables = Types.Exact<{
 }>;
 
 
-export type MessageAddedSubscription = { __typename?: 'Subscription', messageAdded: { __typename?: 'Message', id?: string | null, optionId: string, voteId: string } };
+export type MessageAddedSubscription = { __typename?: 'Subscription', messageAdded: { __typename?: 'Message', id: string, optionId: string, voteId: string, pollId: string, voterId: string, voterName?: string | null } };
 
 export type GreetingsSubscriptionVariables = Types.Exact<{ [key: string]: never; }>;
 
@@ -171,6 +171,9 @@ export const MessageAddedDocument = gql`
     id
     optionId
     voteId
+    pollId
+    voterId
+    voterName
   }
 }
     `;

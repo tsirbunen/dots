@@ -13,15 +13,16 @@ export const DATA_CY_DASHBOARD_INFO = 'dashboard_info'
 const DashboardInfo = () => {
   const { translate } = useTranslation()
   const router = useRouter()
-  const { hasStoredPollCodes } = useBrowserStorage()
+  const { storedPollCodesExist } = useBrowserStorage()
   const [isOldUser, setIsOldUser] = useState(false)
 
   useEffect(() => {
     if (window) {
-      const hasCodesInLocalStorage = hasStoredPollCodes()
+      // const hasCodesInLocalStorage = hasStoredPollCodes()
+      const hasCodesInLocalStorage = storedPollCodesExist()
       setIsOldUser(hasCodesInLocalStorage)
     }
-  }, [hasStoredPollCodes])
+  }, [storedPollCodesExist])
 
   const instructionPhrases = () => {
     const phrases = Object.keys(FI_TRANSLATIONS).filter((key) => key.includes('dashboard_info'))

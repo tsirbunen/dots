@@ -20,7 +20,7 @@ export const DATA_CY_CREATE_POLL_FORM = 'create_poll_form'
  * storage.
  */
 const CreatePollForm = () => {
-  const { getUserName, getUserId, updateAfterPollCreated } = useBrowserStorage()
+  const { getUserName, getUserId, updateStorageAfterPollCreated } = useBrowserStorage()
   const { createPoll } = useGraphQLClient()
   const { state, dispatch } = useContext(AppStateContext) as AppStateContextType
   const router = useRouter()
@@ -57,7 +57,8 @@ const CreatePollForm = () => {
     const poll = await createPoll(data)
     if (poll) {
       dispatch({ type: StateActionType.ADD_POLL, data: poll })
-      updateAfterPollCreated(poll)
+      // updateAfterPollCreated(poll)
+      updateStorageAfterPollCreated(poll)
       router.push(`/dashboard/${poll?.code}`)
     }
   }

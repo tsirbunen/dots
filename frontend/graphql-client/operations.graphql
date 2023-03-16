@@ -78,6 +78,9 @@ subscription MessageAdded($pollId: ID!) {
     id
     optionId
     voteId
+    pollId
+    voterId
+    voterName
   }
 }
 

@@ -77,6 +77,7 @@ export class Poll extends BaseModel {
   }
 
   public static async editPoll(input: EditPollInputType, personId: string): Promise<PollDB> {
+    console.log(input)
     this.validate(getEditPollSchema(input), input)
     return await this.withinTransaction(async (trx: Knex.Transaction): Promise<PollDB> => {
       if (input.options) {

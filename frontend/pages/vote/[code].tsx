@@ -32,19 +32,18 @@ export type FetchFocusPollData = {
 const VoteInPoll: NextPage = () => {
   const [poll, setPoll] = useState<Poll | undefined>(undefined)
   const { state, dispatch } = useContext(AppStateContext) as AppStateContextType
-  const { findPollsByCode } = useGraphQLClient()
+  const { fetchPollData } = useGraphQLClient()
   const { retrieveLocalStorageData } = useBrowserStorage()
   const { translate } = useTranslation()
   const router = useRouter()
   const { code } = router.query
 
-  const fetchPolls = useCallback(async (pollCode: string) => {
-    const { token, userId, userName } = retrieveLocalStorageData()
-    const polls = await findPollsByCode([pollCode], token, userId)
+  const fetchPoll = useCallback(async (pollCode: string) => {
+    const { userId, userName } = retrieveLocalStorageData()
+    const pollByCode = await fetchPollData(pollCode, userId)
 
-    if (polls && polls.length > 0) {
-      const pollWithCode = polls[0]
-      setPoll(pollWithCode)
+    if (pollByCode) {
+      setPoll(pollByCode)
       dispatch({
         type: StateActionType.SET_USER_ID,
         data: userId
@@ -59,9 +58,9 @@ const VoteInPoll: NextPage = () => {
 
   useEffect(() => {
     if (code && window) {
-      fetchPolls(code as string)
+      fetchPoll(code as string)
     }
-  }, [code, fetchPolls])
+  }, [code, fetchPoll])
 
   const userId = state?.userId
 
