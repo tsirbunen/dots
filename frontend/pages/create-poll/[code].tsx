@@ -8,7 +8,7 @@ import NotFound from '../../components/widgets/not-found/not-found'
 import { useBrowserStorage } from '../../hooks/use-browser-storage'
 import { useGraphQLClient } from '../../hooks/use-graphql-client'
 import { useTranslation } from '../../hooks/use-translation'
-import { StateActionType } from '../../state/reducer'
+import { Dispatch } from '../../state/reducer'
 import { AppStateContext, AppStateContextType } from '../../state/state-context'
 
 export const DATA_CY_EDIT_POLL_PAGE = 'edit_poll_page'
@@ -21,34 +21,33 @@ const EditPollPage: NextPage = () => {
   const router = useRouter()
   const { code } = router.query
   const { state, dispatch } = useContext(AppStateContext) as AppStateContextType
-  const { retrieveLocalStorageData } = useBrowserStorage()
+  const { getPollToken } = useBrowserStorage()
   const { fetchPollData } = useGraphQLClient()
   const { translate } = useTranslation()
 
   const fetchPoll = useCallback(async (pollCode: string) => {
-    const { token } = retrieveLocalStorageData()
+    const token = getPollToken(pollCode)
+    if (!token) return
     const poll = await fetchPollData(pollCode, token)
+
     if (poll) {
       dispatch({
-        type: StateActionType.SET_POLL_IN_EDITING,
+        type: Dispatch.SET_POLL_IN_EDITING,
         data: poll
       })
     }
   }, [])
 
   useEffect(() => {
-    console.log('running useEffect edit poll')
     if (code && window) {
       fetchPoll(code as string)
     }
   }, [code, fetchPoll])
 
   return (
-    <LayoutWithHeader>
+    <LayoutWithHeader dataCy={DATA_CY_EDIT_POLL_PAGE}>
       {state?.pollInEditing ? (
-        <div data-cy={DATA_CY_EDIT_POLL_PAGE}>
-          <EditPollForm poll={state?.pollInEditing} />
-        </div>
+        <EditPollForm poll={state?.pollInEditing} />
       ) : (
         <NotFound textLines={[translate('could_not_find'), `${translate('poll_with_code')} ${code}`]} />
       )}

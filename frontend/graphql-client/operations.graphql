@@ -83,7 +83,3 @@ subscription MessageAdded($pollId: ID!) {
     voterName
   }
 }
-
-subscription Greetings {
-  greetings
-}

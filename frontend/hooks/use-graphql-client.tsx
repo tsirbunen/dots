@@ -20,9 +20,6 @@ import {
   GiveVoteToOptionDocument,
   GiveVoteToOptionMutation,
   GiveVoteToOptionMutationVariables,
-  GreetingsDocument,
-  GreetingsSubscription,
-  GreetingsSubscriptionVariables,
   MessageAddedDocument,
   MessageAddedSubscription,
   MessageAddedSubscriptionVariables,
@@ -52,7 +49,6 @@ type UseGraphQLClientService = {
   subscribeToMessages: (
     pollId: string
   ) => Observable<FetchResult<MessageAddedSubscription, Record<string, any>, Record<string, any>>>
-  subscribeToGreetings: () => void
 }
 
 export const useGraphQLClient = (): UseGraphQLClientService => {
@@ -217,14 +213,14 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
     }
   }
 
-  const fetchPollData = async (code: string, userId: string): Promise<Poll | undefined> => {
+  const fetchPollData = async (code: string, pollToken: string): Promise<Poll | undefined> => {
     try {
       const response = await graphqlClient.query<FindPollQuery, FindPollQueryVariables>({
         query: FindPollDocument,
         variables: { code },
         context: {
           headers: {
-            personId: userId
+            authorization: pollToken
           }
         }
       })
@@ -251,42 +247,6 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
       variables: { pollId }
     })
     return subscription
-
-    //   .subscribe({
-    //     next: ({ data }) => {
-    //       if (data) console.log(data)
-    //       if (data?.messageAdded) {
-    //         console.log('new message', data.messageAdded)
-    //         // const message = validateMessage(data.newMessage)
-    //         // toast(message.text, message.type)
-    //       }
-    //     },
-    //     error: (error) => {
-    //       console.log('error', error)
-    //     }
-    //   })
-    // return subscription
-  }
-
-  const subscribeToGreetings = () => {
-    const subscription = graphqlClient
-      .subscribe<GreetingsSubscription, GreetingsSubscriptionVariables>({
-        query: GreetingsDocument
-      })
-      .subscribe({
-        next: ({ data }) => {
-          if (data) console.log(data)
-          if (data?.greetings) {
-            console.log('new message', data.greetings)
-            // const message = validateMessage(data.newMessage)
-            // toast(message.text, message.type)
-          }
-        },
-        error: (error) => {
-          console.log('error', error)
-        }
-      })
-    return subscription
   }
 
   return {
@@ -297,7 +257,6 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
     closePoll,
     fetchPollData,
     giveAVoteToOption,
-    subscribeToMessages,
-    subscribeToGreetings
+    subscribeToMessages
   }
 }

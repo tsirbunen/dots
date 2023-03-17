@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useContext } from 'react'
 import { useGraphQLClient } from '../../../hooks/use-graphql-client'
 import { Phrase } from '../../../localization/translations'
-import { StateActionType } from '../../../state/reducer'
+import { Dispatch } from '../../../state/reducer'
 import { AppStateContext, AppStateContextType } from '../../../state/state-context'
 import { PollState } from '../../../types/graphql-schema-types.generated'
 import { Poll } from '../../../types/types'
@@ -20,7 +20,7 @@ export const DATA_CY_INFO_CLOSE_POLL = 'leave_poll'
 export const DATA_CY_INFO_VOTE_IN_POLL = 'vote_in_poll'
 export const DATA_CY_INFO_VIEW_POLL = 'view_poll'
 
-export type ActionButtonData = { phrase: Phrase; cy: string; onClick: (input?: PollState) => void }
+export type ActionButtonData = { phrase: Phrase; dataCy: string; onClick: (input?: PollState) => void }
 type SinglePollProps = {
   poll: Poll
 }
@@ -37,14 +37,14 @@ export const SinglePoll = ({ poll }: SinglePollProps) => {
   const openPollForVoting = async () => {
     const openingSucceeded = await openPoll(poll.id, poll.token)
     if (openingSucceeded) {
-      dispatch({ type: StateActionType.UPDATE_POLL, data: { ...poll, state: PollState.Vote } })
+      dispatch({ type: Dispatch.UPDATE_POLL, data: { ...poll, state: PollState.Vote } })
     }
   }
 
   const closePollFromVoting = async () => {
     const closingSucceeded = await closePoll(poll.id, poll.token)
     if (closingSucceeded) {
-      dispatch({ type: StateActionType.UPDATE_POLL, data: { ...poll, state: PollState.Closed } })
+      dispatch({ type: Dispatch.UPDATE_POLL, data: { ...poll, state: PollState.Closed } })
     }
   }
 
@@ -58,20 +58,20 @@ export const SinglePoll = ({ poll }: SinglePollProps) => {
     switch (pollState) {
       case PollState.Edit:
         return [
-          { phrase: 'open_poll', cy: DATA_CY_INFO_OPEN_POLL, onClick: openPollForVoting },
-          { phrase: 'edit_poll', cy: DATA_CY_INFO_EDIT_POLL, onClick: continueEditingPoll },
-          { phrase: 'leave_poll', cy: DATA_CY_INFO_LEAVE_POLL, onClick: comeBackLater }
+          { phrase: 'open_poll', dataCy: DATA_CY_INFO_OPEN_POLL, onClick: openPollForVoting },
+          { phrase: 'edit_poll', dataCy: DATA_CY_INFO_EDIT_POLL, onClick: continueEditingPoll },
+          { phrase: 'leave_poll', dataCy: DATA_CY_INFO_LEAVE_POLL, onClick: comeBackLater }
         ] as ActionButtonData[]
       case PollState.Vote:
         return [
-          { phrase: 'vote_in_poll', cy: DATA_CY_INFO_VOTE_IN_POLL, onClick: voteInOrViewPoll },
-          { phrase: 'close_poll', cy: DATA_CY_INFO_CLOSE_POLL, onClick: closePollFromVoting },
-          { phrase: 'leave_poll', cy: DATA_CY_INFO_LEAVE_POLL, onClick: comeBackLater }
+          { phrase: 'vote_in_poll', dataCy: DATA_CY_INFO_VOTE_IN_POLL, onClick: voteInOrViewPoll },
+          { phrase: 'close_poll', dataCy: DATA_CY_INFO_CLOSE_POLL, onClick: closePollFromVoting },
+          { phrase: 'leave_poll', dataCy: DATA_CY_INFO_LEAVE_POLL, onClick: comeBackLater }
         ] as ActionButtonData[]
       case PollState.Closed:
         return [
-          { phrase: 'view_poll', cy: DATA_CY_INFO_VIEW_POLL, onClick: voteInOrViewPoll },
-          { phrase: 'leave_poll', cy: DATA_CY_INFO_LEAVE_POLL, onClick: comeBackLater }
+          { phrase: 'view_poll', dataCy: DATA_CY_INFO_VIEW_POLL, onClick: voteInOrViewPoll },
+          { phrase: 'leave_poll', dataCy: DATA_CY_INFO_LEAVE_POLL, onClick: comeBackLater }
         ] as ActionButtonData[]
       default:
         throw new Error(`Info text not implemented for poll state ${pollState}`)

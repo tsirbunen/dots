@@ -3,7 +3,7 @@ import { Box, Center, IconButton, Popover, PopoverContent, PopoverTrigger, Porta
 import { MdLanguage } from 'react-icons/md'
 import { Language, useTranslation } from '../../../hooks/use-translation'
 import { AppStateContext, AppState } from '../../../state/state-context'
-import { StateAction, StateActionType } from '../../../state/reducer'
+import { DispatchAction, Dispatch } from '../../../state/reducer'
 import { Phrase } from '../../../localization/translations'
 import { Styles } from './styles'
 import SmallButton from '../small-button/small-button'
@@ -17,12 +17,12 @@ const ToggleLanguage = ({ isRowMode }: { isRowMode: boolean }) => {
   const { addBlur, removeBlur } = useBackgroundBlur()
   const { state, dispatch } = useContext(AppStateContext) as {
     state: AppState
-    dispatch: React.Dispatch<StateAction>
+    dispatch: React.Dispatch<DispatchAction>
   }
 
   const changeAppLanguage = (selectedNewLanguage: Language) => {
     if (state.language !== selectedNewLanguage) {
-      dispatch({ type: StateActionType.SET_LANGUAGE, data: selectedNewLanguage })
+      dispatch({ type: Dispatch.SET_LANGUAGE, data: selectedNewLanguage })
     }
   }
 
@@ -48,7 +48,7 @@ const ToggleLanguage = ({ isRowMode }: { isRowMode: boolean }) => {
                 return (
                   <Box key={language} {...Styles.buttonContainer}>
                     <SmallButton
-                      dataCyPostfix={`${DATA_CY_LANGUAGE}-${language}`}
+                      dataCy={`${DATA_CY_LANGUAGE}-${language}`}
                       text={translate(`language_${language}` as Phrase)}
                       onClick={() => changeAppLanguage(language)}
                       noMargin={true}

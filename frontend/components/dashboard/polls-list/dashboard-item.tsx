@@ -34,7 +34,6 @@ const DashboardItem = ({ poll }: DashboardItemProps) => {
             aria-label={'next-actions'}
             {...Styles.nextIcon}
             icon={<ChevronRightIcon {...Styles.chakraIconStyle} />}
-            onClick={() => console.log('next-actions')}
             data-cy={`${DATA_CY_DASHBOARD_ACTION_BUTTON}-next-actions`}
           />
         </Box>

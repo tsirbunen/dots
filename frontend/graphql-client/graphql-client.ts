@@ -34,7 +34,6 @@ const splitLink =
       )
     : httpLink
 
-console.log({ splitLink })
 export const graphqlClient = new ApolloClient({
   link: splitLink,
   cache: new InMemoryCache()

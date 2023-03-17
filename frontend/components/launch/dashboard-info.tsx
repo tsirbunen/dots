@@ -14,13 +14,12 @@ const DashboardInfo = () => {
   const { translate } = useTranslation()
   const router = useRouter()
   const { storedPollCodesExist } = useBrowserStorage()
-  const [isOldUser, setIsOldUser] = useState(false)
+  const [hasUsedAppEarlier, setHasUsedAppEarlier] = useState(false)
 
   useEffect(() => {
     if (window) {
-      // const hasCodesInLocalStorage = hasStoredPollCodes()
       const hasCodesInLocalStorage = storedPollCodesExist()
-      setIsOldUser(hasCodesInLocalStorage)
+      setHasUsedAppEarlier(hasCodesInLocalStorage)
     }
   }, [storedPollCodesExist])
 
@@ -29,7 +28,7 @@ const DashboardInfo = () => {
     return phrases as Phrase[]
   }
 
-  if (!isOldUser) return <div></div>
+  if (!hasUsedAppEarlier) return <div></div>
 
   return (
     <Box>
@@ -46,7 +45,7 @@ const DashboardInfo = () => {
           <SmallButton
             text={translate('view_dashboard').toUpperCase()}
             onClick={() => router.push('/dashboard')}
-            dataCyPostfix={DATA_CY_DASHBOARD_INFO}
+            dataCy={DATA_CY_DASHBOARD_INFO}
           />
         </Box>
       </Center>

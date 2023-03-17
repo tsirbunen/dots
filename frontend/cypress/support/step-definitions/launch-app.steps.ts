@@ -1,6 +1,6 @@
 import { Given, Then } from '@badeball/cypress-cucumber-preprocessor'
 
-import { DATA_CY_APP_SHORT_DESCRIPTION, DATA_CY_APP_TITLE } from '../../../components/launch/app-title'
+import { DATA_CY_APP_DESCRIPTION, DATA_CY_APP_TITLE } from '../../../components/launch/app-title'
 import { DATA_CY_HOW_DOES_IT_WORK, DATA_CY_USE_INSTRUCTION } from '../../../components/launch/instructions'
 import { DATA_CY_LAUNCH_PAGE } from '../../../components/launch/launch-page-content'
 import { DATA_CY_USE_MODE } from '../../../components/launch/mode-selection'
@@ -22,10 +22,10 @@ Then('the app title is visible', () => {
 })
 
 Then('the app short description is visible', () => {
-  launchPage.verifyDataCyIsVisible(DATA_CY_APP_SHORT_DESCRIPTION)
+  launchPage.verifyDataCyIsVisible(DATA_CY_APP_DESCRIPTION)
 })
 
-Then('the use instructions is visible', () => {
+Then('the use instructions are visible', () => {
   launchPage.verifyDataCyIsVisible(DATA_CY_HOW_DOES_IT_WORK)
   const instructionsForUseCount = Object.keys(FI_TRANSLATIONS).filter((key) => key.includes('use_instruction')).length
   launchPage.verifyDataCyBeginsWithInstancesAreVisible(DATA_CY_USE_INSTRUCTION, instructionsForUseCount)

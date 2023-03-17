@@ -11,7 +11,7 @@ type NotFoundProps = {
 }
 
 const NotFound = ({ textLines, withLayout }: NotFoundProps) => {
-  const notFound = (
+  const getNotFound = () => (
     <Center data-cy={DATA_CY_NOT_FOUND}>
       <Flex {...Styles.container}>
         <Box {...Styles.emojiBox}>
@@ -30,26 +30,12 @@ const NotFound = ({ textLines, withLayout }: NotFoundProps) => {
   )
 
   if (!withLayout) {
-    return notFound
+    return <Center data-cy={DATA_CY_NOT_FOUND}>{getNotFound()}</Center>
   }
 
   return (
-    <LayoutWithHeader>
-      <Center data-cy={DATA_CY_NOT_FOUND}>
-        <Flex {...Styles.container}>
-          <Box {...Styles.emojiBox}>
-            <HiOutlineEmojiSad {...Styles.emoji} />
-          </Box>
-          <Text {...Styles.oops}>OOPS...</Text>
-          {textLines.map((line) => {
-            return (
-              <Text key={line} {...Styles.textLine}>
-                {line}
-              </Text>
-            )
-          })}
-        </Flex>
-      </Center>
+    <LayoutWithHeader dataCy={DATA_CY_NOT_FOUND}>
+      <Center>{getNotFound()}</Center>
     </LayoutWithHeader>
   )
 }

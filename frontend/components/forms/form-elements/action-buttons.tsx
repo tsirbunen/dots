@@ -29,7 +29,7 @@ export const ActionButtons = ({ mode, reset, formState }: FormActionsProps) => {
         <SmallButton
           text={translate('general_reset')}
           type="button"
-          dataCyPostfix={DATA_CY_RESET}
+          dataCy={DATA_CY_RESET}
           onClick={reset}
           isDisabled={!formState.isDirty}
         />
@@ -38,7 +38,7 @@ export const ActionButtons = ({ mode, reset, formState }: FormActionsProps) => {
       <SmallButton
         text={mode === FormMode.CREATE ? translate('general_submit') : translate('edit_poll_save_changes')}
         type="submit"
-        dataCyPostfix={DATA_CY_SUBMIT}
+        dataCy={DATA_CY_SUBMIT}
         isDisabled={isDisabled}
       />
     </Center>

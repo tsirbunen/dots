@@ -84,7 +84,6 @@ export const startServer = async (): Promise<void> => {
     }
   })
 
-  // const { parse, validate, contextFactory, execute, schema, subscribe } = getEnveloped({})
   // This is the GraphQL server for subscriptions (web socket connection).
   await server.register(async (server) => {
     server.get(
@@ -92,20 +91,10 @@ export const startServer = async (): Promise<void> => {
       { websocket: true },
       // See info for makeHandler function in node_modules/graphql-ws/lib/server.d.ts
       makeHandler({
-        // execute,
-        // subscribe,
         // The execute and subscribe functions are returned as arguments from the
         // onSubscribe callback.
-        execute: (args: any) => {
-          // console.log('execute args', args)
-          console.log('execute WS')
-          return args.rootValue.execute(args)
-        },
-        subscribe: (args: any) => {
-          console.log('subscribe WS')
-          // console.log('subscribe args', args)
-          return args.rootValue.subscribe(args)
-        },
+        execute: (args: any) => args.rootValue.execute(args),
+        subscribe: (args: any) => args.rootValue.subscribe(args),
         // The below onConnect will be called when client wants to make a WS connection to
         // the server. We will allow all connections for now (and not add extra info).
         onConnect: async (_ctx: Context) => {

@@ -75,7 +75,7 @@ export const EN_TRANSLATIONS: Translations = {
   edit_poll_save_changes: 'Save changes',
   view_poll_info: 'you can view poll results',
   toast_edit_poll_error: 'Something went wrong. Could not save changes poll. Please try again.',
-  toast_edit_poll_success: 'You poll was successfully updated.',
+  toast_edit_poll_success: 'Your poll was successfully updated.',
   toast_fetch_polls_by_id_or_code_error: 'Something went wrong. Could not find polls.',
   enter_poll_code: 'Please type a poll code below',
   go_to_poll: 'Go to poll',

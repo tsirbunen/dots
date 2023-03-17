@@ -9,7 +9,7 @@ export const DATA_CY_VOTE_PAGE = 'vote_page'
  */
 const VotePage: NextPage = () => {
   return (
-    <LayoutWithHeader>
+    <LayoutWithHeader dataCy={DATA_CY_VOTE_PAGE}>
       <EnterPollCode />
     </LayoutWithHeader>
   )

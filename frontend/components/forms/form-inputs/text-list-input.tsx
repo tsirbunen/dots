@@ -10,6 +10,7 @@ import { PollFormData } from '../form-elements/poll-form'
 
 export const DATA_CY_LIST_ADD = 'list_add'
 export const DATA_CY_LIST_ITEM = 'list_item'
+export const DATA_CY_DELETE_LIST_ITEM = 'delete_list_item'
 
 type TextListField = 'votingOptions'
 type TextListInputProps = {
@@ -43,6 +44,7 @@ const TextListInput = ({ control, fieldType, errorMessage, textPackage }: TextLi
             {...Styles.listItem}
             icon={<DeleteIcon {...Styles.listItemIcon} />}
             onClick={() => deleteItem(item, fieldValue, field.onChange)}
+            data-cy={`${DATA_CY_DELETE_LIST_ITEM}-${index}`}
           />
           <Text data-cy={`${DATA_CY_LIST_ITEM}-${index}`} {...Styles.listItemText}>
             {item}

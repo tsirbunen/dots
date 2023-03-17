@@ -8,7 +8,6 @@ import { modalInputValidationSchema } from '../form-elements/validation'
 import { Input, Text, Center, Container } from '@chakra-ui/react'
 import { Controller } from 'react-hook-form'
 import { Styles } from './styles'
-
 import SmallButton from '../../widgets/small-button/small-button'
 
 export const DATA_CY_INPUT_MODAL = 'input_modal'
@@ -89,7 +88,7 @@ const InputModal = ({ isOpen, onClose, saveData, originalText, textPackage }: In
                         ) : (
                           <SmallButton
                             text={translate('general_add')}
-                            dataCyPostfix={DATA_CY_MODAL_ADD}
+                            dataCy={DATA_CY_MODAL_ADD}
                             isLarger={true}
                             onClick={() => {
                               saveData(field.value as string)

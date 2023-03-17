@@ -2,7 +2,7 @@ Feature: Navigation
 
     Navigating within the app
 
-    Scenario: One can navigate to other pages from the launch page
+    Scenario: One can navigate to other pages from the launch page using mode buttons
         Given one has navigated to the DOTS app url
         When one clicks the "<use mode>" button
         Then one is taken to "<target page>"
@@ -24,12 +24,14 @@ Feature: Navigation
         Examples:
             | starting page | target route | target page       |
             | create-poll   |              | launch-page       |
-            | create-poll   | vote-in-poll | vote-in-poll-page |
+            | create-poll   | vote         | vote-in-poll-page |
             | create-poll   | dashboard    | dashboard-page    |
-            | vote-in-poll  |              | launch-page       |
-            | vote-in-poll  | create-poll  | create-poll-page  |
-            | vote-in-poll  | dashboard    | dashboard-page    |
+            | vote          |              | launch-page       |
+            | vote          | create-poll  | create-poll-page  |
+            | vote          | dashboard    | dashboard-page    |
             | dashboard     |              | launch-page       |
-            | dashboard     | vote-in-poll | vote-in-poll-page |
+            | dashboard     | vote         | vote-in-poll-page |
             | dashboard     | create-poll  | create-poll-page  |
+
+
 

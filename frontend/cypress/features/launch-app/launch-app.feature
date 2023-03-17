@@ -7,5 +7,5 @@ Feature: Launching the app
         Then the app title is visible
         Then the app short description is visible
         Then the language toggle is visible
-        Then the use instructions is visible
+        Then the use instructions are visible
         Then the use mode selection buttons are visible

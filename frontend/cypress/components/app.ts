@@ -3,11 +3,12 @@ import { DATA_CY_MENU_BUTTON, DATA_CY_ROUTE_BUTTON } from '../../components/layo
 import { DATA_CY_LAUNCH_PAGE } from '../../components/launch/launch-page-content'
 import { DATA_CY_CREATE_POLL_PAGE } from '../../pages/create-poll'
 import { DATA_CY_VOTE_PAGE } from '../../pages/vote'
-import { DATA_CY_DASHBOARD_PAGE } from '../../components/dashboard/polls-list/polls-list'
+import { DATA_CY_DASHBOARD_PAGE } from '../../pages/dashboard'
+import { DATA_CY_TOAST_CLOSE } from '../../components/widgets/toast/toast'
 
 const CLIENT = 'localhost'
 const CLIENT_BASE_URL = `http://${CLIENT}:3000`
-const MENU_NAVIGATION_TARGETS_COUNT = 5
+const MENU_NAVIGATION_TARGETS_COUNT = 4
 
 export class App extends Base {
   navigateToDotsApp() {
@@ -38,5 +39,9 @@ export class App extends Base {
 
   clickMenuNavigationButton(targetRoute: string) {
     cy.getByDataCy(`${DATA_CY_ROUTE_BUTTON}-${targetRoute}`).click()
+  }
+
+  closeSnackbar() {
+    cy.getByDataCy(DATA_CY_TOAST_CLOSE).click()
   }
 }

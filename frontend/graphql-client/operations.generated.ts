@@ -60,11 +60,6 @@ export type MessageAddedSubscriptionVariables = Types.Exact<{
 
 export type MessageAddedSubscription = { __typename?: 'Subscription', messageAdded: { __typename?: 'Message', id: string, optionId: string, voteId: string, pollId: string, voterId: string, voterName?: string | null } };
 
-export type GreetingsSubscriptionVariables = Types.Exact<{ [key: string]: never; }>;
-
-
-export type GreetingsSubscription = { __typename?: 'Subscription', greetings: string };
-
 export const PollDataFragmentDoc = gql`
     fragment PollData on Poll {
   id
@@ -178,9 +173,3 @@ export const MessageAddedDocument = gql`
 }
     `;
 export type MessageAddedSubscriptionResult = Apollo.SubscriptionResult<MessageAddedSubscription>;
-export const GreetingsDocument = gql`
-    subscription Greetings {
-  greetings
-}
-    `;
-export type GreetingsSubscriptionResult = Apollo.SubscriptionResult<GreetingsSubscription>;

@@ -36,7 +36,7 @@ const HamburgerMenu = () => {
               return (
                 <Flex key={target.label} {...Styles.buttonContainer}>
                   <SmallButton
-                    dataCyPostfix={`${DATA_CY_ROUTE_BUTTON}-${target.route}`}
+                    dataCy={`${DATA_CY_ROUTE_BUTTON}-${target.route}`}
                     text={translate(target.label)}
                     onClick={() => {
                       removeBlur()

@@ -29,6 +29,7 @@ type UseBrowserStorageService = {
   updateStorageAfterPollEdited: (poll: Poll) => void
   storedPollCodesExist: () => boolean
   updateStorageAfterPollCreated: (poll: Poll) => void
+  getPollToken: (code: string) => string | null | undefined
 }
 
 export const useBrowserStorage = (): UseBrowserStorageService => {
@@ -104,6 +105,17 @@ export const useBrowserStorage = (): UseBrowserStorageService => {
     return []
   }
 
+  const getPollToken = (code: string): string | null | undefined => {
+    let codeTokenPairs: CodeTokenPair[] = []
+    if (localStorage.hasOwnProperty(LOCAL_STORAGE_CODE_TOKEN_PAIRS)) {
+      const storedCodeTokenPairsJSON = localStorage.getItem(LOCAL_STORAGE_CODE_TOKEN_PAIRS)
+      if (storedCodeTokenPairsJSON) {
+        codeTokenPairs = JSON.parse(storedCodeTokenPairsJSON) as CodeTokenPair[]
+        return codeTokenPairs.find((pair) => pair.code === code)?.token
+      }
+    }
+  }
+
   const retrieveLocalStorageData = (): LocalStorageData => {
     const userName = getUserName()
     const userId = getUserId()
@@ -152,6 +164,7 @@ export const useBrowserStorage = (): UseBrowserStorageService => {
     updateStorageAfterPollEdited,
     retrieveLocalStorageData,
     storedPollCodesExist,
-    updateStorageAfterPollCreated
+    updateStorageAfterPollCreated,
+    getPollToken
   }
 }

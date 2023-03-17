@@ -35,7 +35,7 @@ const ModeSelection = () => {
               <SmallButton
                 text={translate(phrase).toUpperCase()}
                 onClick={() => navigateToRoute(phrase)}
-                dataCyPostfix={phrase}
+                dataCy={phrase}
               />
             </Box>
           </Center>

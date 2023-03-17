@@ -2,7 +2,7 @@ import { Box, Center, Flex, Text, useDisclosure } from '@chakra-ui/react'
 import { useContext } from 'react'
 import { useBrowserStorage } from '../../../hooks/use-browser-storage'
 import { useTranslation } from '../../../hooks/use-translation'
-import { StateActionType } from '../../../state/reducer'
+import { Dispatch } from '../../../state/reducer'
 import { AppStateContext, AppStateContextType } from '../../../state/state-context'
 import { PACKAGES } from '../../../utils/constant-values'
 
@@ -20,7 +20,7 @@ export const AskForUserName = () => {
 
   const saveName = (newValue: string) => {
     if (typeof newValue !== 'string') return
-    dispatch({ type: StateActionType.SET_USER_NAME, data: newValue })
+    dispatch({ type: Dispatch.SET_USER_NAME, data: newValue })
     storeUserName(newValue)
     onClose()
   }
@@ -47,7 +47,7 @@ export const AskForUserName = () => {
                   <SmallButton
                     text={translate('enter_name').toUpperCase()}
                     type="button"
-                    dataCyPostfix={DATA_CY_ASK_FOR_NAME}
+                    dataCy={DATA_CY_ASK_FOR_NAME}
                     onClick={onOpen}
                   />
                 </Box>

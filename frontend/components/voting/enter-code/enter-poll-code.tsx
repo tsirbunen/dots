@@ -42,7 +42,7 @@ const EnterPollCode = () => {
             <SmallButton
               text={translate('go_to_poll').toUpperCase()}
               type="button"
-              dataCyPostfix={DATA_CY_GIVE_VOTE_CODE}
+              dataCy={DATA_CY_GIVE_VOTE_CODE}
               onClick={goToVoting}
             />
           </Box>

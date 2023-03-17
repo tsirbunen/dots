@@ -19,7 +19,7 @@ export const PollActions = ({ availableActions }: PollActionsProps) => {
             <SmallButton
               text={translate(action.phrase).toUpperCase()}
               type="button"
-              dataCyPostfix={action.cy}
+              dataCy={action.dataCy}
               onClick={action.onClick}
             />
           </Box>

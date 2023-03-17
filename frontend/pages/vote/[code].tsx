@@ -11,9 +11,10 @@ import NotFound from '../../components/widgets/not-found/not-found'
 import { useBrowserStorage } from '../../hooks/use-browser-storage'
 import { useGraphQLClient } from '../../hooks/use-graphql-client'
 import { useTranslation } from '../../hooks/use-translation'
-import { StateActionType } from '../../state/reducer'
+import { Dispatch } from '../../state/reducer'
 import { AppStateContext, AppStateContextType } from '../../state/state-context'
 import { Poll } from '../../types/types'
+import { DATA_CY_VOTE_PAGE } from '.'
 
 export const DATA_CY_VOTE_POLL_PAGE = 'vote_poll_page'
 
@@ -45,11 +46,11 @@ const VoteInPoll: NextPage = () => {
     if (pollByCode) {
       setPoll(pollByCode)
       dispatch({
-        type: StateActionType.SET_USER_ID,
+        type: Dispatch.SET_USER_ID,
         data: userId
       })
       dispatch({
-        type: StateActionType.SET_USER_NAME,
+        type: Dispatch.SET_USER_NAME,
         data: userName
       })
     }
@@ -77,7 +78,7 @@ const VoteInPoll: NextPage = () => {
   const userNameIsMissing = !poll.isAnonymous && !state.userName
   if (userNameIsMissing) {
     return (
-      <LayoutWithHeader>
+      <LayoutWithHeader dataCy={DATA_CY_VOTE_PAGE}>
         <Flex {...Styles.wrapper}>
           <Question
             question={poll.question}
@@ -90,10 +91,9 @@ const VoteInPoll: NextPage = () => {
       </LayoutWithHeader>
     )
   }
-  console.log('VoteInPoll PAGE rendering')
 
   return (
-    <LayoutWithHeader>
+    <LayoutWithHeader dataCy={DATA_CY_VOTE_PAGE}>
       <Voting poll={poll} userId={userId} userName={state?.userName} />
     </LayoutWithHeader>
   )

@@ -3,14 +3,13 @@ import { Flex } from '@chakra-ui/react'
 import { useEffect, useCallback, useContext } from 'react'
 import { useBrowserStorage } from '../../../hooks/use-browser-storage'
 import { useGraphQLClient } from '../../../hooks/use-graphql-client'
-import { StateActionType } from '../../../state/reducer'
+import { Dispatch } from '../../../state/reducer'
 import { AppStateContext, AppStateContextType } from '../../../state/state-context'
 import ModeSelection from '../../launch/mode-selection'
 import NotFound from '../../widgets/not-found/not-found'
 import DashboardItem from './dashboard-item'
 import { Styles } from './styles'
 
-export const DATA_CY_DASHBOARD_PAGE = 'dashboard_page'
 export const DATA_CY_NO_POLLS = 'no_polls'
 
 /**
@@ -32,11 +31,10 @@ export const PollsList = () => {
 
     const allPolls = await findPollsByCode(pollCodeTokenPairs, userId)
     // updateStorageWithPolls(allPolls)
-    dispatch({ type: StateActionType.SET_ALL_POLLS, data: allPolls })
+    dispatch({ type: Dispatch.SET_ALL_POLLS, data: allPolls })
   }, [])
 
   useEffect(() => {
-    console.log('Running useEffect in dashboard')
     if (window) {
       fetchPolls()
     }
@@ -54,7 +52,7 @@ export const PollsList = () => {
   }
 
   return (
-    <div data-cy={DATA_CY_DASHBOARD_PAGE}>
+    <div>
       {Object.values(state.polls).map((poll) => (
         <DashboardItem key={poll.code} poll={poll} />
       ))}

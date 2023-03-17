@@ -5,7 +5,7 @@ import { useBrowserStorage } from '../../../hooks/use-browser-storage'
 import { CreatePollInput, DataClass } from '../../../types/graphql-schema-types.generated'
 import { useContext, useEffect } from 'react'
 import { PollForm, PollFormData } from './poll-form'
-import { StateActionType } from '../../../state/reducer'
+import { Dispatch } from '../../../state/reducer'
 import { AppStateContext, AppStateContextType } from '../../../state/state-context'
 import { useRouter } from 'next/router'
 import { useGraphQLClient } from '../../../hooks/use-graphql-client'
@@ -26,14 +26,17 @@ const CreatePollForm = () => {
   const router = useRouter()
 
   useEffect(() => {
-    console.log('running effect on page create poll')
     if (window && !state.userName) {
       const userName = getUserName()
       if (userName) {
-        dispatch({ type: StateActionType.SET_USER_NAME, data: userName })
+        dispatch({ type: Dispatch.SET_USER_NAME, data: userName })
       }
     }
   }, [dispatch, getUserName, state.userName])
+
+  const navigateToDashboard = (code: string) => {
+    router.push(`/dashboard/${code}`)
+  }
 
   const buildCreatePollData = (formData: PollFormData): CreatePollInput => {
     const data: CreatePollInput = {
@@ -55,17 +58,16 @@ const CreatePollForm = () => {
   const onSubmit: SubmitHandler<PollFormData> = async (formData: PollFormData) => {
     const data = buildCreatePollData(formData)
     const poll = await createPoll(data)
-    if (poll) {
-      dispatch({ type: StateActionType.ADD_POLL, data: poll })
-      // updateAfterPollCreated(poll)
-      updateStorageAfterPollCreated(poll)
-      router.push(`/dashboard/${poll?.code}`)
-    }
+    if (!poll) return
+
+    dispatch({ type: Dispatch.ADD_POLL, data: poll })
+    updateStorageAfterPollCreated(poll)
+    navigateToDashboard(poll.code)
   }
 
   return (
     <Box {...Styles.formContainer} data-cy={DATA_CY_CREATE_POLL_FORM}>
-      <PollForm mode={FormMode.CREATE} userName={state.userName} poll={undefined} onSubmit={onSubmit} />
+      <PollForm mode={FormMode.CREATE} userName={state.userName} onSubmit={onSubmit} />
     </Box>
   )
 }

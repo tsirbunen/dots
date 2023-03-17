@@ -5,7 +5,7 @@ import { OptionEditData, DataClass, EditPollInput } from '../../../types/graphql
 import { Option, Poll } from '../../../types/types'
 import { PollForm, PollFormData } from './poll-form'
 import { useContext, useEffect } from 'react'
-import { StateActionType } from '../../../state/reducer'
+import { Dispatch } from '../../../state/reducer'
 import { AppStateContext, AppStateContextType } from '../../../state/state-context'
 import { useGraphQLClient } from '../../../hooks/use-graphql-client'
 import { FormMode } from './action-buttons'
@@ -30,11 +30,10 @@ const EditPollForm = ({ poll }: EditPollFormWrapperProps) => {
   const { state, dispatch } = useContext(AppStateContext) as AppStateContextType
 
   useEffect(() => {
-    console.log('running effect on page edit poll')
     if (window && !state.userName) {
       const userName = getUserName()
       if (userName) {
-        dispatch({ type: StateActionType.SET_USER_NAME, data: userName })
+        dispatch({ type: Dispatch.SET_USER_NAME, data: userName })
       }
     }
   }, [dispatch, getUserName, state.userName])
@@ -69,11 +68,10 @@ const EditPollForm = ({ poll }: EditPollFormWrapperProps) => {
   const onSubmit: SubmitHandler<PollFormData> = async (formData: PollFormData) => {
     const input: EditPollInput = buildPollData(formData)
     const editedPoll = await editPoll(input, poll.token)
-    if (editedPoll) {
-      // updateAfterPollEdited(editedPoll)
-      updateStorageAfterPollEdited(editedPoll)
-      dispatch({ type: StateActionType.UPDATE_POLL, data: editedPoll })
-    }
+    if (!editedPoll) return
+
+    updateStorageAfterPollEdited(editedPoll)
+    dispatch({ type: Dispatch.UPDATE_POLL, data: editedPoll })
   }
 
   return (

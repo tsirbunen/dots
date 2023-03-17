@@ -77,7 +77,6 @@ export class Poll extends BaseModel {
   }
 
   public static async editPoll(input: EditPollInputType, personId: string): Promise<PollDB> {
-    console.log(input)
     this.validate(getEditPollSchema(input), input)
     return await this.withinTransaction(async (trx: Knex.Transaction): Promise<PollDB> => {
       if (input.options) {
@@ -86,10 +85,7 @@ export class Poll extends BaseModel {
         await Option.updateOptions(optionsToEdit, input.options, input.dataClass, input.pollId, trx)
       }
       if (input.ownerName) {
-        console.log('*********************')
-
         await Person.updatePersonName(personId, input.ownerName, trx)
-        console.log('+++++++++++++++++++++')
       }
       return await this.patchPoll(input, trx)
     })

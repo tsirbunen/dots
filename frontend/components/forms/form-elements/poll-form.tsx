@@ -27,7 +27,7 @@ export type PollFormData = {
 export type PollFormProps = {
   mode: FormMode
   onSubmit: SubmitHandler<PollFormData>
-  poll: Poll | undefined
+  poll?: Poll
   userName: string | undefined
 }
 

@@ -2,11 +2,10 @@ import React from 'react'
 import { Button } from '@chakra-ui/react'
 import { Styles } from './styles'
 
-export const DATA_CY_SMALL_BUTTON = 'small-button'
 type SmallButtonProps = {
   text: string
   onClick?: () => void
-  dataCyPostfix: string
+  dataCy: string
   type?: 'button' | 'submit' | 'reset' | undefined
   isLarger?: boolean
   isDisabled?: boolean
@@ -17,7 +16,7 @@ type SmallButtonProps = {
 const SmallButton = ({
   text,
   onClick,
-  dataCyPostfix,
+  dataCy,
   type,
   isLarger,
   isDisabled = false,
@@ -29,7 +28,7 @@ const SmallButton = ({
     <Button
       {...Styles.smallButton(noMargin, isInverted)}
       {...sizeStyle}
-      data-cy={`${DATA_CY_SMALL_BUTTON}-${dataCyPostfix}`}
+      data-cy={dataCy}
       onClick={onClick}
       type={type}
       isDisabled={isDisabled}
