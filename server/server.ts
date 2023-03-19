@@ -67,7 +67,6 @@ export const startServer = async (): Promise<void> => {
         query,
         variables,
         request: graphQLRequest,
-        // @ts-expect-error
         schema,
         parse,
         validate,
