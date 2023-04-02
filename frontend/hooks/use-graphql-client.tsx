@@ -39,7 +39,7 @@ type UseGraphQLClientService = {
   findPollsByCode: (pollCodeTokenPairs: CodeTokenPair[], personId: string) => Promise<Poll[]>
   openPoll: (pollId: string, pollToken: string) => Promise<boolean | undefined>
   closePoll: (pollId: string, pollToken: string) => Promise<boolean | undefined>
-  fetchPollData: (code: string, userId: string) => Promise<Poll | undefined>
+  fetchPollData: (code: string, pollToken?: string, userId?: string) => Promise<Poll | undefined>
   giveAVoteToOption: (
     optionId: string,
     voterId: string,
@@ -184,7 +184,7 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
     pollId: string
   ): Promise<Vote | undefined> => {
     const input = { optionId, voterId, name: name ?? null, pollId }
-    console.log(input)
+
     try {
       const response = await graphqlClient.mutate<GiveVoteToOptionMutation, GiveVoteToOptionMutationVariables>({
         mutation: GiveVoteToOptionDocument,
@@ -213,15 +213,18 @@ export const useGraphQLClient = (): UseGraphQLClientService => {
     }
   }
 
-  const fetchPollData = async (code: string, pollToken: string): Promise<Poll | undefined> => {
+  const fetchPollData = async (code: string, pollToken?: string, userId?: string): Promise<Poll | undefined> => {
+    const headers = pollToken ? {
+      authorization: pollToken
+    } : {
+      personid: userId
+    }
     try {
       const response = await graphqlClient.query<FindPollQuery, FindPollQueryVariables>({
         query: FindPollDocument,
         variables: { code },
         context: {
-          headers: {
-            authorization: pollToken
-          }
+          headers: headers
         }
       })
 

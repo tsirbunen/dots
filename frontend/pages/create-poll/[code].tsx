@@ -28,7 +28,7 @@ const EditPollPage: NextPage = () => {
   const fetchPoll = useCallback(async (pollCode: string) => {
     const token = getPollToken(pollCode)
     if (!token) return
-    const poll = await fetchPollData(pollCode, token)
+    const poll = await fetchPollData(pollCode, token, undefined)
 
     if (poll) {
       dispatch({
