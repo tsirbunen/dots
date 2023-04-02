@@ -41,7 +41,7 @@ const VoteInPoll: NextPage = () => {
 
   const fetchPoll = useCallback(async (pollCode: string) => {
     const { userId, userName } = retrieveLocalStorageData()
-    const pollByCode = await fetchPollData(pollCode, userId)
+    const pollByCode = await fetchPollData(pollCode, undefined, userId)
 
     if (pollByCode) {
       setPoll(pollByCode)
