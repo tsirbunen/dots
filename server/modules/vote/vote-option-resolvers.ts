@@ -1,16 +1,20 @@
 import { Context } from '../../Context'
-import { Option } from '../../models/option-model'
-import { VoteType } from '../../types/types'
-
+import { OptionDB } from '../../models/option/types'
+import { Vote as VoteSchema } from '../../types/graphql-schema-types.generated'
+import { getAuthenticatedPerson, getPersonIdFromContext } from '../../utils/get-authenticated-person'
 import { VoteProvider } from './provider'
 
-interface VoteOptionResolversType {
-  votes: (_parent: Option, args: unknown, _context: Context) => Promise<VoteType[]>
+interface IVoteOptionResolvers {
+  votes: (_parent: OptionDB, args: unknown, _context: Context) => Promise<VoteSchema[]>
 }
 
-export const VoteOptionResolvers: VoteOptionResolversType = {
+export const VoteOptionResolvers: IVoteOptionResolvers = {
   votes: async (parent, _args, context) => {
     const provider = context.injector.get(VoteProvider)
-    return await provider.findVotesByOptionId(parent.id)
+    let personId = getAuthenticatedPerson(context)
+    if (!personId) {
+      personId = getPersonIdFromContext(context)
+    }
+    return await provider.findVotesByOptionId(parent.id, personId)
   }
 }

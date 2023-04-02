@@ -1,15 +1,16 @@
 import type { NextPage } from 'next'
-import CreatePollFormWrapper from '../../components/form-components/create-poll-form/create-poll-form-wrapper'
-import LayoutWithHeader from '../../components/layout-with-header/layout-with-header'
+import CreatePollForm from '../../components/forms/form-elements/create-poll-form'
+import LayoutWithHeader from '../../components/layout/layout-with-header'
 
-export const DATA_CY_CREATE_POLL_PAGE = 'create-poll-page'
+export const DATA_CY_CREATE_POLL_PAGE = 'create_poll_page'
 
+/**
+ * When user wants to start creating a totally new poll the user is presented with this page.
+ */
 const CreatePollPage: NextPage = () => {
   return (
-    <LayoutWithHeader>
-      <div data-cy={DATA_CY_CREATE_POLL_PAGE}>
-        <CreatePollFormWrapper />
-      </div>
+    <LayoutWithHeader dataCy={DATA_CY_CREATE_POLL_PAGE}>
+      <CreatePollForm />
     </LayoutWithHeader>
   )
 }

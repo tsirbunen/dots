@@ -1,8 +1,8 @@
 import { expect } from 'chai'
-import { getErrorMessageFromResponse } from '../tests/utils/helpers'
-import { getNotAuthenticatedToPerformThisActionErrorMessage } from './error-messages'
+import { extractErrorMessage } from '../tests/utils/helpers'
+import { Errors } from './errors'
 
 export function handleAssertNotAuthenticatedError(error: unknown): void {
-  const errorMessage = getErrorMessageFromResponse(error)
-  expect(errorMessage).to.equal(getNotAuthenticatedToPerformThisActionErrorMessage())
+  const errorMessage = extractErrorMessage(error)
+  expect(errorMessage).to.equal(Errors.notAuthorized)
 }

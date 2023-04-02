@@ -4,7 +4,9 @@ import BlinkingDot from './blinking-dot.tsx'
 export const DATA_CY_BLINKING_DOTS_LINE = 'blinking_dots_line'
 const LINE_LENGTH = 4
 
-const BlinkingDotsLine = ({ isSmall }: { isSmall: boolean }) => {
+type BlinkingDotsLineProps = { isSmall: boolean }
+
+const BlinkingDotsLine = ({ isSmall }: BlinkingDotsLineProps) => {
   const dotIndexes = Array.from(Array(LINE_LENGTH).keys())
   return (
     <Center data-cy={DATA_CY_BLINKING_DOTS_LINE}>

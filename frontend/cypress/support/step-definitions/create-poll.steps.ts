@@ -1,13 +1,18 @@
-import { When, Then } from '@badeball/cypress-cucumber-preprocessor'
+import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
 import { App } from '../../components/app'
 import { CreatePollPage } from '../../components/create-poll-page'
-import { DATA_CY_CREATE_POLL_FORM } from '../../../components/form-components/create-poll-form/create-or-edit-poll-form-core'
+import { DATA_CY_POLL_FORM_CORE } from '../../../components/forms/form-elements/poll-form'
+import {
+  DATA_CY_INFO_EDIT_POLL,
+  DATA_CY_INFO_OPEN_POLL
+} from '../../../components/dashboard/poll-available-actions/poll-available-actions'
+import { DATA_CY_TOAST_TITLE } from '../../../components/widgets/toast/toast'
 
 const createPollPage = new CreatePollPage()
 const app = new App()
 
 Then('the create poll form is visible', () => {
-  app.verifyDataCyIsVisible(DATA_CY_CREATE_POLL_FORM)
+  app.verifyDataCyIsVisible(DATA_CY_POLL_FORM_CORE)
 })
 
 When('one clicks the button to start setting the poll question', () => {
@@ -48,4 +53,32 @@ When('one enters a {string}', (votingOption: string) => {
 
 Then('the entered {string} is visible in the form as a voting option', (votingOption: string) => {
   createPollPage.verifyTextIsVisible(votingOption)
+})
+
+Given('one has filled in the poll form some data', () => {
+  createPollPage.fillInAllRequiredFields()
+})
+
+When('one clicks the button to submit poll data', () => {
+  createPollPage.submitPollData()
+})
+
+Then('poll form is no longer visible', () => {
+  app.verifyDataCyDoesNotExist(DATA_CY_POLL_FORM_CORE)
+})
+
+Then('further editing poll button is visible', () => {
+  app.verifyDataCyContains(DATA_CY_INFO_EDIT_POLL)
+})
+
+Then('open poll button is visible', () => {
+  app.verifyDataCyContains(DATA_CY_INFO_OPEN_POLL)
+})
+
+Then('{word} snackbar containing words {string} is visible', (successOrFailure: string, specificContent: string) => {
+  if (successOrFailure === 'success' && specificContent === 'poll successfully created') {
+    createPollPage.verifySnackbarIsVisible('toast_default_success', 'toast_create_poll_success')
+  } else {
+    createPollPage.verifySnackbarIsVisible('toast_default_success', 'toast_edit_poll_success')
+  }
 })

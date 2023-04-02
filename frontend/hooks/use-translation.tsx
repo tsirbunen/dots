@@ -21,7 +21,7 @@ export const TRANSLATIONS: Record<Language, Translations> = {
 export const useTranslation = (): UseTranslation => {
   const { state } = useContext(AppStateContext) as { state: AppState }
   const translate = (phrase: Phrase) => {
-    const selectedLanguage = state.language ?? Language.EN
+    const selectedLanguage = state && state.language ? state.language : Language.EN
     const translations = TRANSLATIONS[selectedLanguage]
     return translations[phrase]
   }

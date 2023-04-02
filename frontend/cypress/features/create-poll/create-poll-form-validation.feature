@@ -7,8 +7,9 @@ Feature: Create poll form validation
         Then the create poll form is visible
 
     Scenario: To start with, the poll question and voting options are missing, warranting warnings
-        Then warning due to missing poll question is displayed
-        Then warning due to missing voting options is displayed
+        Then info on a missing poll question is displayed
+        Then info on a missing poll question is displayed
+        Then info on missing voting options is displayed
         Then reset button "is disabled"
         Then submit button "is disabled"
 
@@ -25,7 +26,6 @@ Feature: Create poll form validation
     Scenario: When max allowed count of voting options has been added, adding more is disabled
         Given one has added max allowed number of voting options
         Then the add voting option button is disabled
-        Then submit button "is disabled"
 
 
     Scenario: Warning is given if voting options are not unique

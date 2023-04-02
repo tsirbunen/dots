@@ -1,0 +1,28 @@
+enum MessageType {
+  VOTE_ADDED
+}
+
+type Message {
+  id: ID!
+  optionId: ID!
+  voteId: ID!
+  pollId: ID!
+  voterId: ID!
+  voterName: String
+}
+
+input PublishMessageInput {
+  type: MessageType!
+  pollId: ID!
+  optionId: ID!
+  voteId: ID!
+}
+
+extend type Mutation {
+  publishMessage(input: PublishMessageInput!): Message!
+}
+
+type Subscription {
+  messageAdded(pollId: ID!): Message!
+  greetings: String!
+}

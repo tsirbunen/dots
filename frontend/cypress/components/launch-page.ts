@@ -1,4 +1,3 @@
-import { DATA_CY_SMALL_BUTTON } from '../../components/widgets/small-button/small-button'
 import { DATA_CY_LANGUAGE, DATA_CY_LANGUAGE_TOGGLE } from '../../components/widgets/toggle-language/toggle-language'
 import { Language, TRANSLATIONS } from '../../hooks/use-translation'
 import { FI_TRANSLATIONS } from '../../localization/fi'
@@ -7,7 +6,7 @@ import { Base } from './base'
 export class LaunchPage extends Base {
   verifyAppLanguageIsTheGivenLanguage(language: string) {
     assert(Object.keys(Language).includes(language))
-    const exampleElementTextInLanguage = TRANSLATIONS[language]['how_does_it_work']
+    const exampleElementTextInLanguage = TRANSLATIONS[language as Language]['how_does_it_work']
     cy.contains(exampleElementTextInLanguage)
   }
 
@@ -42,7 +41,7 @@ export class LaunchPage extends Base {
 
   getUseModeButton(mode: string) {
     const modesOfUse = Object.keys(FI_TRANSLATIONS).filter((key) => key.includes('mode_'))
-    const searchText = `${DATA_CY_SMALL_BUTTON}-${modesOfUse.filter((mode_of_use) => mode_of_use.includes(mode))[0]}`
+    const searchText = `${modesOfUse.filter((mode_of_use) => mode_of_use.includes(mode))[0]}`
     return cy.getByDataCy(searchText)
   }
 }

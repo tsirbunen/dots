@@ -2,59 +2,57 @@ import 'reflect-metadata'
 import 'mocha'
 import { v4 as uuidv4 } from 'uuid'
 import dns from 'dns'
-import { EDIT_POLL_INPUT_VALID, POLL_INPUT_VALID } from '../data/polls-data'
-import { createPollInDatabase, editPollInDatabase, openPollForVoting } from '../utils/operations'
-
-import { getDatabaseConnection, clearDatabase, closeDatabaseConnection } from '../utils/handle-database-connections'
-
+import { EDIT_POLL_VALID, POLL_VALID } from '../data/polls-data'
+import { createPoll, editPoll, openPollForVoting } from '../utils/operations'
+import { getConnection, clearDatabase, closeConnection } from '../utils/handle-database-connections'
 import { assert } from 'chai'
-
 import { handleAssertNotAuthenticatedError } from '../../utils/handle-not-authenticated-error'
-import { getCannotEditPollThatIsNotInEditStateErrorMessage } from '../../utils/error-messages'
-import { getErrorMessageFromResponse } from '../utils/helpers'
-import { PollFullDataType, PollState } from '../../types/types'
+import { Errors } from '../../utils/errors'
+import { extractErrorMessage } from '../utils/helpers'
+import { PollState } from '../../types/graphql-schema-types.generated'
+import { PollFull } from '../../models/poll/types'
 
 dns.setDefaultResultOrder('ipv4first')
 
-const DATABASE = getDatabaseConnection()
-let createdFirstPoll: PollFullDataType
+const DATABASE = getConnection()
+let firstPoll: PollFull
 
 describe('OPEN POLL', () => {
   beforeEach(async () => {
     await clearDatabase(DATABASE)
-    createdFirstPoll = await createPollInDatabase({ ...POLL_INPUT_VALID[0], ownerId: uuidv4() })
+    firstPoll = await createPoll({ ...POLL_VALID[0], ownerId: uuidv4() })
   })
 
   it('A poll can be opened for voting by the poll owner', async () => {
-    const success = await openPollForVoting(createdFirstPoll.id, createdFirstPoll.token!)
-    assert(success.state === PollState.VOTE)
+    const success = await openPollForVoting(firstPoll.id, firstPoll.token!)
+    assert(success.state === PollState.Vote)
   })
 
   it('A poll cannot be opened for voting by others than the poll owner', async () => {
     const secondOwnerId = uuidv4()
-    const pollInputDataSecondOwner = { ...POLL_INPUT_VALID[0], ownerId: secondOwnerId }
-    const createdPollSecondOwner = await createPollInDatabase(pollInputDataSecondOwner)
+    const inputSecondOwner = { ...POLL_VALID[0], ownerId: secondOwnerId }
+    const pollBySecondOwner = await createPoll(inputSecondOwner)
     try {
-      await openPollForVoting(createdPollSecondOwner.id, createdFirstPoll.token!)
+      await openPollForVoting(pollBySecondOwner.id, firstPoll.token!)
     } catch (error) {
       handleAssertNotAuthenticatedError(error)
     }
   })
 
   it('A poll cannot be edited if it has been opened for voting', async () => {
-    const success = await openPollForVoting(createdFirstPoll.id, createdFirstPoll.token!)
-    assert(success.state === PollState.VOTE)
+    const success = await openPollForVoting(firstPoll.id, firstPoll.token!)
+    assert(success.state === PollState.Vote)
     try {
-      const editPollInput = EDIT_POLL_INPUT_VALID[0]
-      editPollInput.pollId = createdFirstPoll.id
-      await editPollInDatabase(editPollInput, createdFirstPoll.token!)
+      const input = EDIT_POLL_VALID[0]
+      input.pollId = firstPoll.id
+      await editPoll(input, firstPoll.token!)
     } catch (error) {
-      const errorMessage = getErrorMessageFromResponse(error)
-      assert.include(errorMessage, getCannotEditPollThatIsNotInEditStateErrorMessage())
+      const errorMessage = extractErrorMessage(error)
+      assert.include(errorMessage, Errors.pollNotInEditState)
     }
   })
 
   after(async () => {
-    await closeDatabaseConnection(DATABASE)
+    await closeConnection(DATABASE)
   })
 })

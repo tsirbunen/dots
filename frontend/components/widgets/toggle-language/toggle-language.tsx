@@ -1,68 +1,58 @@
 import React, { useContext } from 'react'
-import { Box, Button, Center, IconButton, Popover, PopoverContent, PopoverTrigger, Portal } from '@chakra-ui/react'
+import { Box, Center, IconButton, Popover, PopoverContent, PopoverTrigger, Portal } from '@chakra-ui/react'
 import { MdLanguage } from 'react-icons/md'
-
 import { Language, useTranslation } from '../../../hooks/use-translation'
 import { AppStateContext, AppState } from '../../../state/state-context'
-import { AppStateAction, AppStateActionEnum } from '../../../state/reducer'
-
+import { DispatchAction, Dispatch } from '../../../state/reducer'
 import { Phrase } from '../../../localization/translations'
-import {
-  buttonInvertedStyles,
-  buttonStyles,
-  customButtonBoxStyle,
-  iconButtonStyle,
-  iconStyle,
-  popoverContentStyle
-} from '../../../common/common-styles'
-import { headerToggleLanguageContainerStyle } from './styles'
+import { Styles } from './styles'
+import SmallButton from '../small-button/small-button'
+import { useBackgroundBlur } from '../../../hooks/use-background-blur'
 
 export const DATA_CY_LANGUAGE_TOGGLE = 'language-toggle-icon-button'
 export const DATA_CY_LANGUAGE = 'language'
 
-const ToggleLanguage = ({ isLaunchPage }: { isLaunchPage: boolean }) => {
+const ToggleLanguage = ({ isRowMode }: { isRowMode: boolean }) => {
   const { translate } = useTranslation()
+  const { addBlur, removeBlur } = useBackgroundBlur()
   const { state, dispatch } = useContext(AppStateContext) as {
     state: AppState
-    dispatch: React.Dispatch<AppStateAction>
+    dispatch: React.Dispatch<DispatchAction>
   }
 
   const changeAppLanguage = (selectedNewLanguage: Language) => {
     if (state.language !== selectedNewLanguage) {
-      dispatch({ type: AppStateActionEnum.SET_LANGUAGE, data: selectedNewLanguage })
+      dispatch({ type: Dispatch.SET_LANGUAGE, data: selectedNewLanguage })
     }
   }
 
   const languages = Object.values(Language)
-  const containerStyle = isLaunchPage ? {} : headerToggleLanguageContainerStyle
 
   return (
     <div>
-      <Popover trigger="hover">
+      <Popover trigger="hover" onOpen={!isRowMode ? addBlur : undefined} onClose={!isRowMode ? removeBlur : undefined}>
         <PopoverTrigger>
           <IconButton
-            {...iconButtonStyle}
+            {...Styles.iconButton}
             isRound
             aria-label={DATA_CY_LANGUAGE_TOGGLE}
-            icon={<MdLanguage {...iconStyle} />}
+            icon={<MdLanguage {...Styles.icon} />}
             data-cy={DATA_CY_LANGUAGE_TOGGLE}
           />
         </PopoverTrigger>
 
         <Portal>
-          <PopoverContent {...popoverContentStyle}>
-            <Center flexDirection={isLaunchPage ? 'row' : 'column'} {...containerStyle}>
+          <PopoverContent {...Styles.popoverContent}>
+            <Center {...Styles.container(isRowMode)}>
               {languages.map((language) => {
-                const styles = language === state.language ? buttonStyles : buttonInvertedStyles
                 return (
-                  <Box key={language} {...customButtonBoxStyle}>
-                    <Button
-                      {...styles}
-                      data-cy={`${DATA_CY_LANGUAGE}-${language}`}
+                  <Box key={language} {...Styles.buttonContainer}>
+                    <SmallButton
+                      dataCy={`${DATA_CY_LANGUAGE}-${language}`}
+                      text={translate(`language_${language}` as Phrase)}
                       onClick={() => changeAppLanguage(language)}
-                    >
-                      {translate(`language_${language}` as Phrase)}
-                    </Button>
+                      noMargin={true}
+                    />
                   </Box>
                 )
               })}

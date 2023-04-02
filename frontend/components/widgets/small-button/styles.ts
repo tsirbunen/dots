@@ -1,16 +1,24 @@
 import { ThemeColor } from '../../../theme/theme'
 
-export const smallButtonStyles = {
-  size: 'sm',
-  variant: 'solid',
-  marginBottom: '20px',
-  marginLeft: '10px',
-  marginRight: '10px',
-  borderRadius: '4px',
-  paddingLeft: '5px',
-  paddingRight: '5px',
-  bg: ThemeColor.SHADE_1,
-  color: ThemeColor.BACKGROUND,
-  _focus: { outline: 'none' },
-  _hover: { bg: ThemeColor.CONTRAST, color: ThemeColor.BACKGROUND }
+export class Styles {
+  static smallButton(noMargin: boolean, isInverted: boolean) {
+    const margin = noMargin ? '0px' : '10px'
+    return {
+      size: 'sm',
+      variant: 'solid',
+      marginBottom: margin,
+      marginLeft: margin,
+      marginRight: margin,
+      borderRadius: '4px',
+      paddingLeft: '5px',
+      paddingRight: '5px',
+      bg: isInverted ? ThemeColor.SHADE_2 : ThemeColor.SHADE_1,
+      color: ThemeColor.BACKGROUND,
+      _focus: { outline: 'none' },
+      _hover: {
+        bg: isInverted ? ThemeColor.SHADE_2 : ThemeColor.CONTRAST,
+        color: ThemeColor.BACKGROUND
+      }
+    }
+  }
 }

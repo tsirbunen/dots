@@ -1,37 +1,18 @@
-import { assert, expect } from 'chai'
-import {
-  PollInputFieldValidationDataType,
-  POLL_INPUT_FIELDS_VALIDATION_DATA,
-  PollValidationFieldEnum,
-  PollFullDataType
-} from '../../types/types'
+import { assert } from 'chai'
 import { v4 as uuidv4 } from 'uuid'
 import { OPTION_COUNT_MIN, OPTION_COUNT_MAX } from '../../utils/constant-values'
-import { getPollInputFieldValueNotInRangeErrorMessage } from '../../utils/error-messages'
-import { POLL_INPUT_VALID } from '../data/polls-data'
-import { createPollInDatabase, openPollForVoting, giveAVoteToOption, findAllOwnerPollsInDatabase } from './operations'
+import { POLL_VALID } from '../data/polls-data'
+import { createPoll, openPollForVoting, giveAVoteToOption, findPoll } from './operations'
 import { Knex } from 'knex'
-import {
-  getAllPollsInDatabase,
-  getAllPersonsInDatabase,
-  getAllOptionsInDatabase,
-  getAllVotesInDatabase
-} from './handle-database-connections'
+import { getAllPolls, getAllPersons, getAllOptions, getAllVotes } from './handle-database-connections'
+import { PollFull } from '../../models/poll/types'
+import { assertObjectIsAPoll } from './assertions'
 
-export function getErrorMessageFromResponse(error: unknown): string {
-  const errorResponse = error as { response: { errors: { message: string }[] } }
+export function extractErrorMessage(error: unknown): string {
+  const errorResponse = error as {
+    response: { errors: Array<{ message: string }> }
+  }
   return errorResponse.response.errors[0].message
-}
-
-export function getExpectedErrorMessageForPollFieldValueNotInRange(validationField: PollValidationFieldEnum): string {
-  const validationData: PollInputFieldValidationDataType = POLL_INPUT_FIELDS_VALIDATION_DATA[validationField]
-  return getPollInputFieldValueNotInRangeErrorMessage(validationData.title, validationData.min, validationData.max)
-}
-
-export function verifyValueNotInExpectedRangeErrorMessage(error: unknown, validationField: PollValidationFieldEnum) {
-  const errorMessage = getErrorMessageFromResponse(error)
-  const expectedErrorMessage = getExpectedErrorMessageForPollFieldValueNotInRange(validationField)
-  expect(errorMessage).to.equal(expectedErrorMessage)
 }
 
 export function getOptionsWithInvalidCounts(): string[][] {
@@ -50,29 +31,31 @@ export function getOptionsWithInvalidCounts(): string[][] {
   return invalidOptionsInputs
 }
 
-export async function createPollsByDifferentOwnersEachWithVotesForOptionsInDatabase() {
+export async function createPollsByOwnersWithVotes() {
   const ownersCount = 2
   const pollsCreatedByOwner = 2
-  const createdPolls: PollFullDataType[] = []
+  const createdPolls: PollFull[] = []
   let pollToDeleteIndex = 0
-  let totalNumberOfOptions = 0
-  let totalNumberOfVotes = 0
-  let optionsInPollToDeleteCount = 0
-  let votesInPollToDeleteCount = 0
+  let totalOptions = 0
+  let totalVotes = 0
+  let optionsToDeleteCount = 0
+  let votesToDeleteCount = 0
   let votersCount = 0
-  let codes: Record<string, string[]> = {}
+  const ownerPollsData: { ownerId: string; polls: PollFull[] }[] = []
 
   for (let ownerIndex = 0; ownerIndex < ownersCount; ownerIndex++) {
     const ownerId = uuidv4()
-    codes[ownerId] = []
+    const polls: PollFull[] = []
     for (let pollIndex = 0; pollIndex < pollsCreatedByOwner; pollIndex++) {
-      const pollInputData = { ...POLL_INPUT_VALID[pollIndex], ownerId }
-      const createdPoll = await createPollInDatabase(pollInputData)
+      const pollInputData = { ...POLL_VALID[pollIndex], ownerId }
+      const createdPoll = await createPoll(pollInputData)
       createdPolls.push(createdPoll)
-      codes[ownerId].push(createdPoll.code)
+      polls.push(createdPoll)
       await openPollForVoting(createdPoll.id, createdPoll.token!)
     }
+    ownerPollsData.push({ ownerId, polls })
   }
+
   for (let pollIndex = 0; pollIndex < createdPolls.length; pollIndex++) {
     const poll = createdPolls[pollIndex]
     for (let optionIndex = 0; optionIndex < poll.options.length; optionIndex++) {
@@ -80,83 +63,83 @@ export async function createPollsByDifferentOwnersEachWithVotesForOptionsInDatab
       let giveAVoteInput = {
         optionId: poll.options[optionIndex].id,
         voterId: uuidv4(),
-        name: 'Voter 1'
+        name: 'Voter 1',
+        pollId: poll.id
       }
       await giveAVoteToOption(giveAVoteInput)
       giveAVoteInput = { ...giveAVoteInput, voterId: uuidv4(), name: 'Voter 2' }
       votersCount += 1
       await giveAVoteToOption(giveAVoteInput)
-      totalNumberOfOptions += 1
-      totalNumberOfVotes += 2
+      totalOptions += 1
+      totalVotes += 2
       if (pollIndex === 0) {
-        optionsInPollToDeleteCount += 1
-        votesInPollToDeleteCount += 2
+        optionsToDeleteCount += 1
+        votesToDeleteCount += 2
       }
     }
   }
   return {
+    ownerPollsData,
     pollToDelete: createdPolls[pollToDeleteIndex!],
     personsCount: ownersCount + votersCount,
-    codes,
     pollsByOwnerCount: pollsCreatedByOwner,
     pollsCount: ownersCount * pollsCreatedByOwner,
-    totalNumberOfOptions,
-    totalNumberOfVotes,
-    optionsInPollToDeleteCount,
-    votesInPollToDeleteCount,
+    totalOptions,
+    totalVotes,
+    optionsToDeleteCount,
+    votesToDeleteCount,
     lastPoll: createdPolls[createdPolls.length - 1]
   }
 }
 
-export async function assertPollOwnerOptionAndVoteCountsInDatabaseMatchExpectedCounts(
+export async function assertOwnerOptionAndVoteCountsMatchExpected(
   DATABASE: Knex<any, any[]>,
-  pollToDelete: PollFullDataType,
+  ownersPolls: PollFull[],
+  deletedPoll: PollFull | undefined,
   expectedPollsByOwner: number,
   expectedPollsCount: number,
   expectedPersonsCount: number,
   expectedTotalNumberOfOptionsCount: number,
-  expectedTotalNumberOfVotesCount: number,
-  pollCodes: string[]
+  expectedTotalNumberOfVotesCount: number
 ): Promise<void> {
-  const pollsByOwner = await findAllOwnerPollsInDatabase(pollToDelete.token!, pollCodes)
-  const ownedPolls = pollsByOwner.filter((poll) => poll.token)
-  assert.equal(ownedPolls.length, expectedPollsByOwner)
+  for (let i = 0; i < ownersPolls.length; i++) {
+    if (!deletedPoll && ownersPolls[i] !== deletedPoll) {
+      const retrievedPoll = await findPoll(ownersPolls[i].code)
+      assertObjectIsAPoll(retrievedPoll)
+    }
+  }
 
-  const pollsInDatabase = await getAllPollsInDatabase(DATABASE)
+  const pollsInDatabase = await getAllPolls(DATABASE)
   assert.equal(pollsInDatabase.length, expectedPollsCount)
 
-  const personsInDatabase = await getAllPersonsInDatabase(DATABASE)
+  const personsInDatabase = await getAllPersons(DATABASE)
   assert.equal(personsInDatabase.length, expectedPersonsCount)
 
-  const optionsInDatabase = await getAllOptionsInDatabase(DATABASE)
+  const optionsInDatabase = await getAllOptions(DATABASE)
   assert.equal(optionsInDatabase.length, expectedTotalNumberOfOptionsCount)
 
-  const votesInDatabase = await getAllVotesInDatabase(DATABASE)
+  const votesInDatabase = await getAllVotes(DATABASE)
   assert.equal(votesInDatabase.length, expectedTotalNumberOfVotesCount)
 }
 
-export async function createPollsInDatabaseForMultipleOwners(): Promise<{
-  ownerIds: string[]
-  tokens: string[]
-  codes: Record<string, string[]>
+export type PollOwnerData = {
+  ownerId: string
+  polls: PollFull[]
+}
+
+export async function createPollsForMultipleOwners(): Promise<{
+  pollOwnerData: PollOwnerData[]
 }> {
-  const ownerIds: string[] = []
-  const tokens: string[] = []
-  const codes: Record<string, string[]> = {}
+  const data = []
   for (let ownerIndex = 0; ownerIndex < 3; ownerIndex++) {
     const ownerId = uuidv4()
-    ownerIds.push(ownerId)
-    for (let inputIndex = 0; inputIndex < POLL_INPUT_VALID.length; inputIndex++) {
-      const pollInputData = { ...POLL_INPUT_VALID[inputIndex], ownerId }
-      const createdPoll = await createPollInDatabase(pollInputData)
-      if (!codes[ownerId]) {
-        codes[ownerId] = []
-      }
-      codes[ownerId].push(createdPoll.code)
-      if (inputIndex === POLL_INPUT_VALID.length - 1) {
-        tokens.push(createdPoll.token!)
-      }
+    const polls = []
+    for (let inputIndex = 0; inputIndex < POLL_VALID.length; inputIndex++) {
+      const pollInputData = { ...POLL_VALID[inputIndex], ownerId }
+      const createdPoll = await createPoll(pollInputData)
+      polls.push(createdPoll)
     }
+    data.push({ ownerId, polls })
   }
-  return { ownerIds, tokens, codes }
+  return { pollOwnerData: data }
 }

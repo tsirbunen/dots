@@ -4,7 +4,7 @@ import { DataClass, PollState } from './graphql-schema-types.generated'
 export type Vote = {
   id: string
   optionId: string
-  voterId: string
+  voterId: string | null
   name: string
 }
 
@@ -17,7 +17,7 @@ export type Option = {
 
 export type Owner = {
   id: string
-  name: string
+  name?: string
 }
 
 export type Poll = {
@@ -32,9 +32,10 @@ export type Poll = {
   showStatusWhenVoting: boolean
   state: PollState
   token: string
+  createdAt: Date
 }
 
-export type TextDateTimeItemsInputConstantsPackage = {
+export type TextInputPackage = {
   requiredInfoTextKey: Phrase
   modalTitleKey: Phrase
   placeholderKey: Phrase
@@ -44,22 +45,22 @@ export type TextDateTimeItemsInputConstantsPackage = {
   maxTextLength: number
 }
 
-export type NumberInputConstantsPackage = {
+export type NumberInputPackage = {
   titleKey: Phrase
   minimum_value: number
   maximum_value: number
 }
 
-export type BooleanInputConstantsPackage = {
+export type BooleanInputPackage = {
   titleKey: Phrase
 }
 
-export type WidgetTextPackages = {
-  ownerName: TextDateTimeItemsInputConstantsPackage
-  votingOptions: TextDateTimeItemsInputConstantsPackage
-  question: TextDateTimeItemsInputConstantsPackage
-  totalVotesCountMax: NumberInputConstantsPackage
-  optionVotesCountMax: NumberInputConstantsPackage
-  isAnonymous: BooleanInputConstantsPackage
-  showStatusWhenVoting: BooleanInputConstantsPackage
+export type TextPackages = {
+  ownerName: TextInputPackage
+  votingOptions: TextInputPackage
+  question: TextInputPackage
+  totalVotesCountMax: NumberInputPackage
+  optionVotesCountMax: NumberInputPackage
+  isAnonymous: BooleanInputPackage
+  showStatusWhenVoting: BooleanInputPackage
 }

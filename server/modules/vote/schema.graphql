@@ -1,13 +1,13 @@
 type Vote {
-  id: ID!
-  optionId: ID!
-  voterId: ID!
+  id: ID
+  optionId: ID
+  voterId: ID
   name: String
   deletedAt: Timestamp
-  createdAt: Timestamp!
-  updatedAt: Timestamp!
+  createdAt: Timestamp
+  updatedAt: Timestamp
 }
 
 extend type Option {
-  votes(optionId: ID): [Vote]
+  votes(id: ID): [Vote]
 }

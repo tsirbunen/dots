@@ -36,22 +36,33 @@ export type EditPollInput = {
   isAnonymous?: InputMaybe<Scalars['Boolean']>;
   optionVotesCountMax?: InputMaybe<Scalars['Int']>;
   options?: InputMaybe<Array<InputMaybe<OptionEditData>>>;
+  ownerName?: InputMaybe<Scalars['String']>;
   pollId: Scalars['ID'];
   question?: InputMaybe<Scalars['String']>;
   showStatusWhenVoting?: InputMaybe<Scalars['Boolean']>;
   totalVotesCountMax?: InputMaybe<Scalars['Int']>;
 };
 
-export type FindPollInput = {
-  code?: InputMaybe<Scalars['String']>;
-  id?: InputMaybe<Scalars['ID']>;
-};
-
 export type GiveAVoteToOptionInput = {
   name?: InputMaybe<Scalars['String']>;
   optionId: Scalars['ID'];
+  pollId: Scalars['ID'];
   voterId: Scalars['ID'];
 };
+
+export type Message = {
+  __typename?: 'Message';
+  id: Scalars['ID'];
+  optionId: Scalars['ID'];
+  pollId: Scalars['ID'];
+  voteId: Scalars['ID'];
+  voterId: Scalars['ID'];
+  voterName?: Maybe<Scalars['String']>;
+};
+
+export enum MessageType {
+  VoteAdded = 'VOTE_ADDED'
+}
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -61,6 +72,7 @@ export type Mutation = {
   editPoll: Poll;
   giveAVoteToOption?: Maybe<Vote>;
   openPoll: Poll;
+  publishMessage: Message;
 };
 
 
@@ -93,21 +105,26 @@ export type MutationOpenPollArgs = {
   pollId: Scalars['ID'];
 };
 
+
+export type MutationPublishMessageArgs = {
+  input: PublishMessageInput;
+};
+
 export type Option = {
   __typename?: 'Option';
-  content: Scalars['String'];
-  createdAt: Scalars['Timestamp'];
+  content?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['Timestamp']>;
   dataClass?: Maybe<DataClass>;
   deletedAt?: Maybe<Scalars['Timestamp']>;
-  id: Scalars['ID'];
-  pollId: Scalars['ID'];
-  updatedAt: Scalars['Timestamp'];
+  id?: Maybe<Scalars['ID']>;
+  pollId?: Maybe<Scalars['ID']>;
+  updatedAt?: Maybe<Scalars['Timestamp']>;
   votes?: Maybe<Array<Maybe<Vote>>>;
 };
 
 
 export type OptionVotesArgs = {
-  optionId?: InputMaybe<Scalars['ID']>;
+  id?: InputMaybe<Scalars['ID']>;
 };
 
 export type OptionEditData = {
@@ -117,32 +134,32 @@ export type OptionEditData = {
 
 export type Person = {
   __typename?: 'Person';
-  id: Scalars['ID'];
+  id?: Maybe<Scalars['ID']>;
   name?: Maybe<Scalars['String']>;
 };
 
 export type Poll = {
   __typename?: 'Poll';
-  code: Scalars['String'];
-  createdAt: Scalars['Timestamp'];
+  code?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['Timestamp']>;
   deletedAt?: Maybe<Scalars['Timestamp']>;
-  id: Scalars['ID'];
-  isAnonymous: Scalars['Boolean'];
-  optionVotesCountMax: Scalars['Int'];
+  id?: Maybe<Scalars['ID']>;
+  isAnonymous?: Maybe<Scalars['Boolean']>;
+  optionVotesCountMax?: Maybe<Scalars['Int']>;
   options?: Maybe<Array<Maybe<Option>>>;
   owner?: Maybe<Person>;
-  ownerId: Scalars['ID'];
-  question: Scalars['String'];
-  showStatusWhenVoting: Scalars['Boolean'];
-  state: PollState;
+  ownerId?: Maybe<Scalars['ID']>;
+  question?: Maybe<Scalars['String']>;
+  showStatusWhenVoting?: Maybe<Scalars['Boolean']>;
+  state?: Maybe<PollState>;
   token?: Maybe<Scalars['String']>;
-  totalVotesCountMax: Scalars['Int'];
-  updatedAt: Scalars['Timestamp'];
+  totalVotesCountMax?: Maybe<Scalars['Int']>;
+  updatedAt?: Maybe<Scalars['Timestamp']>;
 };
 
 
 export type PollOptionsArgs = {
-  pollId?: InputMaybe<Scalars['ID']>;
+  id?: InputMaybe<Scalars['ID']>;
 };
 
 
@@ -156,6 +173,13 @@ export enum PollState {
   Vote = 'VOTE'
 }
 
+export type PublishMessageInput = {
+  optionId: Scalars['ID'];
+  pollId: Scalars['ID'];
+  type: MessageType;
+  voteId: Scalars['ID'];
+};
+
 export type Query = {
   __typename?: 'Query';
   findPoll?: Maybe<Poll>;
@@ -166,7 +190,7 @@ export type Query = {
 
 
 export type QueryFindPollArgs = {
-  input?: InputMaybe<FindPollInput>;
+  code: Scalars['String'];
 };
 
 
@@ -174,13 +198,24 @@ export type QueryFindPollsByCodeArgs = {
   codes: Array<Scalars['String']>;
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  greetings: Scalars['String'];
+  messageAdded: Message;
+};
+
+
+export type SubscriptionMessageAddedArgs = {
+  pollId: Scalars['ID'];
+};
+
 export type Vote = {
   __typename?: 'Vote';
-  createdAt: Scalars['Timestamp'];
+  createdAt?: Maybe<Scalars['Timestamp']>;
   deletedAt?: Maybe<Scalars['Timestamp']>;
-  id: Scalars['ID'];
+  id?: Maybe<Scalars['ID']>;
   name?: Maybe<Scalars['String']>;
-  optionId: Scalars['ID'];
-  updatedAt: Scalars['Timestamp'];
-  voterId: Scalars['ID'];
+  optionId?: Maybe<Scalars['ID']>;
+  updatedAt?: Maybe<Scalars['Timestamp']>;
+  voterId?: Maybe<Scalars['ID']>;
 };

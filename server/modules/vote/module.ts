@@ -1,7 +1,6 @@
 import { createModule, gql } from 'graphql-modules'
 import fs from 'fs'
 import path from 'path'
-
 import { VoteProvider } from './provider'
 import { VoteOptionResolvers } from './vote-option-resolvers'
 

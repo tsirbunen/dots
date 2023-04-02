@@ -7,15 +7,16 @@ import { CustomScalarsModule } from '../modules/custom-scalars/module'
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { OptionModule } from '../modules/option/module'
 import { VoteModule } from '../modules/vote/module'
-import { pollInputValidation } from '../modules/directives/poll-validation'
 import { PersonModule } from '../modules/person/module'
 import { isPollOwner } from '../modules/directives/is-poll-owner'
+import { MessageModule } from '../modules/message/module'
 
 export const createGraphQLApp = (): Application => {
   return createApplication({
     modules: [
       QueryModule,
       MutationModule,
+      MessageModule,
       PingModule,
       OptionModule,
       PollModule,
@@ -26,10 +27,6 @@ export const createGraphQLApp = (): Application => {
     schemaBuilder: ({ typeDefs, resolvers }) => {
       let schema = makeExecutableSchema({ typeDefs, resolvers })
       const customDirectives = [
-        {
-          name: 'pollInputValidation',
-          directive: pollInputValidation
-        },
         {
           name: 'isPollOwner',
           directive: isPollOwner

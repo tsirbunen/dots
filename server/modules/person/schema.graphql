@@ -1,5 +1,5 @@
 type Person {
-  id: ID!
+  id: ID
   name: String
 }
 

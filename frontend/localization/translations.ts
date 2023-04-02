@@ -10,22 +10,20 @@ export type Translations = {
   use_instruction_4: string
   use_instruction_5: string
   use_instruction_6: string
-  use_instruction_7: string
   dashboard_info_1: string
   dashboard_info_2: string
   view_dashboard: string
   mode_create_poll: string
   mode_vote_in_poll: string
-  mode_view_poll: string
   language_FI: string
   language_EN: string
   navigation_route_launch_page: string
   navigation_route_create_poll: string
-  navigation_route_vote_in_poll: string
+  navigation_route_vote: string
   navigation_route_view_poll: string
   navigation_route_dashboard: string
   route_text_create_poll: string
-  route_text_vote_in_poll: string
+  route_text_vote: string
   route_text_view_poll: string
   route_text_dashboard: string
   too_short: string
@@ -58,13 +56,42 @@ export type Translations = {
   toast_create_poll_success: string
   option_count_cannot_exceed_total_count: string
   toast_open_poll_error: string
-  open_poll_for_voting: string
+  toast_open_poll_success: string
+  toast_close_poll_error: string
+  toast_close_poll_success: string
+  open_poll: string
+  close_poll: string
   edit_poll: string
-  want_to_edit_poll_further: string
+  leave_poll: string
+  vote_in_poll: string
+  view_poll: string
   can_still_edit_poll: string
-  if_poll_is_ready: string
-  open_poll_for_voting_info: string
+  open_poll_for_voting: string
+  what_to_do_next: string
+  come_back_later: string
+  close_poll_from_voting: string
+  vote_in_poll_info: string
+  view_poll_info: string
   edit_poll_save_changes: string
   toast_edit_poll_error: string
+  toast_edit_poll_success: string
   toast_fetch_polls_by_id_or_code_error: string
+  enter_poll_code: string
+  go_to_poll: string
+  toast_fetch_poll_by_code_error: string
+  toast_give_vote_error: string
+  vote_left: string
+  votes_left: string
+  once_you_click: string
+  you_have: string
+  you: string
+  not_anonymous_info_1: string
+  not_anonymous_info_2: string
+  not_anonymous_info_3: string
+  enter_name: string
+  could_not_find: string
+  poll_with_code: string
+  something_went_wrong: string
+  go_home: string
+  vote_this: string
 }

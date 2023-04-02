@@ -1,28 +1,37 @@
-import { WidgetTextPackages } from '../types/types'
+import { TextPackages } from '../types/types'
 import { NAME_DATA_TYPE_ERROR, QUESTION_DATA_TYPE_ERROR, VOTING_OPTION_DATA_TYPE_ERROR } from './error-messages'
 
 export const LOCAL_STORAGE_NAMES_AND_IDS_KEY = 'dots_user_names_and_uuids'
+export const LOCAL_STORAGE_CODE_TOKEN_PAIRS = 'dots_code_token_pairs'
 export const LOCAL_STORAGE_POLL_CODES = 'dots_poll_codes'
 export const LOCAL_STORAGE_USER_NAME = 'dots_user_name'
 export const LOCAL_STORAGE_TOKEN = 'dots_token'
 export const LOCAL_STORAGE_USER_ID = 'dots_user_id'
+export const POLL_CODE_LENGTH = 9
 
 export const DOT_SIZE = 18
 export const DOT_SIZE_SMALL = 12
 export const DOT_COLORS = [
+  '#0a9396',
+  '#9bc400',
+  '#F7882F',
+  '#3bceac',
+  '#DE3163',
+  '#7C4793',
+  '#08C3DC',
+  '#e1b382',
+  '#e75874',
+  '#0ead69',
+  '#beef00',
+  '#8076a3',
+  '#2E8C05',
+  '#ED6214',
   '#c37d92',
   '#846267',
-  '#ee4266',
-  '#ffd23f',
-  '#3bceac',
-  '#0ead69',
+  '#f9c5bd',
   '#a4243b',
-  '#0a9396',
-  '#d8c99b',
-  '#d8973c',
-  '#bd632f',
-  '#273e47',
-  '#ff595e'
+  '#6B7A8F',
+  '#c2edda'
 ]
 
 export const TEXT_LENGTH_ORGANIZER_MIN = 3
@@ -34,7 +43,7 @@ export const VOTING_OPTIONS_MAX = 6
 export const OPTIONS_COUNT_MIN = 1
 export const OPTIONS_COUNT_MAX = 3
 
-export const TEXT_PACKAGES: WidgetTextPackages = {
+export const PACKAGES: TextPackages = {
   ownerName: {
     requiredInfoTextKey: 'set_your_name',
     modalTitleKey: 'set_your_name_modal_title',

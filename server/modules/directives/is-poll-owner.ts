@@ -1,7 +1,7 @@
 import { mapSchema, getDirective, MapperKind } from '@graphql-tools/utils'
 import { defaultFieldResolver, GraphQLSchema } from 'graphql'
-import { TokenDetails } from '../../types/types'
-import { getNotAuthenticatedToPerformThisActionErrorMessage } from '../../utils/error-messages'
+import { Errors } from '../../utils/errors'
+import { TokenDetails } from '../../utils/token-handling'
 
 export function isPollOwner(originalSchema: GraphQLSchema, directiveName: string): GraphQLSchema {
   return mapSchema(originalSchema, {
@@ -16,13 +16,13 @@ export function isPollOwner(originalSchema: GraphQLSchema, directiveName: string
             const pollId = args.input?.pollId ?? args.pollId
 
             if (authenticationData) {
-              const ownerPollIds = (authenticationData as TokenDetails).pollIds
-              if (ownerPollIds.includes(pollId)) {
+              const ownerPollId = (authenticationData as TokenDetails).pollId
+              if (ownerPollId === pollId) {
                 return resolve(source, args, context, info)
               }
             }
           }
-          throw new Error(getNotAuthenticatedToPerformThisActionErrorMessage())
+          throw new Error(Errors.notAuthorized)
         }
       }
       return fieldConfig

@@ -4,11 +4,15 @@ import { EN_TRANSLATIONS } from '../../../localization/en'
 
 const createPollPage = new CreatePollPage()
 
-Then('warning due to missing poll question is displayed', () => {
+Then('info on a missing name is displayed', () => {
+  cy.contains(EN_TRANSLATIONS.set_your_name)
+})
+
+Then('info on a missing poll question is displayed', () => {
   cy.contains(EN_TRANSLATIONS.set_voting_question)
 })
 
-Then('warning due to missing voting options is displayed', () => {
+Then('info on missing voting options is displayed', () => {
   cy.contains(EN_TRANSLATIONS.set_min_voting_options)
 })
 
@@ -78,7 +82,3 @@ Given('one has added some voting option twice', () => {
 Then('a warning is displayed that voting options must be unique', () => {
   cy.contains(EN_TRANSLATIONS.options_must_be_unique)
 })
-
-// deletoi vastauksia
-// vaihtele muita ominaisuuksia, katso arvot
-// miten tutkia, mitä on submitissa?

@@ -14,20 +14,21 @@ export const validatePollData = (pollData: unknown): Poll => {
     question: validateString(data.question),
     totalVotesCountMax: validateNumber(data.totalVotesCountMax),
     optionVotesCountMax: validateNumber(data.optionVotesCountMax),
-    owner: validateOwner(data.owner),
     showStatusWhenVoting: validateBoolean(data.showStatusWhenVoting),
     isAnonymous: validateBoolean(data.isAnonymous),
+    owner: validateOwner(data.owner, data.isAnonymous),
     state: validatePollState(data.state),
     token: validateToken(data.token),
-    options: validateOptions(data.options)
+    options: validateOptions(data.options),
+    createdAt: validateDate(data.createdAt)
   } as Poll
 }
 
-const validateOwner = (data: unknown): Owner => {
+const validateOwner = (data: unknown, isAnonymous: boolean): Owner => {
   const owner = data as Owner
   return {
     id: validateString(owner.id),
-    name: validateString(owner.name)
+    name: !isAnonymous ? validateString(owner.name) : owner.name
   }
 }
 
@@ -45,27 +46,32 @@ const validateOptions = (data: unknown) => {
     }
   })
 }
-const validateVotes = (data: unknown) => {
+
+const validateVotes = (data: unknown): Vote[] => {
   if (!Array.isArray(data)) {
     throw new Error('Votes must be an array!')
   }
-  return data?.map((v) => {
-    const vote = v as Vote
-    return {
-      id: validateString(vote.id),
-      optionId: validateString(vote.optionId),
-      voterId: validateString(vote.voterId),
-      name: validateString(vote.name)
-    }
-  })
+  return data?.map((v) => validateVote(v))
 }
 
-export const validateToken = (target: unknown): string => {
+export const validateVote = (v: unknown): Vote => {
+  const vote = v as Vote
+  return {
+    id: validateString(vote.id),
+    optionId: validateString(vote.optionId),
+    voterId: vote.voterId === null ? null : validateString(vote.voterId),
+    name: validateString(vote.name)
+  }
+}
+
+export const validateToken = (target: unknown): string | undefined => {
+  if (target === null) return undefined
   if (typeof target !== 'string') {
-    throw new Error('Token is required!')
+    throw new Error('Token must be string when present!')
   }
   return target as string
 }
+
 const validateString = (target: unknown): string => {
   if (typeof target !== 'string') throw new Error(`Target ${target} is not a string!`)
   return target
@@ -91,4 +97,10 @@ const validateDataClass = (target: unknown): DataClass => {
   if (target !== DataClass.Text && target !== DataClass.Date && target !== DataClass.Number)
     throw new Error(`Target ${target} is not a DataClass!`)
   return target
+}
+
+const validateDate = (target: unknown): Date => {
+  const testDate = new Date(target as number)
+  if (typeof target === 'number' && testDate instanceof Date) return testDate
+  throw new Error(`Target ${target} does not represent a date!`)
 }

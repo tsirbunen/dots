@@ -1,13 +1,17 @@
 import chai, { assert, expect } from 'chai'
 import chaiUuid from 'chai-uuid'
-import { OptionType, DataClassType, VoteType, PollFullDataType } from '../../types/types'
+
 import chaiJWT from 'chai-jwt'
+import { DataClass } from '../../types/graphql-schema-types.generated'
+import { VoteDB } from '../../models/vote/types'
+import { OptionDB, OptionDBWithVotesDB } from '../../models/option/types'
+import { PollFull } from '../../models/poll/types'
 
 chai.use(chaiUuid)
 chai.use(chaiJWT)
 
 export function assertObjectIsAPoll(pollCandidate: unknown) {
-  const poll = pollCandidate as PollFullDataType
+  const poll = pollCandidate as PollFull
   expect(poll.id).to.be.a.uuid('v4')
   assert.isString(poll.code)
   assert.isArray(poll.options)
@@ -21,10 +25,10 @@ export function assertObjectIsAPoll(pollCandidate: unknown) {
   assertCreatedAtUpdatedAtAndDeletedAtValuesAreValid(poll)
 }
 
-export function assertPollsArePracticallyEqual(pollOrCreatePollInput: unknown, poll: unknown): void {
-  const pollA = pollOrCreatePollInput as PollFullDataType
-  const pollB = poll as PollFullDataType
-  let pollKey: keyof PollFullDataType
+export function assertPollsAreEqual(pollOrCreatePollInput: unknown, poll: unknown): void {
+  const pollA = pollOrCreatePollInput as PollFull
+  const pollB = poll as PollFull
+  let pollKey: keyof PollFull
   for (pollKey in pollA) {
     if (pollKey in pollB) {
       assertFieldValuesAreEqual(pollA[pollKey], pollB[pollKey])
@@ -32,7 +36,7 @@ export function assertPollsArePracticallyEqual(pollOrCreatePollInput: unknown, p
   }
 }
 
-export function assertPollContainsAToken(poll: PollFullDataType) {
+export function assertPollContainsAToken(poll: PollFull) {
   assert.isString(poll.token)
   expect(poll.token).to.be.a.jwt
 }
@@ -42,20 +46,25 @@ export function assertTokenIsPresent(input: unknown) {
   assert.isString(inputWithToken.token)
 }
 
+export function assertTokenIsMissing(input: unknown) {
+  const inputWithToken = input as { token: null }
+  assert.isNull(inputWithToken.token)
+}
+
 export function assertObjectIsAVote(vote: unknown) {
-  const voteCandidate = vote as VoteType
+  const voteCandidate = vote as VoteDB
   expect(voteCandidate.id).to.be.a.uuid('v4')
   expect(voteCandidate.optionId).to.be.a.uuid('v4')
   if (voteCandidate.name) assert.isString(voteCandidate.name)
   assertCreatedAtUpdatedAtAndDeletedAtValuesAreValid(voteCandidate)
 }
 
-export function assertVoteIsForCorrectOption(vote: VoteType, optionId: string) {
+export function assertVoteIsForCorrectOption(vote: VoteDB, optionId: string) {
   assert.equal(vote.optionId, optionId)
 }
 
 export function assertEachOptionHasValidVotes(poll: unknown) {
-  const pollWithFullData = poll as PollFullDataType
+  const pollWithFullData = poll as PollFull
   assert.isArray(pollWithFullData.options)
   pollWithFullData.options.forEach((option) => {
     assert.isArray(option.votes)
@@ -64,11 +73,14 @@ export function assertEachOptionHasValidVotes(poll: unknown) {
 }
 
 function assertObjectIsAnOptionToPoll(option: unknown, pollId?: string) {
-  const optionCandidate = option as OptionType
+  const optionCandidate = option as OptionDBWithVotesDB
   expect(optionCandidate.id).to.be.a.uuid('v4')
   expect(optionCandidate.pollId).to.be.a.uuid('v4')
   expect(optionCandidate.content).to.be.a.string
-  assert.oneOf(optionCandidate.dataClass, Object.keys(DataClassType))
+  assert.oneOf(
+    optionCandidate.dataClass,
+    Object.keys(DataClass).map((key) => key.toUpperCase())
+  )
   ;(optionCandidate.votes ?? []).forEach((vote) => assertObjectIsAVote(vote))
   if (pollId) assert(optionCandidate.pollId === pollId)
   assertCreatedAtUpdatedAtAndDeletedAtValuesAreValid(optionCandidate)
@@ -78,7 +90,7 @@ function assertObjectIsAnOptionToPoll(option: unknown, pollId?: string) {
   }
 }
 
-function assertOptionsAreUnique(options: OptionType[]) {
+function assertOptionsAreUnique(options: OptionDB[]) {
   const optionIds = new Set()
   options.forEach((option) => optionIds.add(option.id))
   assert(optionIds.size === options.length)
@@ -92,12 +104,12 @@ function assertCreatedAtUpdatedAtAndDeletedAtValuesAreValid(candidate: {
   updatedAt?: unknown
   deletedAt?: unknown
 }) {
-  if (candidate.createdAt !== undefined) assertIsNumberAndRepresentsAValidDate(candidate.createdAt)
-  if (candidate.updatedAt !== undefined) assertIsNumberAndRepresentsAValidDate(candidate.updatedAt)
-  if (candidate.deletedAt) assertIsNumberAndRepresentsAValidDate(candidate.deletedAt)
+  if (candidate.createdAt !== undefined) assertIsNumberAndRepresentsDate(candidate.createdAt)
+  if (candidate.updatedAt !== undefined) assertIsNumberAndRepresentsDate(candidate.updatedAt)
+  if (candidate.deletedAt) assertIsNumberAndRepresentsDate(candidate.deletedAt)
 }
 
-function assertIsNumberAndRepresentsAValidDate(dateAsNumber: unknown) {
+function assertIsNumberAndRepresentsDate(dateAsNumber: unknown) {
   if (!dateAsNumber) return
   assert.isNumber(dateAsNumber)
   const dateCandidate = new Date(dateAsNumber as number)
@@ -119,13 +131,11 @@ function assertFieldValuesAreEqual(valueA: any, valueB: any) {
     Object.keys(valueA).forEach((key) => {
       assertFieldValuesAreEqual(valueA[key], valueB[key])
     })
-  } else if ((valueA as OptionType).content && !(valueB as OptionType).content) {
-    assertFieldValuesAreEqual((valueA as OptionType).content, valueB)
-  } else if (!(valueA as OptionType).content && (valueB as OptionType).content) {
-    assertFieldValuesAreEqual(valueA, (valueB as OptionType).content)
+  } else if ((valueA as OptionDB).content && !(valueB as OptionDB).content) {
+    assertFieldValuesAreEqual((valueA as OptionDB).content, valueB)
+  } else if (!(valueA as OptionDB).content && (valueB as OptionDB).content) {
+    assertFieldValuesAreEqual(valueA, (valueB as OptionDB).content)
   } else {
-    throw new Error(
-      `"Assert field values are equal"-method not implemented for value pairs like ${valueA} and ${valueB}`
-    )
+    throw new Error(`"Assert values are equal" not implemented for pairs like ${valueA} and ${valueB}`)
   }
 }

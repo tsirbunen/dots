@@ -1,0 +1,85 @@
+fragment PollData on Poll {
+  id
+  owner {
+    id
+    name
+  }
+  code
+  question
+  options {
+    id
+    content
+    dataClass
+    votes {
+      id
+      optionId
+      voterId
+      name
+    }
+  }
+  isAnonymous
+  totalVotesCountMax
+  optionVotesCountMax
+  showStatusWhenVoting
+  state
+  token
+  createdAt
+}
+
+mutation CreatePoll($input: CreatePollInput!) {
+  createPoll(input: $input) {
+    ...PollData
+  }
+}
+
+mutation EditPoll($input: EditPollInput!) {
+  editPoll(input: $input) {
+    ...PollData
+  }
+}
+
+query FindPollsByCode($codes: [String!]!) {
+  findPollsByCode(codes: $codes) {
+    ...PollData
+  }
+}
+
+mutation OpenPoll($pollId: ID!) {
+  openPoll(pollId: $pollId) {
+    id
+    state
+  }
+}
+
+mutation ClosePoll($pollId: ID!) {
+  closePoll(pollId: $pollId) {
+    id
+    state
+  }
+}
+
+query FindPoll($code: String!) {
+  findPoll(code: $code) {
+    ...PollData
+  }
+}
+
+mutation GiveVoteToOption($input: GiveAVoteToOptionInput!) {
+  giveAVoteToOption(input: $input) {
+    id
+    optionId
+    voterId
+    name
+  }
+}
+
+subscription MessageAdded($pollId: ID!) {
+  messageAdded(pollId: $pollId) {
+    id
+    optionId
+    voteId
+    pollId
+    voterId
+    voterName
+  }
+}

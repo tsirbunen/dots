@@ -1,14 +1,14 @@
 import { Context } from '../../Context'
-import { Poll } from '../../models/poll-model'
-import { OptionType } from '../../types/types'
+import { OptionDB } from '../../models/option/types'
+import { PollDB } from '../../models/poll/types'
 
 import { OptionProvider } from './provider'
 
-interface OptionPollResolversType {
-  options: (parent: Poll, args: unknown, context: Context) => Promise<OptionType[]>
+interface IOptionPollResolvers {
+  options: (parent: PollDB, args: unknown, context: Context) => Promise<OptionDB[]>
 }
 
-export const OptionPollResolvers: OptionPollResolversType = {
+export const OptionPollResolvers: IOptionPollResolvers = {
   options: async (parent, _args, context) => {
     const provider = context.injector.get(OptionProvider)
     return await provider.findOptionsByPollId(parent.id)
