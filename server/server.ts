@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import * as dotenv from 'dotenv'
 import Fastify, { FastifyReply, FastifyRequest } from 'fastify'
 import fastifyCors from '@fastify/cors'
 import fastifyWebsocket from '@fastify/websocket'
@@ -17,6 +18,7 @@ import {
 import { authenticationPlugin } from './graphql-app/authentication-plugin'
 import { Context } from 'graphql-ws/lib/server'
 import { SubscribeMessage } from 'graphql-ws/lib/common'
+dotenv.config()
 
 const GRAPHQL_ROUTE = '/graphql'
 const WS_ROUTE = '/ws'
@@ -134,7 +136,7 @@ export const startServer = async (): Promise<void> => {
   try {
     const PORT = 3001
     const HOST = '0.0.0.0'
-    server.listen(PORT, HOST, () => {
+    server.listen(process.env.PORT ?? PORT, process.env.HOST ?? HOST, () => {
       console.log(`DOTS server is running on PORT: ${PORT}`)
     })
   } catch (error) {

@@ -6,7 +6,7 @@ import { Base } from './base'
 export class LaunchPage extends Base {
   verifyAppLanguageIsTheGivenLanguage(language: string) {
     assert(Object.keys(Language).includes(language))
-    const exampleElementTextInLanguage = TRANSLATIONS[language]['how_does_it_work']
+    const exampleElementTextInLanguage = TRANSLATIONS[language as Language]['how_does_it_work']
     cy.contains(exampleElementTextInLanguage)
   }
 
