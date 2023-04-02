@@ -3,9 +3,12 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { getMainDefinition } from '@apollo/client/utilities'
 import { createClient } from 'graphql-ws'
 
-const server = 'localhost'
-const HTTP_URI = `http://${server}:3001/graphql`
-const WS_URL = `ws://${server}:3001/ws`
+// const server = 'localhost'
+// const HTTP_URI = `http://${server}:3001/graphql`
+const HTTP_URI = `https://dots-server.herokuapp.com/graphql`
+
+// const WS_URL = `ws://${server}:3001/ws`
+const WS_URL = `ws://dots-server.herokuapp.com/ws`
 
 const httpLink = new HttpLink({
   uri: HTTP_URI
